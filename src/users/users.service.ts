@@ -19,6 +19,10 @@ export class UsersService {
     return this.repository.findByEmail(email);
   }
 
+  async userById(userId: string): Promise<UserDocument> {
+    return this.repository.findById(userId);
+  }
+
   async createUser(input: CreateUserInput): Promise<UserDocument> {
     return this.repository.create(input);
   }
