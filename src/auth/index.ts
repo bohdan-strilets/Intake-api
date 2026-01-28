@@ -1,1 +1,2 @@
-export { AuthSession, AuthSessionDocument, AuthSessionSchema } from './auth-session.schema';
+export { AuthController } from './auth.controller';
+export { AuthModule } from './auth.module';
