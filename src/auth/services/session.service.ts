@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 import { InvalidSessionException } from '../errors';
 import { AuthSession, AuthSessionDocument } from '../schemas';
-import { CreateSessionInput, UpdateSessionInput } from '../types';
+import { CreateSessionInput, SessionEntity, UpdateSessionInput } from '../types';
 
 @Injectable()
 export class SessionService {
@@ -18,12 +18,15 @@ export class SessionService {
     return new Date(Date.now() + daysToMs(days));
   }
 
-  async createSession(input: CreateSessionInput): Promise<AuthSessionDocument> {
-    return this.authSessionModel.create(input);
+  async createSession(input: CreateSessionInput): Promise<SessionEntity> {
+    const doc = new this.authSessionModel(input);
+    await doc.save();
+
+    return doc.toObject() as SessionEntity;
   }
 
-  async getValidSession(sessionId: string): Promise<AuthSessionDocument> {
-    const session = await this.authSessionModel.findById(sessionId);
+  async getValidSession(sessionId: string): Promise<SessionEntity> {
+    const session = await this.authSessionModel.findById(sessionId).lean<SessionEntity>().exec();
 
     if (!session || session.expiresAt < new Date()) {
       throw new InvalidSessionException();
