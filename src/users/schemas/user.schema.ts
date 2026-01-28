@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { Goal, Sex } from './enums';
+import { Goal, Sex } from '../enums';
 
 @Schema({ timestamps: true })
 export class User {
