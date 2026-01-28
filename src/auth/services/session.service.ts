@@ -4,14 +4,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { InvalidSessionException } from '../errors';
-import { AuthSession, AuthSessionDocument } from '../schemas';
+import { Session, SessionDocument } from '../schemas';
 import { CreateSessionInput, SessionEntity, UpdateSessionInput } from '../types';
 
 @Injectable()
 export class SessionService {
   constructor(
-    @InjectModel(AuthSession.name)
-    private readonly authSessionModel: Model<AuthSessionDocument>,
+    @InjectModel(Session.name)
+    private readonly sessionModel: Model<SessionDocument>,
   ) {}
 
   generateExpiresAt(days: number): Date {
@@ -19,14 +19,14 @@ export class SessionService {
   }
 
   async createSession(input: CreateSessionInput): Promise<SessionEntity> {
-    const doc = new this.authSessionModel(input);
+    const doc = new this.sessionModel(input);
     await doc.save();
 
     return doc.toObject() as SessionEntity;
   }
 
   async getValidSession(sessionId: string): Promise<SessionEntity> {
-    const session = await this.authSessionModel.findById(sessionId).lean<SessionEntity>().exec();
+    const session = await this.sessionModel.findById(sessionId).lean<SessionEntity>().exec();
 
     if (!session || session.expiresAt < new Date()) {
       throw new InvalidSessionException();
@@ -36,7 +36,7 @@ export class SessionService {
   }
 
   async updateSession(sessionId: string, input: UpdateSessionInput): Promise<void> {
-    const update: Partial<AuthSession> = {};
+    const update: Partial<SessionEntity> = {};
 
     if (input.refreshTokenHash) {
       update.refreshTokenHash = input.refreshTokenHash;
@@ -45,18 +45,17 @@ export class SessionService {
       update.expiresAt = input.expiresAt;
     }
 
-    const result = await this.authSessionModel.updateOne({ _id: sessionId }, update);
-
+    const result = await this.sessionModel.updateOne({ _id: sessionId }, update);
     if (result.matchedCount === 0) throw new InvalidSessionException();
   }
 
   async invalidateById(sessionId: string): Promise<void> {
-    const result = await this.authSessionModel.deleteOne({ _id: sessionId });
+    const result = await this.sessionModel.deleteOne({ _id: sessionId });
 
     if (result.deletedCount === 0) throw new InvalidSessionException();
   }
 
   async invalidateByUserId(userId: string): Promise<void> {
-    await this.authSessionModel.deleteMany({ userId });
+    await this.sessionModel.deleteMany({ userId });
   }
 }

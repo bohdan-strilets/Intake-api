@@ -4,13 +4,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './auth.controller';
-import { AuthSession, AuthSessionSchema } from './schemas';
+import { Session, SessionSchema } from './schemas';
 import { AuthService, HashService, SessionService, TokenService } from './services';
 import { JwtRefreshStrategy, JwtStrategy } from './strategies';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: AuthSession.name, schema: AuthSessionSchema }]),
+    MongooseModule.forFeature([{ name: Session.name, schema: SessionSchema }]),
     UsersModule,
     PassportModule,
   ],

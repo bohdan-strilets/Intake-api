@@ -1,1 +1,1 @@
-export { AuthSession, AuthSessionDocument, AuthSessionSchema } from './auth-session.schema';
+export { Session, SessionDocument, SessionSchema } from './session.schema';

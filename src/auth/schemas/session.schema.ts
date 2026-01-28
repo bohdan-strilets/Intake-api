@@ -2,16 +2,16 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
-export class AuthSession {
+export class Session {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   userId: Types.ObjectId;
 
   @Prop({ default: null })
-  refreshTokenHash?: string;
+  refreshTokenHash?: string | null;
 
   @Prop({ required: true })
   expiresAt: Date;
 }
 
-export type AuthSessionDocument = AuthSession & Document;
-export const AuthSessionSchema = SchemaFactory.createForClass(AuthSession);
+export type SessionDocument = Session & Document;
+export const SessionSchema = SchemaFactory.createForClass(Session);
