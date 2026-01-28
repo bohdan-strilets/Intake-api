@@ -1,8 +1,9 @@
-export { AccessTokenPayload } from './access-token-payload.type';
-export { AuthUser } from './auth-user.type';
-export { CreateSessionInput } from './create-session-input.type';
-export { JwtExpiresIn } from './jwt-expires-in.type';
-export { LoginOutput } from './login-output.type';
-export { RefreshTokenPayload } from './refresh-token-payload.type';
-export { RegisterInput } from './register-input.type';
-export { RegisterOutput } from './register-output.type';
+export type { AccessTokenPayload } from './access-token-payload.type';
+export type { AuthUser } from './auth-user.type';
+export type { AuthenticatedRequest } from './authenticated-request.type';
+export type { CreateSessionInput } from './create-session-input.type';
+export type { JwtExpiresIn } from './jwt-expires-in.type';
+export type { LoginOutput } from './login-output.type';
+export type { RefreshTokenPayload } from './refresh-token-payload.type';
+export type { RegisterInput } from './register-input.type';
+export type { RegisterOutput } from './register-output.type';
