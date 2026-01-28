@@ -1,7 +1,7 @@
-import { AuthUser } from '../types';
+import { AuthUserResponse } from '../types';
 
-export type LoginResponseDto = {
+export class LoginResponseDto {
   accessToken: string;
   refreshToken: string;
-  user: AuthUser;
-};
+  user: AuthUserResponse;
+}

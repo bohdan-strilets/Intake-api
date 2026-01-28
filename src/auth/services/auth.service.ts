@@ -3,10 +3,23 @@ import { CreateUserInput } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { LoginDto, LoginResponseDto, RegisterResponseDto } from '../dto';
-import { EmailAlreadyExistsException, InvalidCredentialsException } from '../errors';
-import { mapUserToAccessPayload, mapUserToAuthOutput, mapUserToRefreshPayload } from '../mappers';
-import { CreateSessionInput, RegisterInput } from '../types';
+import { LoginDto, LoginResponseDto, RefreshResponseDto, RegisterResponseDto } from '../dto';
+import {
+  EmailAlreadyExistsException,
+  InvalidCredentialsException,
+  UnauthorizedException,
+} from '../errors';
+import {
+  mapUserDocumentToUserResponse,
+  mapUserToAccessPayload,
+  mapUserToRefreshPayload,
+} from '../mappers';
+import {
+  AccessTokenPayload,
+  CreateSessionInput,
+  RegisterInput,
+  UpdateSessionInput,
+} from '../types';
 import { HashService } from './hash.service';
 import { SessionService } from './session.service';
 import { TokenService } from './token.service';
@@ -35,7 +48,7 @@ export class AuthService {
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
 
-    return { user: mapUserToAuthOutput(user) };
+    return { user: mapUserDocumentToUserResponse(user) };
   }
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
@@ -48,27 +61,69 @@ export class AuthService {
 
     if (!passwordValid) throw new InvalidCredentialsException();
 
-    const accessPayload = mapUserToAccessPayload(user);
-    const accessToken = this.tokenService.createAccessToken(accessPayload);
-
-    const refreshPayload = mapUserToRefreshPayload(user);
-    const refreshToken = this.tokenService.createRefreshToken(refreshPayload);
-
-    const refreshTokenHash = await this.hashService.hash(refreshToken);
+    const sessionExpiresAt = this.sessionService.generateExpiresAt(this.sessionExpiresDays);
 
     const createSessionInput: CreateSessionInput = {
       userId: user._id,
-      refreshTokenHash,
-      expiresAt: this.sessionService.generateExpiresAt(this.sessionExpiresDays),
+      expiresAt: sessionExpiresAt,
     };
 
-    await this.sessionService.createSession(createSessionInput);
-    const safeUser = mapUserToAuthOutput(user);
+    const session = await this.sessionService.createSession(createSessionInput);
+    const sessionId = session._id.toString();
+
+    const accessPayload = mapUserToAccessPayload(user);
+    const accessToken = this.tokenService.createAccessToken(accessPayload);
+
+    const refreshPayload = mapUserToRefreshPayload(user, sessionId);
+    const refreshToken = this.tokenService.createRefreshToken(refreshPayload);
+
+    const refreshTokenHash = await this.hashService.hash(refreshToken);
+    await this.sessionService.updateSession(sessionId, {
+      refreshTokenHash,
+      expiresAt: sessionExpiresAt,
+    });
+
+    const safeUser = mapUserDocumentToUserResponse(user);
 
     return {
       accessToken,
       refreshToken,
       user: safeUser,
     };
+  }
+
+  async refresh(sessionId: string, refreshToken: string): Promise<RefreshResponseDto> {
+    const session = await this.sessionService.getValidSession(sessionId);
+    const user = await this.usersService.userById(session.userId.toString());
+
+    if (!session.refreshTokenHash) throw new UnauthorizedException();
+
+    const isValid = await this.hashService.compare(refreshToken, session.refreshTokenHash);
+
+    if (!isValid) throw new UnauthorizedException();
+
+    const refreshPayload = mapUserToRefreshPayload(user, sessionId);
+    const newRefreshToken = this.tokenService.createRefreshToken(refreshPayload);
+
+    const newRefreshHash = await this.hashService.hash(newRefreshToken);
+
+    const updateSessionInput: UpdateSessionInput = {
+      refreshTokenHash: newRefreshHash,
+      expiresAt: this.sessionService.generateExpiresAt(this.sessionExpiresDays),
+    };
+
+    await this.sessionService.updateSession(sessionId, updateSessionInput);
+
+    const accessPayload: AccessTokenPayload = mapUserToAccessPayload(user);
+    const accessToken = this.tokenService.createAccessToken(accessPayload);
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
+  }
+
+  async logout(sessionId: string): Promise<void> {
+    await this.sessionService.invalidateById(sessionId);
   }
 }

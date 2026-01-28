@@ -6,8 +6,8 @@ export class AuthSession {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   userId: Types.ObjectId;
 
-  @Prop({ required: true })
-  refreshTokenHash: string;
+  @Prop({ default: null })
+  refreshTokenHash?: string;
 
   @Prop({ required: true })
   expiresAt: Date;

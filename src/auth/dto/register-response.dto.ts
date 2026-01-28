@@ -1,5 +1,5 @@
-import { AuthUser } from '../types';
+import { AuthUserResponse } from '../types';
 
-export type RegisterResponseDto = {
-  user: AuthUser;
-};
+export class RegisterResponseDto {
+  user: AuthUserResponse;
+}

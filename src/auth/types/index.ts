@@ -1,7 +1,9 @@
 export type { AccessTokenPayload } from './access-token-payload.type';
-export type { AuthUser } from './auth-user.type';
+export type { AuthUserResponse } from './auth-user-response.type';
 export type { AuthenticatedRequest } from './authenticated-request.type';
 export type { CreateSessionInput } from './create-session-input.type';
 export type { JwtExpiresIn } from './jwt-expires-in.type';
 export type { RefreshTokenPayload } from './refresh-token-payload.type';
 export type { RegisterInput } from './register-input.type';
+export type { SessionIdentity } from './session-identity.type';
+export type { UpdateSessionInput } from './update-session-input.type';
