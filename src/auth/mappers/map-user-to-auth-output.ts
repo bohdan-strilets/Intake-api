@@ -1,8 +1,8 @@
 import { UserDocument } from '@app/users/schemas';
 
-import { RegisterOutput } from '../types';
+import { AuthUser } from '../types';
 
-export const mapUserToAuthOutput = (user: UserDocument): RegisterOutput => {
+export const mapUserToAuthOutput = (user: UserDocument): AuthUser => {
   return {
     id: user._id.toString(),
     email: user.email,

@@ -1,5 +1,5 @@
+import { AuthUser } from './auth-user.type';
+
 export type RegisterOutput = {
-  id: string;
-  email: string;
-  name: string;
+  user: AuthUser;
 };
