@@ -3,10 +3,10 @@ import { CreateUserInput } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { LoginDto } from '../dto';
+import { LoginDto, LoginResponseDto, RegisterResponseDto } from '../dto';
 import { EmailAlreadyExistsException, UnauthorizedException } from '../errors';
 import { mapUserToAccessPayload, mapUserToAuthOutput, mapUserToRefreshPayload } from '../mappers';
-import { CreateSessionInput, LoginOutput, RegisterInput, RegisterOutput } from '../types';
+import { CreateSessionInput, RegisterInput } from '../types';
 import { HashService } from './hash.service';
 import { SessionService } from './session.service';
 import { TokenService } from './token.service';
@@ -25,7 +25,7 @@ export class AuthService {
     this.sessionExpiresDays = Number(this.config.get<number>('SESSION_EXPIRES_DAYS'));
   }
 
-  async register(input: RegisterInput): Promise<RegisterOutput> {
+  async register(input: RegisterInput): Promise<RegisterResponseDto> {
     const existingUser = await this.usersService.userExistsByEmail(input.email);
     if (existingUser) throw new EmailAlreadyExistsException();
 
@@ -38,7 +38,7 @@ export class AuthService {
     return { user: mapUserToAuthOutput(user) };
   }
 
-  async login(dto: LoginDto): Promise<LoginOutput> {
+  async login(dto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = dto;
     const user = await this.usersService.userByEmail(email);
 
