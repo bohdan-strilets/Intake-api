@@ -26,6 +26,10 @@ export class UsersRepository {
     return this.userModel.findOne({ email: normalizedEmail });
   }
 
+  async findById(userId: string): Promise<UserDocument> {
+    return this.userModel.findById(userId);
+  }
+
   async create(input: CreateUserInput): Promise<UserDocument> {
     return this.userModel.create(input);
   }

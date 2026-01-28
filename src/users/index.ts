@@ -1,2 +1,3 @@
-export { UsersModule } from './user.module';
-export { UsersService } from './user.service';
+export { UsersController } from './users.controller';
+export { UsersModule } from './users.module';
+export { UsersService } from './users.service';
