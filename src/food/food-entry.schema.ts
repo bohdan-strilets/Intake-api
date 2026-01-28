@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 
 import { Source } from './enums';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class FoodEntry {
   @Prop({ type: Types.ObjectId, ref: 'Day', required: true, index: true })
   dayId: Types.ObjectId;

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 import { Goal, Sex } from '../enums';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class User {
   @Prop({ required: true })
   name: string;
