@@ -1,7 +1,8 @@
+import { EmailAlreadyExistsException } from '@app/auth/errors';
 import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
-import { UpdateProfileDto, UserResponseDto } from './dto';
+import { UpdateEmailDto, UpdateProfileDto, UserResponseDto } from './dto';
 import { UserNotFoundException } from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { CreateUserInput, UserEntity } from './types';
@@ -44,6 +45,16 @@ export class UsersService {
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserResponseDto> {
+    const updatedUser = await this.repository.update(userId, dto);
+    if (!updatedUser) throw new UserNotFoundException();
+
+    return mapUserToResponseDto(updatedUser);
+  }
+
+  async updateEmail(userId: string, dto: UpdateEmailDto): Promise<UserResponseDto> {
+    const exists = await this.repository.existsByEmail(dto.email);
+    if (exists) throw new EmailAlreadyExistsException();
+
     const updatedUser = await this.repository.update(userId, dto);
     if (!updatedUser) throw new UserNotFoundException();
 

@@ -1,7 +1,7 @@
 import { Auth, CurrentUserId } from '@app/auth/decorators';
 import { Body, Controller, Get, Patch } from '@nestjs/common';
 
-import { UpdateProfileDto, UserResponseDto } from './dto';
+import { UpdateEmailDto, UpdateProfileDto, UserResponseDto } from './dto';
 import { UsersService } from './users.service';
 
 @Auth()
@@ -20,5 +20,13 @@ export class UsersController {
     @Body() dto: UpdateProfileDto,
   ): Promise<UserResponseDto> {
     return this.usersService.updateProfile(userId, dto);
+  }
+
+  @Patch('me/email')
+  updateEmail(
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateEmailDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateEmail(userId, dto);
   }
 }
