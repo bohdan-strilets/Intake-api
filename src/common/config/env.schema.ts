@@ -10,6 +10,8 @@ export const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
 
+  SESSION_EXPIRES_DAYS: z.coerce.number().default(7),
+
   MONGO_URI: z.string().url(),
 
   BCRYPT_SALT_ROUNDS: z.coerce.number().default(10),
