@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { LoginDto, LoginResponseDto, RegisterResponseDto } from '../dto';
-import { EmailAlreadyExistsException, UnauthorizedException } from '../errors';
+import { EmailAlreadyExistsException, InvalidCredentialsException } from '../errors';
 import { mapUserToAccessPayload, mapUserToAuthOutput, mapUserToRefreshPayload } from '../mappers';
 import { CreateSessionInput, RegisterInput } from '../types';
 import { HashService } from './hash.service';
@@ -42,11 +42,11 @@ export class AuthService {
     const { email, password } = dto;
     const user = await this.usersService.userByEmail(email);
 
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new InvalidCredentialsException();
 
     const passwordValid = await this.hashService.compare(password, user.passwordHash);
 
-    if (!passwordValid) throw new UnauthorizedException();
+    if (!passwordValid) throw new InvalidCredentialsException();
 
     const accessPayload = mapUserToAccessPayload(user);
     const accessToken = this.tokenService.createAccessToken(accessPayload);
