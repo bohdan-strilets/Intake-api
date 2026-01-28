@@ -1,7 +1,7 @@
-import { UserProfileDto } from '../dto';
+import { UserResponseDto } from '../dto';
 import { UserEntity } from '../types';
 
-export const mapUserToDto = (user: UserEntity): UserProfileDto => {
+export const mapUserToResponseDto = (user: UserEntity): UserResponseDto => {
   return {
     id: user._id.toString(),
     name: user.name,

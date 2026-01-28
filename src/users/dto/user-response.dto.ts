@@ -1,6 +1,6 @@
 import { Goal, Sex } from '../enums';
 
-export class UserProfileDto {
+export class UserResponseDto {
   id: string;
   name: string;
   email: string;

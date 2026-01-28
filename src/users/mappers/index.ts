@@ -1,1 +1,1 @@
-export { mapUserToDto } from './map-user-to-dto';
+export { mapUserToResponseDto } from './map-user-to-response-dto';

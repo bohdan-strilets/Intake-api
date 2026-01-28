@@ -1,16 +1,24 @@
 import { Auth, CurrentUserId } from '@app/auth/decorators';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 
-import { UserProfileDto } from './dto';
+import { UpdateProfileDto, UserResponseDto } from './dto';
 import { UsersService } from './users.service';
 
+@Auth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Auth()
   @Get('me')
-  async getMe(@CurrentUserId() userId: string): Promise<UserProfileDto> {
+  async getMe(@CurrentUserId() userId: string): Promise<UserResponseDto> {
     return this.usersService.getMe(userId);
+  }
+
+  @Patch('me/profile')
+  updateProfile(
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(userId, dto);
   }
 }

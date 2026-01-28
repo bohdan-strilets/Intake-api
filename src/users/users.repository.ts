@@ -1,7 +1,7 @@
 import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 
 import { User, UserDocument } from './schemas';
 import { CreateUserInput, UserEntity } from './types';
@@ -35,5 +35,12 @@ export class UsersRepository {
 
     await doc.save();
     return doc.toObject() as UserEntity;
+  }
+
+  async update(userId: string, update: UpdateQuery<UserDocument>): Promise<UserEntity | null> {
+    return this.userModel
+      .findByIdAndUpdate(userId, update, { new: true })
+      .lean<UserEntity>()
+      .exec();
   }
 }

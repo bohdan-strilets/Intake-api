@@ -1,9 +1,9 @@
 import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
-import { UserProfileDto } from './dto';
+import { UpdateProfileDto, UserResponseDto } from './dto';
 import { UserNotFoundException } from './errors';
-import { mapUserToDto } from './mappers';
+import { mapUserToResponseDto } from './mappers';
 import { CreateUserInput, UserEntity } from './types';
 import { UsersRepository } from './users.repository';
 
@@ -36,10 +36,17 @@ export class UsersService {
     });
   }
 
-  async getMe(userId: string): Promise<UserProfileDto> {
+  async getMe(userId: string): Promise<UserResponseDto> {
     const user = await this.repository.findById(userId);
     if (!user) throw new UserNotFoundException();
 
-    return mapUserToDto(user);
+    return mapUserToResponseDto(user);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserResponseDto> {
+    const updatedUser = await this.repository.update(userId, dto);
+    if (!updatedUser) throw new UserNotFoundException();
+
+    return mapUserToResponseDto(updatedUser);
   }
 }
