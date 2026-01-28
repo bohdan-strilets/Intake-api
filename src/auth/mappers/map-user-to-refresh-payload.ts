@@ -1,9 +1,9 @@
-import { UserDocument } from '@app/users/schemas';
+import { UserEntity } from '@app/users/types';
 
 import { RefreshTokenPayload } from '../types';
 
 export const mapUserToRefreshPayload = (
-  user: UserDocument,
+  user: UserEntity,
   sessionId: string,
 ): RefreshTokenPayload => {
   return {

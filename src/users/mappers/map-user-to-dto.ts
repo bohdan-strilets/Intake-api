@@ -1,7 +1,7 @@
 import { UserProfileDto } from '../dto';
-import { UserDocument } from '../schemas';
+import { UserEntity } from '../types';
 
-export const mapUserDocumentToDto = (user: UserDocument): UserProfileDto => {
+export const mapUserToDto = (user: UserEntity): UserProfileDto => {
   return {
     id: user._id.toString(),
     name: user.name,

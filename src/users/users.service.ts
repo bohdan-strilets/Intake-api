@@ -1,10 +1,10 @@
+import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
 import { UserProfileDto } from './dto';
 import { UserNotFoundException } from './errors';
-import { mapUserDocumentToDto } from './mappers';
-import { UserDocument } from './schemas';
-import { CreateUserInput } from './types';
+import { mapUserToDto } from './mappers';
+import { CreateUserInput, UserEntity } from './types';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
@@ -15,22 +15,31 @@ export class UsersService {
     return this.repository.existsByEmail(email);
   }
 
-  async userByEmail(email: string): Promise<UserDocument> {
-    return this.repository.findByEmail(email);
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.repository.findByEmail(email);
+    if (!user) throw new UserNotFoundException();
+
+    return user;
   }
 
-  async userById(userId: string): Promise<UserDocument> {
-    return this.repository.findById(userId);
+  async getUserById(userId: string): Promise<UserEntity> {
+    const user = await this.repository.findById(userId);
+    if (!user) throw new UserNotFoundException();
+
+    return user;
   }
 
-  async createUser(input: CreateUserInput): Promise<UserDocument> {
-    return this.repository.create(input);
+  async createUser(input: CreateUserInput): Promise<UserEntity> {
+    return this.repository.create({
+      ...input,
+      email: normalizeEmail(input.email),
+    });
   }
 
   async getMe(userId: string): Promise<UserProfileDto> {
     const user = await this.repository.findById(userId);
     if (!user) throw new UserNotFoundException();
 
-    return mapUserDocumentToDto(user);
+    return mapUserToDto(user);
   }
 }

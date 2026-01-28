@@ -1,1 +1,1 @@
-export { mapUserDocumentToDto } from './map-user-document-to-dto';
+export { mapUserToDto } from './map-user-to-dto';

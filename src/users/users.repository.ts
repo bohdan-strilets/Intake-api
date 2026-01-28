@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { User, UserDocument } from './schemas';
-import { CreateUserInput } from './types';
+import { CreateUserInput, UserEntity } from './types';
 
 @Injectable()
 export class UsersRepository {
@@ -14,23 +14,26 @@ export class UsersRepository {
   ) {}
 
   async existsByEmail(email: string): Promise<boolean> {
-    const normalizedEmail = normalizeEmail(email);
+    const exists = await this.userModel.exists({ email: normalizeEmail(email) }).exec();
 
-    const exists = await this.userModel.exists({ email: normalizedEmail });
     return !!exists;
   }
 
-  async findByEmail(email: string): Promise<UserDocument> {
-    const normalizedEmail = normalizeEmail(email);
-
-    return this.userModel.findOne({ email: normalizedEmail });
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    return this.userModel
+      .findOne({ email: normalizeEmail(email) })
+      .lean<UserEntity>()
+      .exec();
   }
 
-  async findById(userId: string): Promise<UserDocument> {
-    return this.userModel.findById(userId);
+  async findById(userId: string): Promise<UserEntity | null> {
+    return this.userModel.findById(userId).lean<UserEntity>().exec();
   }
 
-  async create(input: CreateUserInput): Promise<UserDocument> {
-    return this.userModel.create(input);
+  async create(input: CreateUserInput): Promise<UserEntity> {
+    const doc = new this.userModel(input);
+
+    await doc.save();
+    return doc.toObject() as UserEntity;
   }
 }

@@ -9,11 +9,7 @@ import {
   InvalidCredentialsException,
   UnauthorizedException,
 } from '../errors';
-import {
-  mapUserDocumentToUserResponse,
-  mapUserToAccessPayload,
-  mapUserToRefreshPayload,
-} from '../mappers';
+import { mapUserToAccessPayload, mapUserToRefreshPayload, mapUserToUserResponse } from '../mappers';
 import {
   AccessTokenPayload,
   CreateSessionInput,
@@ -48,12 +44,12 @@ export class AuthService {
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
 
-    return { user: mapUserDocumentToUserResponse(user) };
+    return { user: mapUserToUserResponse(user) };
   }
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = dto;
-    const user = await this.usersService.userByEmail(email);
+    const user = await this.usersService.getUserByEmail(email);
 
     if (!user) throw new InvalidCredentialsException();
 
@@ -83,7 +79,7 @@ export class AuthService {
       expiresAt: sessionExpiresAt,
     });
 
-    const safeUser = mapUserDocumentToUserResponse(user);
+    const safeUser = mapUserToUserResponse(user);
 
     return {
       accessToken,
@@ -94,7 +90,7 @@ export class AuthService {
 
   async refresh(sessionId: string, refreshToken: string): Promise<RefreshResponseDto> {
     const session = await this.sessionService.getValidSession(sessionId);
-    const user = await this.usersService.userById(session.userId.toString());
+    const user = await this.usersService.getUserById(session.userId.toString());
 
     if (!session.refreshTokenHash) throw new UnauthorizedException();
 
