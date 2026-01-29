@@ -47,8 +47,6 @@ export class AuthService {
     const { email, password } = dto;
     const user = await this.usersService.getUserByEmail(email);
 
-    if (!user) throw new InvalidCredentialsException();
-
     const passwordValid = await this.cryptoService.compare(password, user.passwordHash);
 
     if (!passwordValid) throw new InvalidCredentialsException();
@@ -86,7 +84,9 @@ export class AuthService {
 
   async refresh(sessionId: string, refreshToken: string): Promise<RefreshResponseDto> {
     const session = await this.sessionService.getValidSession(sessionId);
-    const user = await this.usersService.getUserById(session.userId.toString());
+
+    const userId = session.userId.toString();
+    const user = await this.usersService.getUserById(userId);
 
     if (!session.refreshTokenHash) throw new UnauthorizedException();
 
