@@ -19,8 +19,9 @@ export class SessionService {
 
   async getValidSession(sessionId: string): Promise<SessionEntity> {
     const session = await this.repository.findById(sessionId);
+    const now = new Date();
 
-    if (!session || session.expiresAt < new Date()) {
+    if (!session || session.expiresAt < now) {
       throw new InvalidSessionException();
     }
 
