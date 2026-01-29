@@ -1,4 +1,5 @@
-import { Auth, CurrentUserId } from '@app/auth/decorators';
+import { Auth } from '@app/auth/decorators';
+import { CurrentUserId } from '@app/common/decorators';
 import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 
 import { DaysService } from './days.service';

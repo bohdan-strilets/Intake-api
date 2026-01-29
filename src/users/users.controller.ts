@@ -1,4 +1,5 @@
-import { Auth, CurrentUserId } from '@app/auth/decorators';
+import { Auth } from '@app/auth/decorators';
+import { CurrentUserId } from '@app/common/decorators';
 import { Body, Controller, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
 
 import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';

@@ -1,6 +1,7 @@
+import { CurrentSessionId } from '@app/common/decorators';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
-import { CurrentSessionId, Public, Refresh } from './decorators';
+import { Public, Refresh } from './decorators';
 import {
   LoginDto,
   LoginResponseDto,
