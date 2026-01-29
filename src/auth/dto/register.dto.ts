@@ -1,36 +1,37 @@
+import { UserConstraints } from '@app/users/constraints';
 import { Goal, Sex } from '@app/users/enums';
 import { IsEmail, IsIn, IsInt, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
-  @MinLength(2)
-  @MaxLength(100)
+  @MinLength(UserConstraints.name.minLength)
+  @MaxLength(UserConstraints.name.maxLength)
   name: string;
 
   @IsEmail()
   email: string;
 
   @IsString()
-  @MinLength(6)
-  @MaxLength(60)
+  @MinLength(UserConstraints.password.minLength)
+  @MaxLength(UserConstraints.password.maxLength)
   password: string;
 
   @IsIn(Object.values(Sex))
   sex: Sex;
 
   @IsInt()
-  @Min(10)
-  @Max(100)
+  @Min(UserConstraints.age.min)
+  @Max(UserConstraints.age.max)
   age: number;
 
   @IsInt()
-  @Min(120)
-  @Max(230)
+  @Min(UserConstraints.height.min)
+  @Max(UserConstraints.height.max)
   height: number;
 
   @IsInt()
-  @Min(30)
-  @Max(300)
+  @Min(UserConstraints.weight.min)
+  @Max(UserConstraints.weight.max)
   weight: number;
 
   @IsIn(Object.values(Goal))

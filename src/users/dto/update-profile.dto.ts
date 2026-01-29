@@ -1,11 +1,12 @@
 import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
+import { UserConstraints } from '../constraints';
 import { Goal, Sex } from '../enums';
 
 export class UpdateProfileDto {
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(UserConstraints.name.maxLength)
   name?: string;
 
   @IsOptional()
@@ -14,20 +15,20 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsInt()
-  @Min(10)
-  @Max(100)
+  @Min(UserConstraints.age.min)
+  @Max(UserConstraints.age.max)
   age?: number;
 
   @IsOptional()
   @IsInt()
-  @Min(120)
-  @Max(230)
+  @Min(UserConstraints.height.min)
+  @Max(UserConstraints.height.max)
   height?: number;
 
   @IsOptional()
   @IsInt()
-  @Min(30)
-  @Max(300)
+  @Min(UserConstraints.weight.min)
+  @Max(UserConstraints.weight.max)
   weight?: number;
 
   @IsOptional()

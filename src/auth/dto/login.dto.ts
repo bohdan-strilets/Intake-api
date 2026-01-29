@@ -1,3 +1,4 @@
+import { UserConstraints } from '@app/users/constraints';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class LoginDto {
@@ -5,7 +6,7 @@ export class LoginDto {
   email: string;
 
   @IsString()
-  @MinLength(6)
-  @MaxLength(60)
+  @MinLength(UserConstraints.password.minLength)
+  @MaxLength(UserConstraints.password.maxLength)
   password: string;
 }
