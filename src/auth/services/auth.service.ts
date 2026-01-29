@@ -1,17 +1,14 @@
 import { CryptoService } from '@app/common/crypto';
+import { InvalidCredentialsException } from '@app/common/errors/exceptions';
 import { SessionService } from '@app/session';
 import { CreateSessionInput, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
+import { EmailAlreadyExistsException } from '@app/users/errors';
 import { CreateUserInput } from '@app/users/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { LoginDto, LoginResponseDto, RefreshResponseDto, RegisterResponseDto } from '../dto';
-import {
-  EmailAlreadyExistsException,
-  InvalidCredentialsException,
-  UnauthorizedException,
-} from '../errors';
 import { mapUserToAccessPayload, mapUserToRefreshPayload, mapUserToUserResponse } from '../mappers';
 import { AccessTokenPayload, RegisterInput } from '../types';
 import { TokenService } from './token.service';

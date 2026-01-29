@@ -1,11 +1,11 @@
-import { EmailAlreadyExistsException, InvalidCredentialsException } from '@app/auth/errors';
 import { CryptoService } from '@app/common/crypto';
+import { InvalidCredentialsException } from '@app/common/errors/exceptions';
 import { normalizeEmail } from '@app/common/utils';
 import { SessionService } from '@app/session';
 import { Injectable } from '@nestjs/common';
 
 import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
-import { UserNotFoundException } from './errors';
+import { EmailAlreadyExistsException, UserNotFoundException } from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { CreateUserInput, UserEntity } from './types';
 import { UsersRepository } from './users.repository';

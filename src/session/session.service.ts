@@ -1,7 +1,7 @@
-import { InvalidSessionException } from '@app/auth/errors';
 import { daysToMs } from '@app/common/lib/date';
 import { Injectable } from '@nestjs/common';
 
+import { InvalidSessionException } from './errors';
 import { SessionRepository } from './session.repository';
 import { CreateSessionInput, SessionEntity, UpdateSessionInput } from './types';
 

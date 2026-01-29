@@ -1,6 +1,6 @@
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 
-import { AppException, ErrorCode } from '../errors';
+import { ValidationException } from '../errors/exceptions';
 
 export const createValidationPipe = () =>
   new ValidationPipe({
@@ -8,6 +8,6 @@ export const createValidationPipe = () =>
     forbidNonWhitelisted: true,
     transform: true,
     exceptionFactory: () => {
-      return new AppException(ErrorCode.VALIDATION_ERROR, HttpStatus.BAD_REQUEST);
+      return new ValidationException();
     },
   });
