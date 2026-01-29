@@ -1,3 +1,4 @@
+import { CryptoService } from '@app/common/crypto';
 import { UsersService } from '@app/users';
 import { CreateUserInput } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
@@ -16,7 +17,6 @@ import {
   RegisterInput,
   UpdateSessionInput,
 } from '../types';
-import { HashService } from './hash.service';
 import { SessionService } from './session.service';
 import { TokenService } from './token.service';
 
@@ -26,7 +26,7 @@ export class AuthService {
 
   constructor(
     private readonly usersService: UsersService,
-    private readonly hashService: HashService,
+    private readonly cryptoService: CryptoService,
     private readonly tokenService: TokenService,
     private readonly sessionService: SessionService,
     readonly config: ConfigService,
@@ -39,7 +39,7 @@ export class AuthService {
     if (existingUser) throw new EmailAlreadyExistsException();
 
     const { password, ...rest } = input;
-    const passwordHash = await this.hashService.hash(password);
+    const passwordHash = await this.cryptoService.hash(password);
 
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
@@ -53,7 +53,7 @@ export class AuthService {
 
     if (!user) throw new InvalidCredentialsException();
 
-    const passwordValid = await this.hashService.compare(password, user.passwordHash);
+    const passwordValid = await this.cryptoService.compare(password, user.passwordHash);
 
     if (!passwordValid) throw new InvalidCredentialsException();
 
@@ -73,7 +73,7 @@ export class AuthService {
     const refreshPayload = mapUserToRefreshPayload(user, sessionId);
     const refreshToken = this.tokenService.createRefreshToken(refreshPayload);
 
-    const refreshTokenHash = await this.hashService.hash(refreshToken);
+    const refreshTokenHash = await this.cryptoService.hash(refreshToken);
     await this.sessionService.updateSession(sessionId, {
       refreshTokenHash,
       expiresAt: sessionExpiresAt,
@@ -94,14 +94,14 @@ export class AuthService {
 
     if (!session.refreshTokenHash) throw new UnauthorizedException();
 
-    const isValid = await this.hashService.compare(refreshToken, session.refreshTokenHash);
+    const isValid = await this.cryptoService.compare(refreshToken, session.refreshTokenHash);
 
     if (!isValid) throw new UnauthorizedException();
 
     const refreshPayload = mapUserToRefreshPayload(user, sessionId);
     const newRefreshToken = this.tokenService.createRefreshToken(refreshPayload);
 
-    const newRefreshHash = await this.hashService.hash(newRefreshToken);
+    const newRefreshHash = await this.cryptoService.hash(newRefreshToken);
 
     const updateSessionInput: UpdateSessionInput = {
       refreshTokenHash: newRefreshHash,

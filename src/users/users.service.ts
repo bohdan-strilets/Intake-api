@@ -1,5 +1,6 @@
 import { EmailAlreadyExistsException, InvalidCredentialsException } from '@app/auth/errors';
-import { HashService, SessionService } from '@app/auth/services';
+import { SessionService } from '@app/auth/services';
+import { CryptoService } from '@app/common/crypto';
 import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
@@ -13,7 +14,7 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
   constructor(
     private readonly repository: UsersRepository,
-    private readonly hashService: HashService,
+    private readonly cryptoService: CryptoService,
     private readonly sessionService: SessionService,
   ) {}
 
@@ -70,13 +71,13 @@ export class UsersService {
     const user = await this.repository.findById(userId);
     if (!user) throw new UserNotFoundException();
 
-    const isMatches = await this.hashService.compare(dto.currentPassword, user?.passwordHash);
+    const isMatches = await this.cryptoService.compare(dto.currentPassword, user?.passwordHash);
 
     if (!isMatches) throw new InvalidCredentialsException();
 
     if (dto.currentPassword === dto.newPassword) throw new InvalidCredentialsException();
 
-    const passwordHash = await this.hashService.hash(dto.newPassword);
+    const passwordHash = await this.cryptoService.hash(dto.newPassword);
 
     await this.repository.update(userId, { passwordHash });
     await this.sessionService.invalidateByUserId(userId);
