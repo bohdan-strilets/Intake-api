@@ -1,7 +1,7 @@
 import { EmailAlreadyExistsException, InvalidCredentialsException } from '@app/auth/errors';
-import { SessionService } from '@app/auth/services';
 import { CryptoService } from '@app/common/crypto';
 import { normalizeEmail } from '@app/common/utils';
+import { SessionService } from '@app/session';
 import { Injectable } from '@nestjs/common';
 
 import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';

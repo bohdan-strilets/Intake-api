@@ -1,32 +1,24 @@
+import { InvalidSessionException } from '@app/auth/errors';
 import { daysToMs } from '@app/common/lib/date';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
-import { InvalidSessionException } from '../errors';
-import { Session, SessionDocument } from '../schemas';
-import { CreateSessionInput, SessionEntity, UpdateSessionInput } from '../types';
+import { SessionRepository } from './session.repository';
+import { CreateSessionInput, SessionEntity, UpdateSessionInput } from './types';
 
 @Injectable()
 export class SessionService {
-  constructor(
-    @InjectModel(Session.name)
-    private readonly sessionModel: Model<SessionDocument>,
-  ) {}
+  constructor(private readonly repository: SessionRepository) {}
 
   generateExpiresAt(days: number): Date {
     return new Date(Date.now() + daysToMs(days));
   }
 
   async createSession(input: CreateSessionInput): Promise<SessionEntity> {
-    const doc = new this.sessionModel(input);
-    await doc.save();
-
-    return doc.toObject() as SessionEntity;
+    return this.repository.create(input);
   }
 
   async getValidSession(sessionId: string): Promise<SessionEntity> {
-    const session = await this.sessionModel.findById(sessionId).lean<SessionEntity>().exec();
+    const session = await this.repository.findById(sessionId);
 
     if (!session || session.expiresAt < new Date()) {
       throw new InvalidSessionException();
@@ -45,17 +37,16 @@ export class SessionService {
       update.expiresAt = input.expiresAt;
     }
 
-    const result = await this.sessionModel.updateOne({ _id: sessionId }, update);
-    if (result.matchedCount === 0) throw new InvalidSessionException();
+    const updated = await this.repository.update(sessionId, update);
+    if (!updated) throw new InvalidSessionException();
   }
 
   async invalidateById(sessionId: string): Promise<void> {
-    const result = await this.sessionModel.deleteOne({ _id: sessionId });
-
-    if (result.deletedCount === 0) throw new InvalidSessionException();
+    const isInvalidated = await this.repository.invalidateOne(sessionId);
+    if (!isInvalidated) throw new InvalidSessionException();
   }
 
   async invalidateByUserId(userId: string): Promise<void> {
-    await this.sessionModel.deleteMany({ userId });
+    await this.repository.invalidateMany(userId);
   }
 }

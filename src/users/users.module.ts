@@ -1,5 +1,5 @@
-import { AuthModule } from '@app/auth';
 import { CryptoModule } from '@app/common/crypto';
+import { SessionModule } from '@app/session';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -11,8 +11,8 @@ import { UsersService } from './users.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    AuthModule,
     CryptoModule,
+    SessionModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

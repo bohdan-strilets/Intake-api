@@ -1,6 +1,6 @@
 import 'express';
 
-import { SessionIdentity } from '@app/auth/types';
+import { SessionIdentity } from '@app/session/types';
 
 declare module 'express' {
   interface Request {

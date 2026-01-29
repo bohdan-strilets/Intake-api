@@ -1,4 +1,6 @@
 import { CryptoService } from '@app/common/crypto';
+import { SessionService } from '@app/session';
+import { CreateSessionInput, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
 import { CreateUserInput } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
@@ -11,13 +13,7 @@ import {
   UnauthorizedException,
 } from '../errors';
 import { mapUserToAccessPayload, mapUserToRefreshPayload, mapUserToUserResponse } from '../mappers';
-import {
-  AccessTokenPayload,
-  CreateSessionInput,
-  RegisterInput,
-  UpdateSessionInput,
-} from '../types';
-import { SessionService } from './session.service';
+import { AccessTokenPayload, RegisterInput } from '../types';
 import { TokenService } from './token.service';
 
 @Injectable()
@@ -31,7 +27,7 @@ export class AuthService {
     private readonly sessionService: SessionService,
     readonly config: ConfigService,
   ) {
-    this.sessionExpiresDays = Number(this.config.get<number>('SESSION_EXPIRES_DAYS'));
+    this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
   }
 
   async register(input: RegisterInput): Promise<RegisterResponseDto> {

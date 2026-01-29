@@ -1,6 +1,5 @@
+import { AuthenticatedRequest } from '@app/common/types';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-
-import { AuthenticatedRequest } from '../types';
 
 export const CurrentSessionId = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): string => {
