@@ -37,10 +37,10 @@ export class UsersService {
   }
 
   async createUser(input: CreateUserInput): Promise<UserEntity> {
-    return this.repository.create({
-      ...input,
-      email: normalizeEmail(input.email),
-    });
+    const normalizedEmail = normalizeEmail(input.email);
+    const payload = { ...input, email: normalizedEmail };
+
+    return this.repository.create(payload);
   }
 
   async getMe(userId: string): Promise<UserResponseDto> {
@@ -58,10 +58,19 @@ export class UsersService {
   }
 
   async updateEmail(userId: string, dto: UpdateEmailDto): Promise<UserResponseDto> {
-    const exists = await this.repository.existsByEmail(dto.email);
-    if (exists) throw new EmailAlreadyExistsException();
+    const normalizedEmail = normalizeEmail(dto.email);
+    const user = await this.repository.findById(userId);
 
-    const updatedUser = await this.repository.update(userId, dto);
+    if (!user) throw new UserNotFoundException();
+
+    if (normalizedEmail !== user.email) {
+      const exists = await this.repository.existsByEmail(normalizedEmail);
+      if (exists) throw new EmailAlreadyExistsException();
+    }
+
+    const payload = { email: normalizedEmail };
+    const updatedUser = await this.repository.update(userId, payload);
+
     if (!updatedUser) throw new UserNotFoundException();
 
     return mapUserToResponseDto(updatedUser);
@@ -71,7 +80,7 @@ export class UsersService {
     const user = await this.repository.findById(userId);
     if (!user) throw new UserNotFoundException();
 
-    const isMatches = await this.cryptoService.compare(dto.currentPassword, user?.passwordHash);
+    const isMatches = await this.cryptoService.compare(dto.currentPassword, user.passwordHash);
 
     if (!isMatches) throw new InvalidCredentialsException();
 

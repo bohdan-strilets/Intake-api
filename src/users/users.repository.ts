@@ -1,7 +1,7 @@
-import { normalizeEmail } from '@app/common/utils';
+import { normalizeEmail, toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { Model, QueryFilter, QueryOptions, UpdateQuery } from 'mongoose';
 
 import { User, UserDocument } from './schemas';
 import { CreateUserInput, UserEntity } from './types';
@@ -14,32 +14,42 @@ export class UsersRepository {
   ) {}
 
   async existsByEmail(email: string): Promise<boolean> {
-    const exists = await this.userModel.exists({ email: normalizeEmail(email) }).exec();
+    const normalizedEmail = normalizeEmail(email);
+    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
 
+    const exists = await this.userModel.exists(filter).exec();
     return !!exists;
   }
 
   async findByEmail(email: string): Promise<UserEntity | null> {
-    return this.userModel
-      .findOne({ email: normalizeEmail(email) })
-      .lean<UserEntity>()
-      .exec();
+    const normalizedEmail = normalizeEmail(email);
+    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
+
+    return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
 
   async findById(userId: string): Promise<UserEntity | null> {
-    return this.userModel.findById(userId).lean<UserEntity>().exec();
+    const objectUserId = toObjectId(userId);
+
+    return this.userModel.findById(objectUserId).lean<UserEntity>().exec();
   }
 
   async create(input: CreateUserInput): Promise<UserEntity> {
     const doc = new this.userModel(input);
-
     await doc.save();
+
     return doc.toObject() as UserEntity;
   }
 
-  async update(userId: string, update: UpdateQuery<UserDocument>): Promise<UserEntity | null> {
+  async update(
+    userId: string,
+    update: UpdateQuery<UserDocument | null>,
+  ): Promise<UserEntity | null> {
+    const objectUserId = toObjectId(userId);
+    const options: QueryOptions = { new: true };
+
     return this.userModel
-      .findByIdAndUpdate(userId, update, { new: true })
+      .findByIdAndUpdate(objectUserId, update, options)
       .lean<UserEntity>()
       .exec();
   }
