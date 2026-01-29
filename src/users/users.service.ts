@@ -1,8 +1,9 @@
-import { EmailAlreadyExistsException } from '@app/auth/errors';
+import { EmailAlreadyExistsException, InvalidCredentialsException } from '@app/auth/errors';
+import { HashService, SessionService } from '@app/auth/services';
 import { normalizeEmail } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
-import { UpdateEmailDto, UpdateProfileDto, UserResponseDto } from './dto';
+import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
 import { UserNotFoundException } from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { CreateUserInput, UserEntity } from './types';
@@ -10,7 +11,11 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly repository: UsersRepository) {}
+  constructor(
+    private readonly repository: UsersRepository,
+    private readonly hashService: HashService,
+    private readonly sessionService: SessionService,
+  ) {}
 
   async userExistsByEmail(email: string): Promise<boolean> {
     return this.repository.existsByEmail(email);
@@ -59,5 +64,21 @@ export class UsersService {
     if (!updatedUser) throw new UserNotFoundException();
 
     return mapUserToResponseDto(updatedUser);
+  }
+
+  async updatePassword(userId: string, dto: UpdatePasswordDto): Promise<void> {
+    const user = await this.repository.findById(userId);
+    if (!user) throw new UserNotFoundException();
+
+    const isMatches = await this.hashService.compare(dto.currentPassword, user?.passwordHash);
+
+    if (!isMatches) throw new InvalidCredentialsException();
+
+    if (dto.currentPassword === dto.newPassword) throw new InvalidCredentialsException();
+
+    const passwordHash = await this.hashService.hash(dto.newPassword);
+
+    await this.repository.update(userId, { passwordHash });
+    await this.sessionService.invalidateByUserId(userId);
   }
 }

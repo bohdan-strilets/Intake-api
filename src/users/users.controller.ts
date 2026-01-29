@@ -1,7 +1,7 @@
 import { Auth, CurrentUserId } from '@app/auth/decorators';
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
 
-import { UpdateEmailDto, UpdateProfileDto, UserResponseDto } from './dto';
+import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
 import { UsersService } from './users.service';
 
 @Auth()
@@ -28,5 +28,11 @@ export class UsersController {
     @Body() dto: UpdateEmailDto,
   ): Promise<UserResponseDto> {
     return this.usersService.updateEmail(userId, dto);
+  }
+
+  @Patch('me/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  updatePassword(@CurrentUserId() userId: string, @Body() dto: UpdatePasswordDto): Promise<void> {
+    return this.usersService.updatePassword(userId, dto);
   }
 }

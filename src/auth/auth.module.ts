@@ -23,5 +23,6 @@ import { JwtRefreshStrategy, JwtStrategy } from './strategies';
     JwtRefreshStrategy,
   ],
   controllers: [AuthController],
+  exports: [HashService, SessionService],
 })
 export class AuthModule {}
