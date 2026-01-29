@@ -15,10 +15,10 @@ export class TokenService {
     private readonly jwtService: JwtService,
     readonly config: ConfigService,
   ) {
-    this.accessSecret = config.get<string>('JWT_ACCESS_SECRET');
-    this.refreshSecret = config.get<string>('JWT_REFRESH_SECRET');
-    this.accessExpiresIn = config.get<JwtExpiresIn>('JWT_ACCESS_EXPIRES_IN');
-    this.refreshExpiresIn = config.get<JwtExpiresIn>('JWT_REFRESH_EXPIRES_IN');
+    this.accessSecret = config.getOrThrow<string>('JWT_ACCESS_SECRET');
+    this.refreshSecret = config.getOrThrow<string>('JWT_REFRESH_SECRET');
+    this.accessExpiresIn = config.getOrThrow<JwtExpiresIn>('JWT_ACCESS_EXPIRES_IN');
+    this.refreshExpiresIn = config.getOrThrow<JwtExpiresIn>('JWT_REFRESH_EXPIRES_IN');
   }
 
   createAccessToken(payload: AccessTokenPayload): string {
