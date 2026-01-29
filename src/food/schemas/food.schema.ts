@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-import { Source } from './enums';
+import { Source } from '../enums';
 
 @Schema({ timestamps: true, versionKey: false })
-export class FoodEntry {
+export class Food {
   @Prop({ type: Types.ObjectId, ref: 'Day', required: true, index: true })
   dayId: Types.ObjectId;
 
@@ -26,9 +26,9 @@ export class FoodEntry {
   @Prop({ required: true })
   carbs: number;
 
-  @Prop({ enum: Source, required: true })
+  @Prop({ enum: Source, default: Source.Text })
   source: Source;
 }
 
-export type FoodEntryDocument = FoodEntry & Document;
-export const FoodEntrySchema = SchemaFactory.createForClass(FoodEntry);
+export type FoodDocument = Food & Document;
+export const FoodSchema = SchemaFactory.createForClass(Food);
