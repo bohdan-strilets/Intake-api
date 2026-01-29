@@ -10,11 +10,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
+  @HttpCode(HttpStatus.OK)
   async getMe(@CurrentUserId() userId: string): Promise<UserResponseDto> {
     return this.usersService.getMe(userId);
   }
 
   @Patch('me/profile')
+  @HttpCode(HttpStatus.OK)
   updateProfile(
     @CurrentUserId() userId: string,
     @Body() dto: UpdateProfileDto,
@@ -23,6 +25,7 @@ export class UsersController {
   }
 
   @Patch('me/email')
+  @HttpCode(HttpStatus.OK)
   updateEmail(
     @CurrentUserId() userId: string,
     @Body() dto: UpdateEmailDto,

@@ -32,6 +32,7 @@ export class AuthController {
   @Public()
   @Refresh()
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
   refresh(
     @Body() dto: RefreshDto,
     @CurrentSessionId() sessionId: string,
@@ -42,6 +43,7 @@ export class AuthController {
   @Public()
   @Refresh()
   @Post('logout')
+  @HttpCode(HttpStatus.OK)
   logout(@Body() _dto: RefreshDto, @CurrentSessionId() sessionId: string): Promise<void> {
     return this.authService.logout(sessionId);
   }
