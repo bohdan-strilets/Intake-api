@@ -15,4 +15,6 @@ export const envSchema = z.object({
   MONGO_URI: z.string().url(),
 
   BCRYPT_SALT_ROUNDS: z.coerce.number().default(10),
+
+  OPENAI_API_KEY: z.string().min(1),
 });

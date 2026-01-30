@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AiModule } from './ai';
 import { AuthModule } from './auth';
 import { EnvModule } from './common/config';
 import { DatabaseModule } from './common/database';
@@ -19,6 +20,7 @@ import { UsersModule } from './users';
     DaysModule,
     DayDetailsModule,
     FoodModule,
+    AiModule,
   ],
 })
 export class AppModule {}
