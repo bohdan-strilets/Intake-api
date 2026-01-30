@@ -6,7 +6,7 @@ import { DaysService } from '../days/days.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { Source } from './enums';
 import { FoodRepository } from './food.repository';
-import { CreateFoodInput } from './types';
+import { CreateFoodInput, FoodEntity } from './types';
 
 @Injectable()
 export class FoodService {
@@ -36,5 +36,9 @@ export class FoodService {
     const totals = await this.repository.aggregateDayTotals(day._id.toString());
 
     await this.daysService.updateTotals(day._id.toString(), totals);
+  }
+
+  async getFoodByDayId(dayId: string): Promise<FoodEntity[]> {
+    return this.repository.findByDayId(dayId);
   }
 }

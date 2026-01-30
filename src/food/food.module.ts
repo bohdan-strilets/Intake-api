@@ -11,5 +11,6 @@ import { Food, FoodSchema } from './schemas';
   imports: [MongooseModule.forFeature([{ name: Food.name, schema: FoodSchema }]), DaysModule],
   controllers: [FoodController],
   providers: [FoodService, FoodRepository],
+  exports: [FoodService],
 })
 export class FoodModule {}

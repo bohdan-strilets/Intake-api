@@ -4,6 +4,7 @@ import { AuthModule } from './auth';
 import { EnvModule } from './common/config';
 import { DatabaseModule } from './common/database';
 import { GlobalJwtModule } from './common/jwt';
+import { DayDetailsModule } from './day-details';
 import { DaysModule } from './days';
 import { FoodModule } from './food';
 import { UsersModule } from './users';
@@ -16,6 +17,7 @@ import { UsersModule } from './users';
     AuthModule,
     UsersModule,
     DaysModule,
+    DayDetailsModule,
     FoodModule,
   ],
 })

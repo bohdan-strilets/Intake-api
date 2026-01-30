@@ -2,7 +2,7 @@ import { toObjectId } from '@app/common/utils';
 import { DayTotals } from '@app/days/types';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, PipelineStage } from 'mongoose';
+import { Model, PipelineStage, QueryFilter } from 'mongoose';
 
 import { Food, FoodDocument } from './schemas';
 import { CreateFoodInput, FoodEntity } from './types';
@@ -45,5 +45,12 @@ export class FoodRepository {
     };
 
     return result ?? defaultTotals;
+  }
+
+  async findByDayId(dayId: string): Promise<FoodEntity[]> {
+    const dayObjectId = toObjectId(dayId);
+    const filter: QueryFilter<FoodDocument> = { dayId: dayObjectId };
+
+    return this.foodModel.find(filter).sort({ createdAt: 1 }).lean<FoodEntity[]>().exec();
   }
 }
