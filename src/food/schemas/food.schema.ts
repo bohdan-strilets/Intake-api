@@ -8,6 +8,9 @@ export class Food {
   @Prop({ type: Types.ObjectId, ref: 'Day', required: true, index: true })
   dayId: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  userId: Types.ObjectId;
+
   @Prop({ required: true })
   title: string;
 

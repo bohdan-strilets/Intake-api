@@ -53,4 +53,16 @@ export class FoodRepository {
 
     return this.foodModel.find(filter).sort({ createdAt: 1 }).lean<FoodEntity[]>().exec();
   }
+
+  async deleteById(foodId: string, userId: string): Promise<FoodEntity | null> {
+    const foodObjectId = toObjectId(foodId);
+    const userObjectId = toObjectId(userId);
+
+    const filter: QueryFilter<FoodDocument> = {
+      _id: foodObjectId,
+      userId: userObjectId,
+    };
+
+    return await this.foodModel.findOneAndDelete(filter).lean<FoodEntity>().exec();
+  }
 }

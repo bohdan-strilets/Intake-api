@@ -4,6 +4,7 @@ import { Source } from '../enums';
 
 export type CreateFoodInput = {
   dayId: Types.ObjectId;
+  userId: Types.ObjectId;
   title: string;
   weight: number;
   calories: number;
