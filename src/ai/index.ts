@@ -1,5 +1,4 @@
-export {
-  AIParseRequest,
-  AIParseRequestDocument,
-  AIParseRequestSchema,
-} from './ai-parse-request.schema';
+export { AiController } from './ai.controller';
+export { AiModule } from './ai.module';
+export { AiRepository } from './ai.repository';
+export { AiService } from './ai.service';
