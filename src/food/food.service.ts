@@ -18,8 +18,17 @@ export class FoodService {
     private readonly daysService: DaysService,
   ) {}
 
+  private async recalculateDayTotals(dayId: string): Promise<void> {
+    const totals = await this.repository.calculateDayTotals(dayId);
+    await this.daysService.updateTotals(dayId, totals);
+  }
+
+  private parseDate(date: string): string {
+    return normalizeDate(date);
+  }
+
   async addFoodFromManual(userId: string, dto: CreateFoodDto): Promise<void> {
-    const date = normalizeDate(dto.date);
+    const date = this.parseDate(dto.date);
 
     const day = await this.daysService.getOrCreateByDate(userId, date);
     const userObjectId = toObjectId(userId);
@@ -32,14 +41,11 @@ export class FoodService {
     });
 
     await this.repository.create(createFoodInput);
-
-    const totals = await this.repository.aggregateDayTotals(day._id.toString());
-
-    await this.daysService.updateTotals(day._id.toString(), totals);
+    await this.recalculateDayTotals(day._id.toString());
   }
 
   async getFoodByDayId(dayId: string): Promise<FoodEntity[]> {
-    return this.repository.findByDayId(dayId);
+    return this.repository.findAllByDayId(dayId);
   }
 
   async delete(foodId: string, userId: string): Promise<void> {
@@ -48,13 +54,13 @@ export class FoodService {
     if (!food) throw new FoodNotFoundException();
 
     const dayId = food.dayId.toString();
-    const totals = await this.repository.aggregateDayTotals(dayId);
+    const totals = await this.repository.calculateDayTotals(dayId);
 
     await this.daysService.updateTotals(dayId, totals);
   }
 
   async addFoodFromAi(userId: string, dto: CreateFoodFromAiDto): Promise<void> {
-    const date = normalizeDate(dto.date);
+    const date = this.parseDate(dto.date);
 
     const day = await this.daysService.getOrCreateByDate(userId, date);
     const userObjectId = toObjectId(userId);
@@ -68,10 +74,7 @@ export class FoodService {
       }),
     );
 
-    await this.repository.createMany(inputs);
-
-    const totals = await this.repository.aggregateDayTotals(day._id.toString());
-
-    await this.daysService.updateTotals(day._id.toString(), totals);
+    await this.repository.bulkCreate(inputs);
+    await this.recalculateDayTotals(day._id.toString());
   }
 }

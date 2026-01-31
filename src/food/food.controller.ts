@@ -11,7 +11,7 @@ import { FoodService } from './food.service';
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
 
-  @Post('from-manual')
+  @Post('manual')
   @HttpCode(HttpStatus.NO_CONTENT)
   async addFoodFromManual(
     @CurrentUserId() userId: string,
@@ -26,15 +26,15 @@ export class FoodController {
     @Param('foodId') foodId: string,
     @CurrentUserId() userId: string,
   ): Promise<void> {
-    await this.foodService.delete(foodId, userId);
+    return this.foodService.delete(foodId, userId);
   }
 
-  @Post('from-ai')
+  @Post('ai')
   @HttpCode(HttpStatus.NO_CONTENT)
   async addFromAi(
     @CurrentUserId() userId: string,
     @Body() dto: CreateFoodFromAiDto,
   ): Promise<void> {
-    await this.foodService.addFoodFromAi(userId, dto);
+    return this.foodService.addFoodFromAi(userId, dto);
   }
 }

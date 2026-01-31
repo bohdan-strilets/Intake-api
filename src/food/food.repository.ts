@@ -2,8 +2,10 @@ import { toObjectId } from '@app/common/utils';
 import { DayTotals } from '@app/days/types';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, PipelineStage, QueryFilter } from 'mongoose';
+import { Model, QueryFilter } from 'mongoose';
 
+import { buildDayTotalsPipeline } from './aggregates';
+import { EMPTY_DAY_TOTALS } from './constants';
 import { Food, FoodDocument } from './schemas';
 import { CreateFoodInput, FoodEntity } from './types';
 
@@ -21,33 +23,17 @@ export class FoodRepository {
     return doc.toObject() as FoodEntity;
   }
 
-  async aggregateDayTotals(dayId: string): Promise<DayTotals> {
+  async calculateDayTotals(dayId: string): Promise<DayTotals> {
     const dayObjectId = toObjectId(dayId);
 
-    const matchStage: PipelineStage.Match = { $match: { dayId: dayObjectId } };
-    const groupStage: PipelineStage.Group = {
-      $group: {
-        _id: null,
-        calories: { $sum: '$calories' },
-        protein: { $sum: '$protein' },
-        fat: { $sum: '$fat' },
-        carbs: { $sum: '$carbs' },
-      },
-    };
+    const [result] = await this.foodModel
+      .aggregate<DayTotals>(buildDayTotalsPipeline(dayObjectId))
+      .exec();
 
-    const [result] = await this.foodModel.aggregate<DayTotals>([matchStage, groupStage]).exec();
-
-    const defaultTotals: DayTotals = {
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbs: 0,
-    };
-
-    return result ?? defaultTotals;
+    return result ?? EMPTY_DAY_TOTALS;
   }
 
-  async findByDayId(dayId: string): Promise<FoodEntity[]> {
+  async findAllByDayId(dayId: string): Promise<FoodEntity[]> {
     const dayObjectId = toObjectId(dayId);
     const filter: QueryFilter<FoodDocument> = { dayId: dayObjectId };
 
@@ -66,7 +52,7 @@ export class FoodRepository {
     return await this.foodModel.findOneAndDelete(filter).lean<FoodEntity>().exec();
   }
 
-  async createMany(inputs: CreateFoodInput[]): Promise<void> {
+  async bulkCreate(inputs: CreateFoodInput[]): Promise<void> {
     await this.foodModel.insertMany(inputs);
   }
 }
