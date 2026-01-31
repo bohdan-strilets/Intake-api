@@ -29,7 +29,7 @@ export class Food {
   @Prop({ required: true })
   carbs: number;
 
-  @Prop({ enum: Source, default: Source.Text })
+  @Prop({ enum: Source, default: Source.Manual })
   source: Source;
 }
 

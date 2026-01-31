@@ -1,5 +1,5 @@
 export enum Source {
-  Text = 'text',
+  AI = 'ai',
   Photo = 'photo',
   Manual = 'manual',
 }

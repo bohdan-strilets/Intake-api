@@ -1,28 +1,16 @@
 import { Type } from 'class-transformer';
-import {
-  IsDateString,
-  IsInt,
-  IsNumber,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsNumber, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 import { FoodConstraints } from '../constraints';
 
-export class CreateFoodDto {
-  @IsDateString()
-  date: string;
-
+export class ItemFoodDto {
   @IsString()
   @MinLength(FoodConstraints.title.minLength)
   @MaxLength(FoodConstraints.title.maxLength)
   title: string;
 
   @Type(() => Number)
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(FoodConstraints.weight.min)
   @Max(FoodConstraints.weight.max)
   weight: number;

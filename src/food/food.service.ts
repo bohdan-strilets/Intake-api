@@ -1,13 +1,14 @@
-// food/food.service.ts
 import { normalizeDate } from '@app/common/lib/date';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
 import { DaysService } from '../days/days.service';
+import { CreateFoodFromAiDto } from './dto';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { Source } from './enums';
 import { FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
+import { mapToCreateFoodInput } from './mappers';
 import { CreateFoodInput, FoodEntity } from './types';
 
 @Injectable()
@@ -17,23 +18,18 @@ export class FoodService {
     private readonly daysService: DaysService,
   ) {}
 
-  async addFood(userId: string, dto: CreateFoodDto): Promise<void> {
+  async addFoodFromManual(userId: string, dto: CreateFoodDto): Promise<void> {
     const date = normalizeDate(dto.date);
 
     const day = await this.daysService.getOrCreateByDate(userId, date);
     const userObjectId = toObjectId(userId);
 
-    const createFoodInput: CreateFoodInput = {
+    const createFoodInput: CreateFoodInput = mapToCreateFoodInput({
       dayId: day._id,
       userId: userObjectId,
-      title: dto.title,
-      weight: dto.weight,
-      calories: dto.calories,
-      protein: dto.protein,
-      fat: dto.fat,
-      carbs: dto.carbs,
-      source: Source.Text,
-    };
+      food: dto,
+      source: Source.Manual,
+    });
 
     await this.repository.create(createFoodInput);
 
@@ -55,5 +51,27 @@ export class FoodService {
     const totals = await this.repository.aggregateDayTotals(dayId);
 
     await this.daysService.updateTotals(dayId, totals);
+  }
+
+  async addFoodFromAi(userId: string, dto: CreateFoodFromAiDto): Promise<void> {
+    const date = normalizeDate(dto.date);
+
+    const day = await this.daysService.getOrCreateByDate(userId, date);
+    const userObjectId = toObjectId(userId);
+
+    const inputs: CreateFoodInput[] = dto.items.map((item) =>
+      mapToCreateFoodInput({
+        dayId: day._id,
+        userId: userObjectId,
+        food: item,
+        source: Source.AI,
+      }),
+    );
+
+    await this.repository.createMany(inputs);
+
+    const totals = await this.repository.aggregateDayTotals(day._id.toString());
+
+    await this.daysService.updateTotals(day._id.toString(), totals);
   }
 }

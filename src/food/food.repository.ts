@@ -65,4 +65,8 @@ export class FoodRepository {
 
     return await this.foodModel.findOneAndDelete(filter).lean<FoodEntity>().exec();
   }
+
+  async createMany(inputs: CreateFoodInput[]): Promise<void> {
+    await this.foodModel.insertMany(inputs);
+  }
 }
