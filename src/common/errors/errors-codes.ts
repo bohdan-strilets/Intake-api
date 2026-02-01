@@ -10,4 +10,6 @@ export enum ErrorCode {
   FOOT_NOT_FOUND = 'FOOD_NOT_FOUND',
 
   AI_PARSE_FAILED = 'AI_PARSE_FAILED',
+
+  SERVER_ERROR = 'SERVER_ERROR',
 }
