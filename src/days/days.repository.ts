@@ -7,7 +7,7 @@ import { Model, QueryFilter, UpdateQuery } from 'mongoose';
 import { CalendarDayDto } from './dto';
 import { DaySelectFields } from './projections';
 import { Day, DayDocument } from './schemas/day.schema';
-import { DayEntity, DayTotals } from './types';
+import { DateRange, DayEntity, DayTotals } from './types';
 
 @Injectable()
 export class DaysRepository {
@@ -16,8 +16,9 @@ export class DaysRepository {
     private readonly dayModel: Model<DayDocument>,
   ) {}
 
-  async getMonthRange(userId: string, start: string, end: string): Promise<CalendarDayDto[]> {
+  async getDateRange(userId: string, range: DateRange): Promise<CalendarDayDto[]> {
     const userObjectId = toObjectId(userId);
+    const { start, end } = range;
 
     const filter: QueryFilter<DayDocument> = {
       userId: userObjectId,
