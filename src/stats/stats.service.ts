@@ -35,19 +35,6 @@ export class StatsService {
     };
   }
 
-  private getLastNDaysRange(days: number): DateRange {
-    const end = new Date();
-    end.setUTCHours(0, 0, 0, 0);
-
-    const start = new Date();
-    start.setUTCDate(end.getUTCDate() - (days - 1));
-
-    return {
-      start: start.toISOString().slice(0, 10),
-      end: end.toISOString().slice(0, 10),
-    };
-  }
-
   private getDaysInRange(range: DateRange): number {
     const start = new Date(range.start);
     const end = new Date(range.end);
@@ -61,22 +48,6 @@ export class StatsService {
     return diffDays + 1;
   }
 
-  async getWeekStats(userId: string): Promise<WeekTotalsResponseDto> {
-    const range = this.getLastNDaysRange(7);
-
-    const days = await this.daysService.getDateRange(userId, range);
-    if (days.length === 0) return EMPTY_STATS;
-
-    const totals = this.calculateTotals(days);
-    const averages = this.calculateAverages(totals, days.length);
-
-    return {
-      daysCount: 7,
-      totals,
-      averages,
-    };
-  }
-
   async getRangeStats(userId: string, range: DateRange): Promise<WeekTotalsResponseDto> {
     const days = await this.daysService.getDateRange(userId, range);
     if (days.length === 0) return EMPTY_STATS;
@@ -86,7 +57,7 @@ export class StatsService {
     const averages = this.calculateAverages(totals, periodDays);
 
     return {
-      daysCount: periodDays,
+      periodDays,
       totals,
       averages,
     };

@@ -18,10 +18,4 @@ export class StatsController {
   ): Promise<WeekTotalsResponseDto> {
     return this.statsService.getRangeStats(userId, dto);
   }
-
-  @Get('week')
-  @HttpCode(HttpStatus.OK)
-  getWeek(@CurrentUserId() userId: string): Promise<WeekTotalsResponseDto> {
-    return this.statsService.getWeekStats(userId);
-  }
 }
