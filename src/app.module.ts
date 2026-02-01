@@ -8,6 +8,7 @@ import { GlobalJwtModule } from './common/jwt';
 import { DayDetailsModule } from './day-details';
 import { DaysModule } from './days';
 import { FoodModule } from './food';
+import { StatsModule } from './stats';
 import { UsersModule } from './users';
 
 @Module({
@@ -21,6 +22,7 @@ import { UsersModule } from './users';
     DayDetailsModule,
     FoodModule,
     AiModule,
+    StatsModule,
   ],
 })
 export class AppModule {}
