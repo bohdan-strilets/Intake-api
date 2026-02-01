@@ -1,4 +1,5 @@
 import { CurrentSessionId } from '@app/common/decorators';
+import { AuthRateLimit, RefreshRateLimit } from '@app/common/rate-limit/decorators';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { Public, Refresh } from './decorators';
@@ -18,6 +19,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
+  @AuthRateLimit()
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: RegisterDto): Promise<RegisterResponseDto> {
     return this.authService.register(dto);
@@ -25,6 +27,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(dto);
@@ -33,6 +36,7 @@ export class AuthController {
   @Public()
   @Refresh()
   @Post('refresh')
+  @RefreshRateLimit()
   @HttpCode(HttpStatus.OK)
   refresh(
     @Body() dto: RefreshDto,

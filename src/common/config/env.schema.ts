@@ -17,4 +17,13 @@ export const envSchema = z.object({
   BCRYPT_SALT_ROUNDS: z.coerce.number().default(10),
 
   OPENAI_API_KEY: z.string().min(1),
+
+  RATE_LIMIT_GLOBAL_TTL: z.coerce.number().default(60),
+  RATE_LIMIT_GLOBAL_LIMIT: z.coerce.number().default(100),
+  RATE_LIMIT_AUTH_TTL: z.coerce.number().default(60),
+  RATE_LIMIT_AUTH_LIMIT: z.coerce.number().default(20),
+  RATE_LIMIT_REFRESH_TTL: z.coerce.number().default(60),
+  RATE_LIMIT_REFRESH_LIMIT: z.coerce.number().default(10),
+  RATE_LIMIT_AI_TTL: z.coerce.number().default(60),
+  RATE_LIMIT_AI_LIMIT: z.coerce.number().default(15),
 });
