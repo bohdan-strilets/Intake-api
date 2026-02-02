@@ -154,7 +154,7 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Session terminated"
           },
           "401": {
             "description": "",
@@ -175,17 +175,44 @@
     "/users/me": {
       "get": {
         "operationId": "UsersController_getMe",
+        "summary": "Get current user profile",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/users/me/profile": {
       "patch": {
         "operationId": "UsersController_updateProfile",
+        "summary": "Update current user profile",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -199,14 +226,50 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/users/me/email": {
       "patch": {
         "operationId": "UsersController_updateEmail",
+        "summary": "Update current user email",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -220,14 +283,60 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/users/me/password": {
       "patch": {
         "operationId": "UsersController_updatePassword",
+        "summary": "Update current user password",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -242,24 +351,93 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/days": {
       "get": {
         "operationId": "DaysController_getCalendar",
-        "parameters": [],
+        "summary": "Get calendar days for selected month",
+        "parameters": [
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "description": "Month in YYYY-MM format",
+            "schema": {
+              "example": "2026-02",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CalendarDayDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Days"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/day-details/{date}": {
       "get": {
         "operationId": "DayDetailsController_getDayDetails",
+        "summary": "Get day details by date",
         "parameters": [
           {
             "name": "date",
@@ -272,14 +450,50 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayDetailsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Day Details"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/food/manual": {
       "post": {
         "operationId": "FoodController_addFoodFromManual",
+        "summary": "Add food manually",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -294,13 +508,42 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Food"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/food/{foodId}": {
       "delete": {
         "operationId": "FoodController_deleteFood",
+        "summary": "Delete food entry",
         "parameters": [
           {
             "name": "foodId",
@@ -314,13 +557,42 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Food"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/food/ai": {
       "post": {
         "operationId": "FoodController_addFromAi",
+        "summary": "Add food entries from AI parsing result",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -335,8 +607,36 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Food"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     },
     "/ai/parse-food": {
@@ -398,18 +698,70 @@
         },
         "tags": [
           "AI"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
         ]
       }
     },
     "/stats/range": {
       "get": {
         "operationId": "StatsController_getRange",
-        "parameters": [],
+        "summary": "Get statistics for custom date range",
+        "parameters": [
+          {
+            "name": "start",
+            "required": true,
+            "in": "query",
+            "description": "Start date (YYYY-MM-DD)",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "end",
+            "required": true,
+            "in": "query",
+            "description": "End date (YYYY-MM-DD)",
+            "schema": {
+              "example": "2026-01-07",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeekTotalsResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "Stats"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
       }
     }
   },
@@ -496,7 +848,7 @@
           "goal"
         ]
       },
-      "AuthUserResponseDto": {
+      "UserResponseDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -556,7 +908,7 @@
         "type": "object",
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/AuthUserResponseDto"
+            "$ref": "#/components/schemas/UserResponseDto"
           }
         },
         "required": [
@@ -616,7 +968,7 @@
             "type": "string"
           },
           "user": {
-            "$ref": "#/components/schemas/AuthUserResponseDto"
+            "$ref": "#/components/schemas/UserResponseDto"
           }
         },
         "required": [
@@ -653,23 +1005,315 @@
       },
       "UpdateProfileDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ]
+          },
+          "age": {
+            "type": "number",
+            "minimum": 10,
+            "maximum": 100
+          },
+          "height": {
+            "type": "number",
+            "minimum": 120,
+            "maximum": 230
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 30,
+            "maximum": 300
+          },
+          "goal": {
+            "type": "string",
+            "enum": [
+              "lose",
+              "maintain",
+              "gain"
+            ]
+          }
+        }
       },
       "UpdateEmailDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
       },
       "UpdatePasswordDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "example": "P@ssw0rd!",
+            "minLength": 8,
+            "maxLength": 80
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "P@ssw0rd!",
+            "minLength": 8,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "CalendarDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-02-01"
+          },
+          "totalCalories": {
+            "type": "number",
+            "example": 1800
+          },
+          "totalProtein": {
+            "type": "number",
+            "example": 140
+          },
+          "totalFat": {
+            "type": "number",
+            "example": 60
+          },
+          "totalCarbs": {
+            "type": "number",
+            "example": 210
+          }
+        },
+        "required": [
+          "date",
+          "totalCalories",
+          "totalProtein",
+          "totalFat",
+          "totalCarbs"
+        ]
+      },
+      "DayTotalsDto": {
+        "type": "object",
+        "properties": {
+          "calories": {
+            "type": "number",
+            "example": 2000,
+            "description": "Total calories"
+          },
+          "protein": {
+            "type": "number",
+            "example": 150,
+            "description": "Total protein in grams"
+          },
+          "fat": {
+            "type": "number",
+            "example": 70,
+            "description": "Total fat in grams"
+          },
+          "carbs": {
+            "type": "number",
+            "example": 250,
+            "description": "Total carbohydrates in grams"
+          }
+        },
+        "required": [
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
+      "DayResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "example": "2026-02-01"
+          },
+          "total": {
+            "$ref": "#/components/schemas/DayTotalsDto"
+          },
+          "weight": {
+            "type": "number",
+            "example": 82.5
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "total"
+        ]
+      },
+      "FoodResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          },
+          "calories": {
+            "type": "number"
+          },
+          "protein": {
+            "type": "number"
+          },
+          "fat": {
+            "type": "number"
+          },
+          "carbs": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "weight",
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
+      "DayDetailsResponseDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "$ref": "#/components/schemas/DayResponseDto"
+          },
+          "food": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FoodResponseDto"
+            }
+          }
+        },
+        "required": [
+          "day",
+          "food"
+        ]
       },
       "CreateFoodDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-02-01",
+            "description": "Day date (YYYY-MM-DD)"
+          },
+          "title": {
+            "type": "string",
+            "example": "Chicken breast"
+          },
+          "weight": {
+            "type": "number",
+            "example": 150,
+            "description": "Weight in grams"
+          },
+          "calories": {
+            "type": "number",
+            "example": 240
+          },
+          "protein": {
+            "type": "number",
+            "example": 31
+          },
+          "fat": {
+            "type": "number",
+            "example": 5
+          },
+          "carbs": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "date",
+          "title",
+          "weight",
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
+      "ItemFoodDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Rice"
+          },
+          "weight": {
+            "type": "number",
+            "example": 100
+          },
+          "calories": {
+            "type": "number",
+            "example": 130
+          },
+          "protein": {
+            "type": "number",
+            "example": 2.7
+          },
+          "fat": {
+            "type": "number",
+            "example": 0.3
+          },
+          "carbs": {
+            "type": "number",
+            "example": 28
+          }
+        },
+        "required": [
+          "title",
+          "weight",
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
       },
       "CreateFoodFromAiDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-02-01"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemFoodDto"
+            }
+          }
+        },
+        "required": [
+          "date",
+          "items"
+        ]
       },
       "ParseFoodDto": {
         "type": "object",
@@ -739,6 +1383,37 @@
         },
         "required": [
           "items"
+        ]
+      },
+      "WeekTotalsResponseDto": {
+        "type": "object",
+        "properties": {
+          "periodDays": {
+            "type": "number",
+            "example": 7,
+            "description": "Number of days in selected period"
+          },
+          "totals": {
+            "description": "Total values for the period",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DayTotalsDto"
+              }
+            ]
+          },
+          "averages": {
+            "description": "Average daily values for the period",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DayTotalsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "periodDays",
+          "totals",
+          "averages"
         ]
       }
     }
