@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { DaysRepository } from './days.repository';
-import { CalendarDayDto } from './dto';
-import { DateRange, DayEntity, DayTotals } from './types';
+import { CalendarDayDto, DayTotalsDto } from './dto';
+import { DateRange, DayEntity } from './types';
 
 @Injectable()
 export class DaysService {
@@ -30,7 +30,7 @@ export class DaysService {
     }
   }
 
-  async updateTotals(dayId: string, totals: DayTotals) {
+  async updateTotals(dayId: string, totals: DayTotalsDto) {
     await this.repository.updateTotals(dayId, totals);
   }
 }

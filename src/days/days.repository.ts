@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, QueryFilter, UpdateQuery } from 'mongoose';
 
-import { CalendarDayDto } from './dto';
+import { CalendarDayDto, DayTotalsDto } from './dto';
 import { DaySelectFields } from './projections';
 import { Day, DayDocument } from './schemas/day.schema';
-import { DateRange, DayEntity, DayTotals } from './types';
+import { DateRange, DayEntity } from './types';
 
 @Injectable()
 export class DaysRepository {
@@ -63,7 +63,7 @@ export class DaysRepository {
     return doc.toObject() as DayEntity;
   }
 
-  async updateTotals(dayId: string, totals: DayTotals): Promise<void> {
+  async updateTotals(dayId: string, totals: DayTotalsDto): Promise<void> {
     const dayObjectId = toObjectId(dayId);
 
     const filter: QueryFilter<DayDocument> = { _id: dayObjectId };
