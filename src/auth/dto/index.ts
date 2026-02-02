@@ -1,3 +1,4 @@
+export { AuthUserResponseDto } from './auth-user-response.dto';
 export { LoginDto } from './login.dto';
 export { LoginResponseDto } from './login-response.dto';
 export { RefreshDto } from './refresh.dto';
