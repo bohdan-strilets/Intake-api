@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/logo.png" width="96" alt="Intake logo" />
+  <img src="./assets/logo.webp" width="96" alt="Intake logo" />
 </p>
 
 <h1 align="center">🥗 Intake API</h1>
