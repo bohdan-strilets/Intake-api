@@ -5,12 +5,13 @@ import { SessionService } from '@app/session';
 import { CreateSessionInput, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
 import { EmailAlreadyExistsException } from '@app/users/errors';
+import { mapUserToResponseDto } from '@app/users/mappers';
 import { CreateUserInput } from '@app/users/types';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { LoginDto, LoginResponseDto, RefreshResponseDto, RegisterResponseDto } from '../dto';
-import { mapUserToAccessPayload, mapUserToRefreshPayload, mapUserToUserResponse } from '../mappers';
+import { mapUserToAccessPayload, mapUserToRefreshPayload } from '../mappers';
 import { AccessTokenPayload, RegisterInput } from '../types';
 import { TokenService } from './token.service';
 
@@ -39,7 +40,7 @@ export class AuthService {
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
 
-    return { user: mapUserToUserResponse(user) };
+    return { user: mapUserToResponseDto(user) };
   }
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
@@ -72,7 +73,7 @@ export class AuthService {
       expiresAt: sessionExpiresAt,
     });
 
-    const safeUser = mapUserToUserResponse(user);
+    const safeUser = mapUserToResponseDto(user);
 
     return {
       accessToken,
