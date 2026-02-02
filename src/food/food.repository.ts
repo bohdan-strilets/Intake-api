@@ -1,5 +1,5 @@
 import { toObjectId } from '@app/common/utils';
-import { DayTotals } from '@app/days/types';
+import { DayTotalsDto } from '@app/days/dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, QueryFilter } from 'mongoose';
@@ -23,11 +23,11 @@ export class FoodRepository {
     return doc.toObject() as FoodEntity;
   }
 
-  async calculateDayTotals(dayId: string): Promise<DayTotals> {
+  async calculateDayTotals(dayId: string): Promise<DayTotalsDto> {
     const dayObjectId = toObjectId(dayId);
 
     const [result] = await this.foodModel
-      .aggregate<DayTotals>(buildDayTotalsPipeline(dayObjectId))
+      .aggregate<DayTotalsDto>(buildDayTotalsPipeline(dayObjectId))
       .exec();
 
     return result ?? EMPTY_DAY_TOTALS;
