@@ -342,6 +342,7 @@
     "/ai/parse-food": {
       "post": {
         "operationId": "AiController_parseFood",
+        "summary": "Parse food description using AI",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -355,9 +356,49 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParseFoodResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "AI"
+        ]
       }
     },
     "/stats/range": {
@@ -632,7 +673,73 @@
       },
       "ParseFoodDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Chicken sandwich with lettuce and tomato",
+            "minLength": 3,
+            "maxLength": 1000,
+            "description": "Free-form text description of eaten food"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "ParsedFoodItemDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Chicken sandwich"
+          },
+          "weight": {
+            "type": "number",
+            "example": 200
+          },
+          "calories": {
+            "type": "number",
+            "example": 330
+          },
+          "protein": {
+            "type": "number",
+            "example": 46
+          },
+          "fat": {
+            "type": "number",
+            "example": 6
+          },
+          "carbs": {
+            "type": "number",
+            "example": 0
+          }
+        },
+        "required": [
+          "title",
+          "weight",
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
+      "ParseFoodResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParsedFoodItemDto"
+            }
+          },
+          "assumptions": {
+            "type": "string",
+            "example": "Assumed standard chicken breast, cooked"
+          }
+        },
+        "required": [
+          "items"
+        ]
       }
     }
   }

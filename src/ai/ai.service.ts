@@ -2,10 +2,10 @@ import { OPENAI_MODEL, OpenAIService } from '@app/common/lib/openai';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { AiRepository } from './ai.repository';
-import { ParseFoodDto } from './dto';
+import { ParseFoodDto, ParseFoodResponseDto } from './dto';
 import { AiParseFailedException } from './errors';
+import { mapFoodParseResultToDto } from './mappers';
 import { buildParseFoodPrompt } from './prompt';
-import { FoodParseResult } from './types';
 import { FoodParseResultSchema } from './zod';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AiService {
     private readonly openai: OpenAIService,
   ) {}
 
-  async parseFood(userId: string, dto: ParseFoodDto): Promise<FoodParseResult> {
+  async parseFood(userId: string, dto: ParseFoodDto): Promise<ParseFoodResponseDto> {
     let success = false;
     let errorMessage: string | undefined;
 
@@ -32,7 +32,7 @@ export class AiService {
       const result = FoodParseResultSchema.parse(parsedJson);
 
       success = true;
-      return result;
+      return mapFoodParseResultToDto(result);
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : String(error);
 
