@@ -4,11 +4,6 @@ export const UserConstraints = {
     maxLength: 100,
   },
 
-  password: {
-    minLength: 6,
-    maxLength: 60,
-  },
-
   age: {
     min: 10,
     max: 100,

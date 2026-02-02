@@ -1,5 +1,6 @@
 import { CryptoService } from '@app/common/crypto';
 import { InvalidCredentialsException } from '@app/common/errors/exceptions';
+import { PasswordService } from '@app/common/security';
 import { SessionService } from '@app/session';
 import { CreateSessionInput, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly cryptoService: CryptoService,
     private readonly tokenService: TokenService,
     private readonly sessionService: SessionService,
+    private readonly passwordService: PasswordService,
     readonly config: ConfigService,
   ) {
     this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
@@ -32,7 +34,7 @@ export class AuthService {
     if (existingUser) throw new EmailAlreadyExistsException();
 
     const { password, ...rest } = input;
-    const passwordHash = await this.cryptoService.hash(password);
+    const passwordHash = await this.passwordService.hash(password);
 
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
@@ -44,7 +46,7 @@ export class AuthService {
     const { email, password } = dto;
     const user = await this.usersService.getUserByEmail(email);
 
-    const passwordValid = await this.cryptoService.compare(password, user.passwordHash);
+    const passwordValid = await this.passwordService.compare(password, user.passwordHash);
 
     if (!passwordValid) throw new InvalidCredentialsException();
 

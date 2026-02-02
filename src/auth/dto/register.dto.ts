@@ -1,3 +1,4 @@
+import { PasswordConstraints } from '@app/common/security/constraints';
 import { UserConstraints } from '@app/users/constraints';
 import { Goal, Sex } from '@app/users/enums';
 import { IsEmail, IsIn, IsInt, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
@@ -12,8 +13,8 @@ export class RegisterDto {
   email: string;
 
   @IsString()
-  @MinLength(UserConstraints.password.minLength)
-  @MaxLength(UserConstraints.password.maxLength)
+  @MinLength(PasswordConstraints.password.min)
+  @MaxLength(PasswordConstraints.password.max)
   password: string;
 
   @IsIn(Object.values(Sex))

@@ -6,6 +6,7 @@ import { EnvModule } from './common/config';
 import { DatabaseModule } from './common/database';
 import { GlobalJwtModule } from './common/jwt';
 import { RateLimitModule } from './common/rate-limit';
+import { PasswordModule } from './common/security';
 import { DayDetailsModule } from './day-details';
 import { DaysModule } from './days';
 import { FoodModule } from './food';
@@ -25,6 +26,7 @@ import { UsersModule } from './users';
     FoodModule,
     AiModule,
     StatsModule,
+    PasswordModule,
   ],
 })
 export class AppModule {}
