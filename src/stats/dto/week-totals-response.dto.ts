@@ -1,7 +1,22 @@
-import { DayTotals } from '@app/days/types';
+import { DayTotalsDto } from '@app/days/dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class WeekTotalsResponseDto {
+  @ApiProperty({
+    example: 7,
+    description: 'Number of days in selected period',
+  })
   periodDays: number;
-  totals: DayTotals;
-  averages: DayTotals;
+
+  @ApiProperty({
+    description: 'Total values for the period',
+    type: DayTotalsDto,
+  })
+  totals: DayTotalsDto;
+
+  @ApiProperty({
+    description: 'Average daily values for the period',
+    type: DayTotalsDto,
+  })
+  averages: DayTotalsDto;
 }
