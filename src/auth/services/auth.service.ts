@@ -45,7 +45,9 @@ export class AuthService {
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = dto;
-    const user = await this.usersService.getUserByEmail(email);
+    const user = await this.usersService.findUserByEmail(email);
+
+    if (!user) throw new InvalidCredentialsException();
 
     const passwordValid = await this.passwordService.compare(password, user.passwordHash);
 
