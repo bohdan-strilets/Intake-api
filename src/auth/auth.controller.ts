@@ -13,14 +13,7 @@ import {
 } from '@nestjs/swagger';
 
 import { Public, Refresh } from './decorators';
-import {
-  LoginDto,
-  LoginResponseDto,
-  RefreshDto,
-  RefreshResponseDto,
-  RegisterDto,
-  RegisterResponseDto,
-} from './dto';
+import { AuthTokensResponseDto, LoginDto, RefreshTokenDto, RegisterDto } from './dto';
 import { AuthService } from './services';
 
 @ApiTags('Auth')
@@ -33,10 +26,10 @@ export class AuthController {
   @AuthRateLimit()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
-  @ApiCreatedResponse({ type: RegisterResponseDto })
+  @ApiCreatedResponse({ description: 'User registered successfully' })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiConflictResponse({ type: ErrorResponseDto })
-  async register(@Body() dto: RegisterDto): Promise<RegisterResponseDto> {
+  async register(@Body() dto: RegisterDto): Promise<void> {
     return this.authService.register(dto);
   }
 
@@ -45,9 +38,9 @@ export class AuthController {
   @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
-  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiOkResponse({ type: AuthTokensResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  async login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
+  async login(@Body() dto: LoginDto): Promise<AuthTokensResponseDto> {
     return this.authService.login(dto);
   }
 
@@ -57,12 +50,12 @@ export class AuthController {
   @RefreshRateLimit()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiOkResponse({ type: RefreshResponseDto })
+  @ApiOkResponse({ type: AuthTokensResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   refresh(
-    @Body() dto: RefreshDto,
+    @Body() dto: RefreshTokenDto,
     @CurrentSessionId() sessionId: string,
-  ): Promise<RefreshResponseDto> {
+  ): Promise<AuthTokensResponseDto> {
     return this.authService.refresh(sessionId, dto.refreshToken);
   }
 
@@ -73,7 +66,19 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout user' })
   @ApiOkResponse({ description: 'Session terminated' })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  logout(@Body() _dto: RefreshDto, @CurrentSessionId() sessionId: string): Promise<void> {
+  logout(@Body() _dto: RefreshTokenDto, @CurrentSessionId() sessionId: string): Promise<void> {
     return this.authService.logout(sessionId);
+  }
+
+  @Public()
+  @Refresh()
+  @Post('me')
+  @ApiOkResponse({ type: AuthTokensResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  me(
+    @CurrentSessionId() sessionId: string,
+    @Body() dto: RefreshTokenDto,
+  ): Promise<AuthTokensResponseDto> {
+    return this.authService.restore(sessionId, dto.refreshToken);
   }
 }

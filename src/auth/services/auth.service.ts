@@ -5,12 +5,11 @@ import { SessionService } from '@app/session';
 import { CreateSessionInput, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
 import { EmailAlreadyExistsException } from '@app/users/errors';
-import { mapUserToResponseDto } from '@app/users/mappers';
 import { CreateUserInput } from '@app/users/types';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { LoginDto, LoginResponseDto, RefreshResponseDto, RegisterResponseDto } from '../dto';
+import { AuthTokensResponseDto, LoginDto } from '../dto';
 import { mapUserToAccessPayload, mapUserToRefreshPayload } from '../mappers';
 import { AccessTokenPayload, RegisterInput } from '../types';
 import { TokenService } from './token.service';
@@ -30,7 +29,7 @@ export class AuthService {
     this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
   }
 
-  async register(input: RegisterInput): Promise<RegisterResponseDto> {
+  async register(input: RegisterInput): Promise<void> {
     const existingUser = await this.usersService.userExistsByEmail(input.email);
     if (existingUser) throw new EmailAlreadyExistsException();
 
@@ -38,12 +37,10 @@ export class AuthService {
     const passwordHash = await this.passwordService.hash(password);
 
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
-    const user = await this.usersService.createUser(createUserInput);
-
-    return { user: mapUserToResponseDto(user) };
+    await this.usersService.createUser(createUserInput);
   }
 
-  async login(dto: LoginDto): Promise<LoginResponseDto> {
+  async login(dto: LoginDto): Promise<AuthTokensResponseDto> {
     const { email, password } = dto;
     const user = await this.usersService.findUserByEmail(email);
 
@@ -75,16 +72,10 @@ export class AuthService {
       expiresAt: sessionExpiresAt,
     });
 
-    const safeUser = mapUserToResponseDto(user);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: safeUser,
-    };
+    return { accessToken, refreshToken };
   }
 
-  async refresh(sessionId: string, refreshToken: string): Promise<RefreshResponseDto> {
+  async refresh(sessionId: string, refreshToken: string): Promise<AuthTokensResponseDto> {
     const session = await this.sessionService.getValidSession(sessionId);
 
     const userId = session.userId.toString();
@@ -119,5 +110,29 @@ export class AuthService {
 
   async logout(sessionId: string): Promise<void> {
     await this.sessionService.invalidateById(sessionId);
+  }
+
+  async restore(sessionId: string, refreshToken: string): Promise<AuthTokensResponseDto> {
+    const session = await this.sessionService.getValidSession(sessionId);
+    if (!session.refreshTokenHash) throw new UnauthorizedException();
+
+    const isValid = await this.cryptoService.compare(refreshToken, session.refreshTokenHash);
+    if (!isValid) throw new UnauthorizedException();
+
+    const userid = session.userId.toString();
+    const user = await this.usersService.getUserById(userid);
+
+    const accessToken = this.tokenService.createAccessToken(mapUserToAccessPayload(user));
+
+    const newRefreshToken = this.tokenService.createRefreshToken(
+      mapUserToRefreshPayload(user, sessionId),
+    );
+
+    await this.sessionService.updateSession(sessionId, {
+      refreshTokenHash: await this.cryptoService.hash(newRefreshToken),
+      expiresAt: this.sessionService.generateExpiresAt(this.sessionExpiresDays),
+    });
+
+    return { accessToken, refreshToken: newRefreshToken };
   }
 }

@@ -18,14 +18,7 @@
         },
         "responses": {
           "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegisterResponseDto"
-                }
-              }
-            }
+            "description": "User registered successfully"
           },
           "400": {
             "description": "",
@@ -74,7 +67,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponseDto"
+                  "$ref": "#/components/schemas/AuthTokensResponseDto"
                 }
               }
             }
@@ -105,7 +98,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefreshDto"
+                "$ref": "#/components/schemas/RefreshTokenDto"
               }
             }
           }
@@ -116,7 +109,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RefreshResponseDto"
+                  "$ref": "#/components/schemas/AuthTokensResponseDto"
                 }
               }
             }
@@ -147,7 +140,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefreshDto"
+                "$ref": "#/components/schemas/RefreshTokenDto"
               }
             }
           }
@@ -155,6 +148,47 @@
         "responses": {
           "200": {
             "description": "Session terminated"
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "post": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokensResponseDto"
+                }
+              }
+            }
           },
           "401": {
             "description": "",
@@ -848,6 +882,75 @@
           "goal"
         ]
       },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "EMAIL_ALREADY_EXISTS",
+              "INVALID_CREDENTIALS",
+              "UNAUTHORIZED",
+              "INVALID_SESSION",
+              "VALIDATION_ERROR",
+              "USER_NOT_FOUND",
+              "FOOD_NOT_FOUND",
+              "AI_PARSE_FAILED",
+              "SERVER_ERROR"
+            ],
+            "example": "VALIDATION_ERROR",
+            "description": "Machine-readable error code"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "P@ssw0rd!",
+            "minLength": 8,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthTokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
       "UserResponseDto": {
         "type": "object",
         "properties": {
@@ -902,105 +1005,6 @@
           "height",
           "weight",
           "goal"
-        ]
-      },
-      "RegisterResponseDto": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserResponseDto"
-          }
-        },
-        "required": [
-          "user"
-        ]
-      },
-      "ErrorResponseDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": [
-              "EMAIL_ALREADY_EXISTS",
-              "INVALID_CREDENTIALS",
-              "UNAUTHORIZED",
-              "INVALID_SESSION",
-              "VALIDATION_ERROR",
-              "USER_NOT_FOUND",
-              "FOOD_NOT_FOUND",
-              "AI_PARSE_FAILED",
-              "SERVER_ERROR"
-            ],
-            "example": "VALIDATION_ERROR",
-            "description": "Machine-readable error code"
-          }
-        },
-        "required": [
-          "code"
-        ]
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@email.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "P@ssw0rd!",
-            "minLength": 8,
-            "maxLength": 80
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "LoginResponseDto": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserResponseDto"
-          }
-        },
-        "required": [
-          "accessToken",
-          "refreshToken",
-          "user"
-        ]
-      },
-      "RefreshDto": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "refreshToken"
-        ]
-      },
-      "RefreshResponseDto": {
-        "type": "object",
-        "properties": {
-          "accessToken": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "accessToken",
-          "refreshToken"
         ]
       },
       "UpdateProfileDto": {
