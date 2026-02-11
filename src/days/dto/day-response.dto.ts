@@ -10,7 +10,7 @@ export class DayResponseDto {
   date: string;
 
   @ApiProperty({ type: DayTotalsDto })
-  total: DayTotalsDto;
+  totals: DayTotalsDto;
 
   @ApiProperty({ required: false, example: 82.5 })
   weight?: number;
