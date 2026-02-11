@@ -14,10 +14,10 @@ export class StatsService {
   private calculateTotals(days: CalendarDayDto[]): DayTotalsDto {
     return days.reduce(
       (acc, day) => {
-        acc.calories += day.totalCalories;
-        acc.protein += day.totalProtein;
-        acc.fat += day.totalFat;
-        acc.carbs += day.totalCarbs;
+        acc.calories += day.totals.calories;
+        acc.protein += day.totals.protein;
+        acc.fat += day.totals.fat;
+        acc.carbs += day.totals.carbs;
         return acc;
       },
       { ...EMPTY_TOTALS },
