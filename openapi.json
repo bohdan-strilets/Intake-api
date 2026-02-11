@@ -524,56 +524,6 @@
         ]
       }
     },
-    "/food/manual": {
-      "post": {
-        "operationId": "FoodController_addFoodFromManual",
-        "summary": "Add food manually",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFoodDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": ""
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Food"
-        ],
-        "security": [
-          {
-            "access-token": []
-          }
-        ]
-      }
-    },
     "/food/{foodId}": {
       "delete": {
         "operationId": "FoodController_deleteFood",
@@ -623,17 +573,17 @@
         ]
       }
     },
-    "/food/ai": {
+    "/food/add/from-ai": {
       "post": {
-        "operationId": "FoodController_addFromAi",
-        "summary": "Add food entries from AI parsing result",
+        "operationId": "FoodController_addFromText",
+        "summary": "Add food to day from natural language text",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateFoodFromAiDto"
+                "$ref": "#/components/schemas/AddFoodFromTextDto"
               }
             }
           }
@@ -1079,38 +1029,6 @@
           "newPassword"
         ]
       },
-      "CalendarDayDto": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "example": "2026-02-01"
-          },
-          "totalCalories": {
-            "type": "number",
-            "example": 1800
-          },
-          "totalProtein": {
-            "type": "number",
-            "example": 140
-          },
-          "totalFat": {
-            "type": "number",
-            "example": 60
-          },
-          "totalCarbs": {
-            "type": "number",
-            "example": 210
-          }
-        },
-        "required": [
-          "date",
-          "totalCalories",
-          "totalProtein",
-          "totalFat",
-          "totalCarbs"
-        ]
-      },
       "DayTotalsDto": {
         "type": "object",
         "properties": {
@@ -1142,6 +1060,22 @@
           "carbs"
         ]
       },
+      "CalendarDayDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-02-01"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/DayTotalsDto"
+          }
+        },
+        "required": [
+          "date",
+          "totals"
+        ]
+      },
       "DayResponseDto": {
         "type": "object",
         "properties": {
@@ -1152,7 +1086,7 @@
             "type": "string",
             "example": "2026-02-01"
           },
-          "total": {
+          "totals": {
             "$ref": "#/components/schemas/DayTotalsDto"
           },
           "weight": {
@@ -1163,7 +1097,7 @@
         "required": [
           "id",
           "date",
-          "total"
+          "totals"
         ]
       },
       "FoodResponseDto": {
@@ -1219,48 +1153,39 @@
           "food"
         ]
       },
-      "CreateFoodDto": {
+      "AddFoodFromTextDto": {
         "type": "object",
         "properties": {
           "date": {
             "type": "string",
-            "example": "2026-02-01",
-            "description": "Day date (YYYY-MM-DD)"
+            "example": "2026-02-01"
           },
-          "title": {
+          "text": {
             "type": "string",
-            "example": "Chicken breast"
-          },
-          "weight": {
-            "type": "number",
-            "example": 150,
-            "description": "Weight in grams"
-          },
-          "calories": {
-            "type": "number",
-            "example": 240
-          },
-          "protein": {
-            "type": "number",
-            "example": 31
-          },
-          "fat": {
-            "type": "number",
-            "example": 5
-          },
-          "carbs": {
-            "type": "number",
-            "example": 0
+            "example": "Chicken sandwich with lettuce and tomato",
+            "minLength": 3,
+            "maxLength": 1000,
+            "description": "Free-form text description of eaten food"
           }
         },
         "required": [
           "date",
-          "title",
-          "weight",
-          "calories",
-          "protein",
-          "fat",
-          "carbs"
+          "text"
+        ]
+      },
+      "ParseFoodDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Chicken sandwich with lettuce and tomato",
+            "minLength": 3,
+            "maxLength": 1000,
+            "description": "Free-form text description of eaten food"
+          }
+        },
+        "required": [
+          "text"
         ]
       },
       "ItemFoodDto": {
@@ -1300,84 +1225,13 @@
           "carbs"
         ]
       },
-      "CreateFoodFromAiDto": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "example": "2026-02-01"
-          },
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ItemFoodDto"
-            }
-          }
-        },
-        "required": [
-          "date",
-          "items"
-        ]
-      },
-      "ParseFoodDto": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string",
-            "example": "Chicken sandwich with lettuce and tomato",
-            "minLength": 3,
-            "maxLength": 1000,
-            "description": "Free-form text description of eaten food"
-          }
-        },
-        "required": [
-          "text"
-        ]
-      },
-      "ParsedFoodItemDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "example": "Chicken sandwich"
-          },
-          "weight": {
-            "type": "number",
-            "example": 200
-          },
-          "calories": {
-            "type": "number",
-            "example": 330
-          },
-          "protein": {
-            "type": "number",
-            "example": 46
-          },
-          "fat": {
-            "type": "number",
-            "example": 6
-          },
-          "carbs": {
-            "type": "number",
-            "example": 0
-          }
-        },
-        "required": [
-          "title",
-          "weight",
-          "calories",
-          "protein",
-          "fat",
-          "carbs"
-        ]
-      },
       "ParseFoodResponseDto": {
         "type": "object",
         "properties": {
           "items": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ParsedFoodItemDto"
+              "$ref": "#/components/schemas/ItemFoodDto"
             }
           },
           "assumptions": {
