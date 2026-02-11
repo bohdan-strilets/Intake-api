@@ -3,7 +3,7 @@ import { FoodService } from '@app/food';
 import { Injectable } from '@nestjs/common';
 
 import { DayDetailsResponseDto } from './dto';
-import { mapDayAndFoodToResponse } from './mappers';
+import { mapDayDetailsToResponse } from './mappers';
 
 @Injectable()
 export class DayDetailsService {
@@ -18,6 +18,6 @@ export class DayDetailsService {
 
     const food = await this.foodService.getFoodByDayId(dayId);
 
-    return mapDayAndFoodToResponse(day, food);
+    return mapDayDetailsToResponse(day, food);
   }
 }

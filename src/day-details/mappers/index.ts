@@ -1,1 +1,1 @@
-export { mapDayAndFoodToResponse } from './map-day-and-food-to-response';
+export { mapDayDetailsToResponse } from './map-day-details-to-response';

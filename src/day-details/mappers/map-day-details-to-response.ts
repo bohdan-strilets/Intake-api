@@ -3,7 +3,7 @@ import { FoodEntity } from '@app/food/types';
 
 import { DayDetailsResponseDto } from '../dto';
 
-export const mapDayAndFoodToResponse = (
+export const mapDayDetailsToResponse = (
   day: DayEntity,
   food: FoodEntity[],
 ): DayDetailsResponseDto => {
@@ -12,7 +12,7 @@ export const mapDayAndFoodToResponse = (
       id: day._id.toString(),
       date: day.date,
 
-      total: {
+      totals: {
         calories: day.totalCalories,
         protein: day.totalProtein,
         fat: day.totalFat,
