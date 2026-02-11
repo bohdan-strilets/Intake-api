@@ -14,5 +14,6 @@ import { AIParseRequest, AIParseRequestSchema } from './schemas';
   ],
   controllers: [AiController],
   providers: [AiService, AiRepository],
+  exports: [AiService],
 })
 export class AiModule {}

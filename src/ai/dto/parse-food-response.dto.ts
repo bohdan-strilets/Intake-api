@@ -1,10 +1,9 @@
+import { ItemFoodDto } from '@app/food/dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ParsedFoodItemDto } from './parsed-food-item.dto';
-
 export class ParseFoodResponseDto {
-  @ApiProperty({ type: [ParsedFoodItemDto] })
-  items: ParsedFoodItemDto[];
+  @ApiProperty({ type: [ItemFoodDto] })
+  items: ItemFoodDto[];
 
   @ApiProperty({
     example: 'Assumed standard chicken breast, cooked',
