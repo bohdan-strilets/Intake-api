@@ -11,8 +11,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CreateFoodFromAiDto } from './dto';
-import { CreateFoodDto } from './dto/create-food.dto';
+import { AddFoodFromTextDto } from './dto';
 import { FoodService } from './food.service';
 
 @Auth()
@@ -21,19 +20,6 @@ import { FoodService } from './food.service';
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
-
-  @Post('manual')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Add food manually' })
-  @ApiNoContentResponse()
-  @ApiBadRequestResponse({ type: ErrorResponseDto })
-  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  async addFoodFromManual(
-    @CurrentUserId() userId: string,
-    @Body() dto: CreateFoodDto,
-  ): Promise<void> {
-    return this.foodService.addFoodFromManual(userId, dto);
-  }
 
   @Delete(':foodId')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -48,16 +34,16 @@ export class FoodController {
     return this.foodService.delete(foodId, userId);
   }
 
-  @Post('ai')
+  @Post('add/from-ai')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Add food entries from AI parsing result' })
+  @ApiOperation({ summary: 'Add food to day from natural language text' })
   @ApiNoContentResponse()
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  async addFromAi(
+  async addFromText(
     @CurrentUserId() userId: string,
-    @Body() dto: CreateFoodFromAiDto,
+    @Body() dto: AddFoodFromTextDto,
   ): Promise<void> {
-    return this.foodService.addFoodFromAi(userId, dto);
+    await this.foodService.addFromText(userId, dto);
   }
 }

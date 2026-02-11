@@ -4,7 +4,7 @@ import { ArrayMinSize, IsArray, IsDateString, ValidateNested } from 'class-valid
 
 import { ItemFoodDto } from './item-food.dto';
 
-export class CreateFoodFromAiDto {
+export class AddFoodDto {
   @ApiProperty({ example: '2026-02-01' })
   @IsDateString()
   date: string;

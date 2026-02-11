@@ -1,10 +1,10 @@
+import { AiService } from '@app/ai';
 import { normalizeDate } from '@app/common/lib/date';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
 import { DaysService } from '../days/days.service';
-import { CreateFoodFromAiDto } from './dto';
-import { CreateFoodDto } from './dto/create-food.dto';
+import { AddFoodDto, AddFoodFromTextDto } from './dto';
 import { Source } from './enums';
 import { FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
@@ -16,6 +16,7 @@ export class FoodService {
   constructor(
     private readonly repository: FoodRepository,
     private readonly daysService: DaysService,
+    private readonly aiService: AiService,
   ) {}
 
   private async recalculateDayTotals(dayId: string): Promise<void> {
@@ -23,25 +24,25 @@ export class FoodService {
     await this.daysService.updateTotals(dayId, totals);
   }
 
-  private parseDate(date: string): string {
-    return normalizeDate(date);
-  }
-
-  async addFoodFromManual(userId: string, dto: CreateFoodDto): Promise<void> {
-    const date = this.parseDate(dto.date);
+  async addFood(userId: string, dto: AddFoodDto): Promise<void> {
+    const date = normalizeDate(dto.date);
 
     const day = await this.daysService.getOrCreateByDate(userId, date);
     const userObjectId = toObjectId(userId);
 
-    const createFoodInput: CreateFoodInput = mapToCreateFoodInput({
-      dayId: day._id,
-      userId: userObjectId,
-      food: dto,
-      source: Source.Manual,
-    });
+    const inputs: CreateFoodInput[] = dto.items.map((item) =>
+      mapToCreateFoodInput({
+        dayId: day._id,
+        userId: userObjectId,
+        food: item,
+        source: Source.AI,
+      }),
+    );
 
-    await this.repository.create(createFoodInput);
-    await this.recalculateDayTotals(day._id.toString());
+    await this.repository.bulkCreate(inputs);
+
+    const dayId = day._id.toString();
+    await this.recalculateDayTotals(dayId);
   }
 
   async getFoodByDayId(dayId: string): Promise<FoodEntity[]> {
@@ -59,22 +60,12 @@ export class FoodService {
     await this.daysService.updateTotals(dayId, totals);
   }
 
-  async addFoodFromAi(userId: string, dto: CreateFoodFromAiDto): Promise<void> {
-    const date = this.parseDate(dto.date);
+  async addFromText(userId: string, dto: AddFoodFromTextDto): Promise<void> {
+    const parsed = await this.aiService.parseFood(userId, { text: dto.text });
 
-    const day = await this.daysService.getOrCreateByDate(userId, date);
-    const userObjectId = toObjectId(userId);
-
-    const inputs: CreateFoodInput[] = dto.items.map((item) =>
-      mapToCreateFoodInput({
-        dayId: day._id,
-        userId: userObjectId,
-        food: item,
-        source: Source.AI,
-      }),
-    );
-
-    await this.repository.bulkCreate(inputs);
-    await this.recalculateDayTotals(day._id.toString());
+    await this.addFood(userId, {
+      date: dto.date,
+      items: parsed.items,
+    });
   }
 }

@@ -1,6 +1,6 @@
-import { CreateFoodInput, MapToCreateFoodInputParams } from '../types';
+import { CreateFoodInput, CreateFoodMapperParams } from '../types';
 
-export const mapToCreateFoodInput = (params: MapToCreateFoodInputParams): CreateFoodInput => {
+export const mapToCreateFoodInput = (params: CreateFoodMapperParams): CreateFoodInput => {
   return {
     dayId: params.dayId,
     userId: params.userId,
