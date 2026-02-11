@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-import { Source } from '../enums';
+import { FoodIcon, Source } from '../enums';
 
 @Schema({ timestamps: true, versionKey: false })
 export class Food {
@@ -10,6 +10,9 @@ export class Food {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   userId: Types.ObjectId;
+
+  @Prop({ enum: FoodIcon, required: true })
+  icon: FoodIcon;
 
   @Prop({ required: true })
   title: string;

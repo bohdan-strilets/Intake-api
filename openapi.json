@@ -623,73 +623,6 @@
         ]
       }
     },
-    "/ai/parse-food": {
-      "post": {
-        "operationId": "AiController_parseFood",
-        "summary": "Parse food description using AI",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ParseFoodDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ParseFoodResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "AI"
-        ],
-        "security": [
-          {
-            "access-token": []
-          }
-        ]
-      }
-    },
     "/stats/range": {
       "get": {
         "operationId": "StatsController_getRange",
@@ -1109,6 +1042,9 @@
           "title": {
             "type": "string"
           },
+          "icon": {
+            "type": "string"
+          },
           "weight": {
             "type": "number"
           },
@@ -1128,6 +1064,7 @@
         "required": [
           "id",
           "title",
+          "icon",
           "weight",
           "calories",
           "protein",
@@ -1171,76 +1108,6 @@
         "required": [
           "date",
           "text"
-        ]
-      },
-      "ParseFoodDto": {
-        "type": "object",
-        "properties": {
-          "text": {
-            "type": "string",
-            "example": "Chicken sandwich with lettuce and tomato",
-            "minLength": 3,
-            "maxLength": 1000,
-            "description": "Free-form text description of eaten food"
-          }
-        },
-        "required": [
-          "text"
-        ]
-      },
-      "ItemFoodDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "example": "Rice"
-          },
-          "weight": {
-            "type": "number",
-            "example": 100
-          },
-          "calories": {
-            "type": "number",
-            "example": 130
-          },
-          "protein": {
-            "type": "number",
-            "example": 2.7
-          },
-          "fat": {
-            "type": "number",
-            "example": 0.3
-          },
-          "carbs": {
-            "type": "number",
-            "example": 28
-          }
-        },
-        "required": [
-          "title",
-          "weight",
-          "calories",
-          "protein",
-          "fat",
-          "carbs"
-        ]
-      },
-      "ParseFoodResponseDto": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ItemFoodDto"
-            }
-          },
-          "assumptions": {
-            "type": "string",
-            "example": "Assumed standard chicken breast, cooked"
-          }
-        },
-        "required": [
-          "items"
         ]
       },
       "WeekTotalsResponseDto": {

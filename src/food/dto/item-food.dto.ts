@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsEnum, IsNumber, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 import { FoodConstraints } from '../constraints';
+import { FoodIcon } from '../enums';
 
 export class ItemFoodDto {
+  @ApiProperty({ enum: FoodIcon, example: FoodIcon.Grain })
+  @IsEnum(FoodIcon)
+  icon: FoodIcon;
+
   @ApiProperty({ example: 'Rice' })
   @IsString()
   @MinLength(FoodConstraints.title.minLength)

@@ -24,6 +24,7 @@ export const mapDayDetailsToResponse = (
     food: food.map((item) => ({
       id: item._id.toString(),
       title: item.title,
+      icon: item.icon,
 
       weight: item.weight,
       calories: item.calories,

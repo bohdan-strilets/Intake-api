@@ -1,12 +1,13 @@
 import { Types } from 'mongoose';
 
-import { Source } from '../enums';
+import { FoodIcon, Source } from '../enums';
 
 export type FoodEntity = {
   _id: Types.ObjectId;
   dayId: Types.ObjectId;
 
   title: string;
+  icon: FoodIcon;
 
   weight: number;
   calories: number;
