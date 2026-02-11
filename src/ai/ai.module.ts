@@ -2,7 +2,6 @@ import { OpenAIModule } from '@app/common/lib/openai';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AiController } from './ai.controller';
 import { AiRepository } from './ai.repository';
 import { AiService } from './ai.service';
 import { AIParseRequest, AIParseRequestSchema } from './schemas';
@@ -12,7 +11,6 @@ import { AIParseRequest, AIParseRequestSchema } from './schemas';
     MongooseModule.forFeature([{ name: AIParseRequest.name, schema: AIParseRequestSchema }]),
     OpenAIModule,
   ],
-  controllers: [AiController],
   providers: [AiService, AiRepository],
   exports: [AiService],
 })
