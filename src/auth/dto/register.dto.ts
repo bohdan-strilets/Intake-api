@@ -1,6 +1,6 @@
 import { PasswordConstraints } from '@app/common/security/constraints';
 import { UserConstraints } from '@app/users/constraints';
-import { Goal, Sex } from '@app/users/enums';
+import { ActivityLevel, Goal, Sex } from '@app/users/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsInt, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
@@ -66,4 +66,8 @@ export class RegisterDto {
   @ApiProperty({ enum: Goal, example: Goal.Lose })
   @IsEnum(Goal)
   goal: Goal;
+
+  @ApiProperty({ enum: ActivityLevel, example: ActivityLevel.MODERATE })
+  @IsEnum(ActivityLevel)
+  activityLevel: ActivityLevel;
 }

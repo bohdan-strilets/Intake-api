@@ -417,6 +417,46 @@
         ]
       }
     },
+    "/users/me/delete": {
+      "patch": {
+        "operationId": "UsersController_deleteUser",
+        "summary": "Soft delete current user",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/days": {
       "get": {
         "operationId": "DaysController_getCalendar",
@@ -821,6 +861,17 @@
               "gain"
             ],
             "example": "lose"
+          },
+          "activityLevel": {
+            "type": "number",
+            "enum": [
+              1.2,
+              1.375,
+              1.55,
+              1.725,
+              1.9
+            ],
+            "example": 1.55
           }
         },
         "required": [
@@ -831,7 +882,8 @@
           "age",
           "height",
           "weight",
-          "goal"
+          "goal",
+          "activityLevel"
         ]
       },
       "ErrorResponseDto": {
@@ -904,6 +956,23 @@
           "refreshToken"
         ]
       },
+      "MetabolismDto": {
+        "type": "object",
+        "properties": {
+          "bmr": {
+            "type": "number",
+            "example": 1500
+          },
+          "recommendedCalories": {
+            "type": "number",
+            "example": 2000
+          }
+        },
+        "required": [
+          "bmr",
+          "recommendedCalories"
+        ]
+      },
       "UserResponseDto": {
         "type": "object",
         "properties": {
@@ -939,6 +1008,10 @@
             "type": "number",
             "example": 70
           },
+          "targetWeight": {
+            "type": "number",
+            "example": 60
+          },
           "goal": {
             "type": "string",
             "enum": [
@@ -947,6 +1020,24 @@
               "gain"
             ],
             "example": "lose"
+          },
+          "goalDelta": {
+            "type": "number",
+            "example": 5
+          },
+          "activityLevel": {
+            "type": "number",
+            "enum": [
+              1.2,
+              1.375,
+              1.55,
+              1.725,
+              1.9
+            ],
+            "example": 1.55
+          },
+          "metabolism": {
+            "$ref": "#/components/schemas/MetabolismDto"
           }
         },
         "required": [
@@ -957,7 +1048,11 @@
           "age",
           "height",
           "weight",
-          "goal"
+          "targetWeight",
+          "goal",
+          "goalDelta",
+          "activityLevel",
+          "metabolism"
         ]
       },
       "UpdateProfileDto": {
@@ -995,6 +1090,16 @@
               "lose",
               "maintain",
               "gain"
+            ]
+          },
+          "activityLevel": {
+            "type": "number",
+            "enum": [
+              1.2,
+              1.375,
+              1.55,
+              1.725,
+              1.9
             ]
           }
         }

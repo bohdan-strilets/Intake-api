@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
 import { EmailAlreadyExistsException, UserNotFoundException } from './errors';
 import { mapUserToResponseDto } from './mappers';
+import { MetabolismService } from './services';
 import { CreateUserInput, UserEntity } from './types';
 import { UsersRepository } from './users.repository';
 
@@ -16,6 +17,7 @@ export class UsersService {
     private readonly repository: UsersRepository,
     private readonly sessionService: SessionService,
     private readonly passwordService: PasswordService,
+    private readonly metabolismService: MetabolismService,
   ) {}
 
   async userExistsByEmail(email: string): Promise<boolean> {
@@ -23,18 +25,18 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string): Promise<UserEntity> {
-    const user = await this.repository.findByEmail(email);
+    const user = await this.repository.findActiveByEmail(email);
     if (!user) throw new UserNotFoundException();
 
     return user;
   }
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
-    return this.repository.findByEmail(email);
+    return this.repository.findActiveByEmail(email);
   }
 
   async getUserById(userId: string): Promise<UserEntity> {
-    const user = await this.repository.findById(userId);
+    const user = await this.repository.findActiveById(userId);
     if (!user) throw new UserNotFoundException();
 
     return user;
@@ -48,22 +50,26 @@ export class UsersService {
   }
 
   async getMe(userId: string): Promise<UserResponseDto> {
-    const user = await this.repository.findById(userId);
+    const user = await this.repository.findActiveById(userId);
     if (!user) throw new UserNotFoundException();
 
-    return mapUserToResponseDto(user);
+    const metabolism = this.metabolismService.calculate(user);
+    return mapUserToResponseDto(user, metabolism);
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserResponseDto> {
-    const updatedUser = await this.repository.update(userId, dto);
+    const payload: Partial<UpdateProfileDto> = { ...dto };
+
+    const updatedUser = await this.repository.updateActive(userId, payload);
     if (!updatedUser) throw new UserNotFoundException();
 
-    return mapUserToResponseDto(updatedUser);
+    const metabolism = this.metabolismService.calculate(updatedUser);
+    return mapUserToResponseDto(updatedUser, metabolism);
   }
 
   async updateEmail(userId: string, dto: UpdateEmailDto): Promise<UserResponseDto> {
     const normalizedEmail = normalizeEmail(dto.email);
-    const user = await this.repository.findById(userId);
+    const user = await this.repository.findActiveById(userId);
 
     if (!user) throw new UserNotFoundException();
 
@@ -73,15 +79,16 @@ export class UsersService {
     }
 
     const payload = { email: normalizedEmail };
-    const updatedUser = await this.repository.update(userId, payload);
+    const updatedUser = await this.repository.updateActive(userId, payload);
 
     if (!updatedUser) throw new UserNotFoundException();
 
-    return mapUserToResponseDto(updatedUser);
+    const metabolism = this.metabolismService.calculate(updatedUser);
+    return mapUserToResponseDto(updatedUser, metabolism);
   }
 
   async updatePassword(userId: string, dto: UpdatePasswordDto): Promise<void> {
-    const user = await this.repository.findById(userId);
+    const user = await this.repository.findActiveById(userId);
     if (!user) throw new UserNotFoundException();
 
     const isMatches = await this.passwordService.compare(dto.currentPassword, user.passwordHash);
@@ -92,7 +99,14 @@ export class UsersService {
 
     const passwordHash = await this.passwordService.hash(dto.newPassword);
 
-    await this.repository.update(userId, { passwordHash });
+    await this.repository.updateActive(userId, { passwordHash });
+    await this.sessionService.invalidateByUserId(userId);
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const deletedUser = await this.repository.softDelete(userId);
+    if (!deletedUser) throw new UserNotFoundException();
+
     await this.sessionService.invalidateByUserId(userId);
   }
 }

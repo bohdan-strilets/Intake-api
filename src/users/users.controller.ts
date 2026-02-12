@@ -7,6 +7,7 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -67,5 +68,15 @@ export class UsersController {
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   updatePassword(@CurrentUserId() userId: string, @Body() dto: UpdatePasswordDto): Promise<void> {
     return this.usersService.updatePassword(userId, dto);
+  }
+
+  @Patch('me/delete')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Soft delete current user' })
+  @ApiNoContentResponse()
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
+  deleteUser(@CurrentUserId() userId: string): Promise<void> {
+    return this.usersService.deleteUser(userId);
   }
 }

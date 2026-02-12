@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 import { UserConstraints } from '../constraints';
-import { Goal, Sex } from '../enums';
+import { ActivityLevel, Goal, Sex } from '../enums';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({ maxLength: UserConstraints.name.maxLength })
@@ -13,7 +13,7 @@ export class UpdateProfileDto {
 
   @ApiPropertyOptional({ enum: Sex })
   @IsOptional()
-  @IsIn(Object.values(Sex))
+  @IsEnum(Sex)
   sex?: Sex;
 
   @ApiPropertyOptional({
@@ -46,8 +46,25 @@ export class UpdateProfileDto {
   @Max(UserConstraints.weight.max)
   weight?: number;
 
+  @IsOptional()
+  @IsInt()
+  @Min(UserConstraints.targetWeight.min)
+  @Max(UserConstraints.targetWeight.max)
+  targetWeight?: number;
+
   @ApiPropertyOptional({ enum: Goal })
   @IsOptional()
-  @IsIn(Object.values(Goal))
+  @IsEnum(Goal)
   goal?: Goal;
+
+  @IsOptional()
+  @IsInt()
+  @Min(UserConstraints.goalDelta.min)
+  @Max(UserConstraints.goalDelta.max)
+  goalDelta?: number | null;
+
+  @ApiPropertyOptional({ enum: ActivityLevel })
+  @IsOptional()
+  @IsEnum(ActivityLevel)
+  activityLevel?: ActivityLevel;
 }

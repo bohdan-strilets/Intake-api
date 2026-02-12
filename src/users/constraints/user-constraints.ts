@@ -18,4 +18,14 @@ export const UserConstraints = {
     min: 30,
     max: 300,
   },
+
+  targetWeight: {
+    min: 30,
+    max: 300,
+  },
+
+  goalDelta: {
+    min: -1000,
+    max: 1000,
+  },
 } as const;

@@ -24,7 +24,7 @@ export class UsersRepository {
     return !!exists;
   }
 
-  async findByEmail(email: string): Promise<UserEntity | null> {
+  async findActiveByEmail(email: string): Promise<UserEntity | null> {
     const normalizedEmail = normalizeEmail(email);
     const filter: QueryFilter<UserDocument> = {
       email: normalizedEmail,
@@ -34,7 +34,7 @@ export class UsersRepository {
     return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
 
-  async findById(userId: string): Promise<UserEntity | null> {
+  async findActiveById(userId: string): Promise<UserEntity | null> {
     const objectUserId = toObjectId(userId);
     const filter: QueryFilter<UserDocument> = {
       _id: objectUserId,
@@ -51,11 +51,36 @@ export class UsersRepository {
     return doc.toObject() as UserEntity;
   }
 
-  async update(userId: string, update: UpdateQuery<UserDocument>): Promise<UserEntity | null> {
+  async updateActive(
+    userId: string,
+    update: UpdateQuery<UserDocument>,
+  ): Promise<UserEntity | null> {
     const objectUserId = toObjectId(userId);
     const filter: QueryFilter<UserDocument> = {
       _id: objectUserId,
       isDeleted: false,
+    };
+
+    const options: QueryOptions = { new: true };
+
+    return this.userModel
+      .findOneAndUpdate(filter, { $set: update }, options)
+      .lean<UserEntity>()
+      .exec();
+  }
+
+  async softDelete(userId: string): Promise<UserEntity | null> {
+    const objectUserId = toObjectId(userId);
+
+    const filter: QueryFilter<UserDocument> = {
+      _id: objectUserId,
+      isDeleted: false,
+    };
+
+    const now = new Date();
+    const update: UpdateQuery<UserDocument> = {
+      isDeleted: true,
+      deletedAt: now,
     };
 
     const options: QueryOptions = { new: true };

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-import { Goal, Sex } from '../enums';
+import { ActivityLevel, Goal, Sex } from '../enums';
 
 export type UserEntity = {
   _id: Types.ObjectId;
@@ -14,5 +14,12 @@ export type UserEntity = {
 
   height: number;
   weight: number;
+  targetWeight?: number;
+
   goal: Goal;
+  goalDelta?: number | null;
+  activityLevel: ActivityLevel;
+
+  isDeleted: boolean;
+  deletedAt?: Date;
 };

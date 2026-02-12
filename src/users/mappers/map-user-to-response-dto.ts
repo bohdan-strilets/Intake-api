@@ -1,9 +1,11 @@
-import { UserResponseDto } from '../dto';
-import { UserEntity } from '../types';
+import { mapObjectId } from '@app/common/utils';
 
-export const mapUserToResponseDto = (user: UserEntity): UserResponseDto => {
+import { UserResponseDto } from '../dto';
+import { Metabolism, UserEntity } from '../types';
+
+export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): UserResponseDto => {
   return {
-    id: user._id.toString(),
+    id: mapObjectId(user._id),
     name: user.name,
     email: user.email,
 
@@ -12,6 +14,12 @@ export const mapUserToResponseDto = (user: UserEntity): UserResponseDto => {
 
     height: user.height,
     weight: user.weight,
+    targetWeight: user.targetWeight,
+
     goal: user.goal,
+    goalDelta: user.goalDelta,
+    activityLevel: user.activityLevel,
+
+    metabolism,
   };
 };
