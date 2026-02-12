@@ -15,7 +15,10 @@ export class UsersRepository {
 
   async existsByEmail(email: string): Promise<boolean> {
     const normalizedEmail = normalizeEmail(email);
-    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
+    const filter: QueryFilter<UserDocument> = {
+      email: normalizedEmail,
+      isDeleted: false,
+    };
 
     const exists = await this.userModel.exists(filter).exec();
     return !!exists;
@@ -23,15 +26,22 @@ export class UsersRepository {
 
   async findByEmail(email: string): Promise<UserEntity | null> {
     const normalizedEmail = normalizeEmail(email);
-    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
+    const filter: QueryFilter<UserDocument> = {
+      email: normalizedEmail,
+      isDeleted: false,
+    };
 
     return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
 
   async findById(userId: string): Promise<UserEntity | null> {
     const objectUserId = toObjectId(userId);
+    const filter: QueryFilter<UserDocument> = {
+      _id: objectUserId,
+      isDeleted: false,
+    };
 
-    return this.userModel.findById(objectUserId).lean<UserEntity>().exec();
+    return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
 
   async create(input: CreateUserInput): Promise<UserEntity> {
@@ -41,16 +51,15 @@ export class UsersRepository {
     return doc.toObject() as UserEntity;
   }
 
-  async update(
-    userId: string,
-    update: UpdateQuery<UserDocument | null>,
-  ): Promise<UserEntity | null> {
+  async update(userId: string, update: UpdateQuery<UserDocument>): Promise<UserEntity | null> {
     const objectUserId = toObjectId(userId);
+    const filter: QueryFilter<UserDocument> = {
+      _id: objectUserId,
+      isDeleted: false,
+    };
+
     const options: QueryOptions = { new: true };
 
-    return this.userModel
-      .findByIdAndUpdate(objectUserId, update, options)
-      .lean<UserEntity>()
-      .exec();
+    return this.userModel.findOneAndUpdate(filter, update, options).lean<UserEntity>().exec();
   }
 }
