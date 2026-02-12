@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 import { FoodIcon, Source } from '../enums';
+import { Per100g } from './per-100.schema';
 
 @Schema({ timestamps: true, versionKey: false })
 export class Food {
@@ -34,6 +35,9 @@ export class Food {
 
   @Prop({ enum: Source, default: Source.Manual })
   source: Source;
+
+  @Prop({ type: Per100g })
+  per100g?: Per100g;
 }
 
 export type FoodDocument = Food & Document;

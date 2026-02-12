@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 
 import { FoodIcon, Source } from '../enums';
+import { Per100g } from './per-100.type';
 
 export type FoodEntity = {
   _id: Types.ObjectId;
@@ -16,4 +17,5 @@ export type FoodEntity = {
   carbs: number;
 
   source: Source;
+  per100g?: Per100g;
 };

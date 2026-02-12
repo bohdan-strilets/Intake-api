@@ -1,7 +1,9 @@
 import { CreateFoodInput, CreateFoodMapperParams } from '../types';
-import { normalizeIcon } from '../utils';
+import { calculatePer100g, normalizeIcon } from '../utils';
 
 export const mapToCreateFoodInput = (params: CreateFoodMapperParams): CreateFoodInput => {
+  const per100g = calculatePer100g(params.food);
+
   return {
     dayId: params.dayId,
     userId: params.userId,
@@ -13,5 +15,6 @@ export const mapToCreateFoodInput = (params: CreateFoodMapperParams): CreateFood
     fat: params.food.fat,
     carbs: params.food.carbs,
     source: params.source,
+    per100g,
   };
 };

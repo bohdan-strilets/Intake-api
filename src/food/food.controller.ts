@@ -1,17 +1,18 @@
 import { Auth } from '@app/auth/decorators';
 import { CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
-import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { AddFoodFromTextDto } from './dto';
+import { AddFoodFromTextDto, UpdateFoodWeightDto } from './dto';
 import { FoodService } from './food.service';
 
 @Auth()
@@ -32,6 +33,21 @@ export class FoodController {
     @CurrentUserId() userId: string,
   ): Promise<void> {
     return this.foodService.delete(foodId, userId);
+  }
+
+  @Patch(':foodId/weight')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Update food weight' })
+  @ApiNoContentResponse()
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  async updateWeight(
+    @Param('foodId') foodId: string,
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateFoodWeightDto,
+  ): Promise<void> {
+    return this.foodService.updateWeight(foodId, userId, dto.weight);
   }
 
   @Post('add/from-ai')

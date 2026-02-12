@@ -1,15 +1,16 @@
 import { AiService } from '@app/ai';
 import { normalizeDate } from '@app/common/lib/date';
+import { round } from '@app/common/lib/number';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
 import { DaysService } from '../days/days.service';
 import { AddFoodDto, AddFoodFromTextDto } from './dto';
 import { Source } from './enums';
-import { FoodNotFoundException } from './errors';
+import { FoodBadRequestException, FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
 import { mapToCreateFoodInput } from './mappers';
-import { CreateFoodInput, FoodEntity } from './types';
+import type { CreateFoodInput, FoodEntity, UpdateMacrosInput } from './types';
 
 @Injectable()
 export class FoodService {
@@ -67,5 +68,29 @@ export class FoodService {
       date: dto.date,
       items: parsed.items,
     });
+  }
+
+  async updateWeight(foodId: string, userId: string, newWeight: number): Promise<void> {
+    if (newWeight <= 0) throw new FoodBadRequestException();
+
+    const food = await this.repository.findById(foodId, userId);
+
+    if (!food) throw new FoodNotFoundException();
+    if (!food.per100g) throw new FoodBadRequestException();
+
+    const { calories, protein, fat, carbs } = food.per100g;
+
+    const input: UpdateMacrosInput = {
+      weight: newWeight,
+      calories: round((calories * newWeight) / 100, 1),
+      protein: round((protein * newWeight) / 100, 1),
+      fat: round((fat * newWeight) / 100, 1),
+      carbs: round((carbs * newWeight) / 100, 1),
+    };
+
+    await this.repository.updateMacros(foodId, input);
+
+    const dayId = food.dayId.toString();
+    await this.recalculateDayTotals(dayId);
   }
 }

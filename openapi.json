@@ -573,6 +573,75 @@
         ]
       }
     },
+    "/food/{foodId}/weight": {
+      "patch": {
+        "operationId": "FoodController_updateWeight",
+        "summary": "Update food weight",
+        "parameters": [
+          {
+            "name": "foodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFoodWeightDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Food"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/food/add/from-ai": {
       "post": {
         "operationId": "FoodController_addFromText",
@@ -778,6 +847,7 @@
               "VALIDATION_ERROR",
               "USER_NOT_FOUND",
               "FOOD_NOT_FOUND",
+              "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",
               "SERVER_ERROR"
             ],
@@ -1088,6 +1158,18 @@
         "required": [
           "day",
           "food"
+        ]
+      },
+      "UpdateFoodWeightDto": {
+        "type": "object",
+        "properties": {
+          "weight": {
+            "type": "number",
+            "example": 100
+          }
+        },
+        "required": [
+          "weight"
         ]
       },
       "AddFoodFromTextDto": {
