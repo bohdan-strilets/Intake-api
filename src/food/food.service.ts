@@ -1,6 +1,6 @@
 import { AiService } from '@app/ai';
 import { normalizeDate } from '@app/common/lib/date';
-import { round } from '@app/common/lib/number';
+import { normalizeCalories, normalizeMacro, normalizeWeight } from '@app/common/lib/number';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
@@ -22,7 +22,13 @@ export class FoodService {
 
   private async recalculateDayTotals(dayId: string): Promise<void> {
     const totals = await this.repository.calculateDayTotals(dayId);
-    await this.daysService.updateTotals(dayId, totals);
+
+    await this.daysService.updateTotals(dayId, {
+      calories: normalizeCalories(totals.calories),
+      protein: normalizeMacro(totals.protein),
+      fat: normalizeMacro(totals.fat),
+      carbs: normalizeMacro(totals.carbs),
+    });
   }
 
   async addFood(userId: string, dto: AddFoodDto): Promise<void> {
@@ -56,9 +62,8 @@ export class FoodService {
     if (!food) throw new FoodNotFoundException();
 
     const dayId = food.dayId.toString();
-    const totals = await this.repository.calculateDayTotals(dayId);
 
-    await this.daysService.updateTotals(dayId, totals);
+    await this.recalculateDayTotals(dayId);
   }
 
   async addFromText(userId: string, dto: AddFoodFromTextDto): Promise<void> {
@@ -71,7 +76,9 @@ export class FoodService {
   }
 
   async updateWeight(foodId: string, userId: string, newWeight: number): Promise<void> {
-    if (newWeight <= 0) throw new FoodBadRequestException();
+    if (!Number.isFinite(newWeight) || newWeight <= 0) {
+      throw new FoodBadRequestException();
+    }
 
     const food = await this.repository.findById(foodId, userId);
 
@@ -79,13 +86,14 @@ export class FoodService {
     if (!food.per100g) throw new FoodBadRequestException();
 
     const { calories, protein, fat, carbs } = food.per100g;
+    const normalizedWeight = normalizeWeight(newWeight);
 
     const input: UpdateMacrosInput = {
-      weight: newWeight,
-      calories: round((calories * newWeight) / 100, 1),
-      protein: round((protein * newWeight) / 100, 1),
-      fat: round((fat * newWeight) / 100, 1),
-      carbs: round((carbs * newWeight) / 100, 1),
+      weight: normalizedWeight,
+      calories: normalizeCalories((calories * normalizedWeight) / 100),
+      protein: normalizeMacro((protein * normalizedWeight) / 100),
+      fat: normalizeMacro((fat * normalizedWeight) / 100),
+      carbs: normalizeMacro((carbs * normalizedWeight) / 100),
     };
 
     await this.repository.updateMacros(foodId, input);
