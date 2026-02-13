@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DayTotalsDto } from './day-totals.dto';
 
-export class CalendarDayDto {
+export class CalendarCellDto {
   @ApiProperty({ example: '2026-02-01' })
   date: string;
 

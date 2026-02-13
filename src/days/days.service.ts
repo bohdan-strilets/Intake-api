@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
 
 import { DaysRepository } from './days.repository';
-import { CalendarDayDto, DayTotalsDto } from './dto';
-import { DateRange, DayEntity } from './types';
+import { CalendarCellDto, DayTotalsDto } from './dto';
+import { mapCellToDto } from './mappers';
+import { DateRange, DayCellDetails, DayEntity } from './types';
 
 @Injectable()
 export class DaysService {
   constructor(private readonly repository: DaysRepository) {}
 
-  async getDateRange(userId: string, range: DateRange): Promise<CalendarDayDto[]> {
+  async getDateRange(userId: string, range: DateRange): Promise<DayCellDetails[]> {
     return this.repository.getDateRange(userId, range);
   }
 
-  async getCalendar(userId: string, month: string): Promise<CalendarDayDto[]> {
+  async getCalendar(userId: string, month: string): Promise<CalendarCellDto[]> {
     const start = `${month}-01`;
     const end = `${month}-31`;
 
-    return this.repository.getDateRange(userId, { start, end });
+    const days = await this.repository.getDateRange(userId, { start, end });
+    return days.map(mapCellToDto);
   }
 
   async getOrCreateByDate(userId: string, date: string): Promise<DayEntity> {

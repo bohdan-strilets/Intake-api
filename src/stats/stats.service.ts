@@ -1,7 +1,7 @@
 import { msToDays } from '@app/common/lib/date';
 import { DaysService } from '@app/days';
-import { CalendarDayDto, DayTotalsDto } from '@app/days/dto';
-import { DateRange } from '@app/days/types';
+import { DayTotalsDto } from '@app/days/dto';
+import { DateRange, DayCellDetails } from '@app/days/types';
 import { Injectable } from '@nestjs/common';
 
 import { EMPTY_STATS, EMPTY_TOTALS } from './constants';
@@ -11,13 +11,13 @@ import { WeekTotalsResponseDto } from './dto';
 export class StatsService {
   constructor(private readonly daysService: DaysService) {}
 
-  private calculateTotals(days: CalendarDayDto[]): DayTotalsDto {
+  private calculateTotals(days: DayCellDetails[]): DayTotalsDto {
     return days.reduce(
       (acc, day) => {
-        acc.calories += day.totals.calories;
-        acc.protein += day.totals.protein;
-        acc.fat += day.totals.fat;
-        acc.carbs += day.totals.carbs;
+        acc.calories += day.totalCalories;
+        acc.protein += day.totalProtein;
+        acc.fat += day.totalFat;
+        acc.carbs += day.totalCarbs;
         return acc;
       },
       { ...EMPTY_TOTALS },

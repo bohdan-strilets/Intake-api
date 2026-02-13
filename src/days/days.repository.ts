@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, QueryFilter, UpdateQuery } from 'mongoose';
 
-import { CalendarDayDto, DayTotalsDto } from './dto';
+import { DayTotalsDto } from './dto';
 import { DaySelectFields } from './projections';
 import { Day, DayDocument } from './schemas/day.schema';
-import { DateRange, DayEntity } from './types';
+import { DateRange, DayCellDetails, DayEntity } from './types';
 
 @Injectable()
 export class DaysRepository {
@@ -16,7 +16,7 @@ export class DaysRepository {
     private readonly dayModel: Model<DayDocument>,
   ) {}
 
-  async getDateRange(userId: string, range: DateRange): Promise<CalendarDayDto[]> {
+  async getDateRange(userId: string, range: DateRange): Promise<DayCellDetails[]> {
     const userObjectId = toObjectId(userId);
     const { start, end } = range;
 
@@ -28,7 +28,7 @@ export class DaysRepository {
     return this.dayModel
       .find(filter, DaySelectFields)
       .sort({ date: 1 })
-      .lean<CalendarDayDto[]>()
+      .lean<DayCellDetails[]>()
       .exec();
   }
 

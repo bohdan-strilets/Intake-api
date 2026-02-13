@@ -481,7 +481,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CalendarDayDto"
+                    "$ref": "#/components/schemas/CalendarCellDto"
                   }
                 }
               }
@@ -1168,7 +1168,7 @@
           "carbs"
         ]
       },
-      "CalendarDayDto": {
+      "CalendarCellDto": {
         "type": "object",
         "properties": {
           "date": {

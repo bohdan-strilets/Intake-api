@@ -11,7 +11,7 @@ import {
 } from '@nestjs/swagger';
 
 import { DaysService } from './days.service';
-import { CalendarDayDto } from './dto';
+import { CalendarCellDto } from './dto';
 import { GetCalendarDto } from './dto/get-calendar.dto';
 
 @Auth()
@@ -24,12 +24,12 @@ export class DaysController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get calendar days for selected month' })
-  @ApiOkResponse({ type: [CalendarDayDto] })
+  @ApiOkResponse({ type: [CalendarCellDto] })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   getCalendar(
     @CurrentUserId() userId: string,
     @Query() dto: GetCalendarDto,
-  ): Promise<CalendarDayDto[]> {
+  ): Promise<CalendarCellDto[]> {
     return this.daysService.getCalendar(userId, dto.month);
   }
 }
