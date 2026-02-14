@@ -1258,11 +1258,15 @@
             "items": {
               "$ref": "#/components/schemas/FoodResponseDto"
             }
+          },
+          "targetCalories": {
+            "type": "number"
           }
         },
         "required": [
           "day",
-          "food"
+          "food",
+          "targetCalories"
         ]
       },
       "UpdateFoodWeightDto": {

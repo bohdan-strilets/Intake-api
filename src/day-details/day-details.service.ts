@@ -1,5 +1,7 @@
 import { DaysService } from '@app/days';
 import { FoodService } from '@app/food';
+import { UsersService } from '@app/users';
+import { MetabolismService } from '@app/users/services';
 import { Injectable } from '@nestjs/common';
 
 import { DayDetailsResponseDto } from './dto';
@@ -10,14 +12,21 @@ export class DayDetailsService {
   constructor(
     private readonly daysService: DaysService,
     private readonly foodService: FoodService,
+    private readonly usersService: UsersService,
+    private readonly metabolismService: MetabolismService,
   ) {}
 
   async getByDate(userId: string, date: string): Promise<DayDetailsResponseDto> {
-    const day = await this.daysService.getOrCreateByDate(userId, date);
-    const dayId = day._id.toString();
+    const [day, user] = await Promise.all([
+      this.daysService.getOrCreateByDate(userId, date),
+      this.usersService.getUserById(userId),
+    ]);
 
-    const food = await this.foodService.getFoodByDayId(dayId);
+    const food = await this.foodService.getFoodByDayId(day._id.toString());
 
-    return mapDayDetailsToResponse(day, food);
+    const metabolism = this.metabolismService.calculate(user);
+    const targetCalories = metabolism.recommendedCalories;
+
+    return mapDayDetailsToResponse(day, food, targetCalories);
   }
 }

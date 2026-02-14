@@ -8,4 +8,7 @@ export class DayDetailsResponseDto {
 
   @ApiProperty({ type: [FoodResponseDto] })
   food: FoodResponseDto[];
+
+  @ApiProperty({ type: Number, required: true })
+  targetCalories: number;
 }

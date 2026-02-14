@@ -6,6 +6,7 @@ import { DayDetailsResponseDto } from '../dto';
 export const mapDayDetailsToResponse = (
   day: DayEntity,
   food: FoodEntity[],
+  targetCalories: number,
 ): DayDetailsResponseDto => {
   return {
     day: {
@@ -21,6 +22,7 @@ export const mapDayDetailsToResponse = (
 
       weight: day.weight,
     },
+
     food: food.map((item) => ({
       id: item._id.toString(),
       title: item.title,
@@ -32,5 +34,7 @@ export const mapDayDetailsToResponse = (
       fat: item.fat,
       carbs: item.carbs,
     })),
+
+    targetCalories,
   };
 };
