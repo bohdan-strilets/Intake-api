@@ -19,7 +19,7 @@ export class DayDetailsService {
   async getByDate(userId: string, date: string): Promise<DayDetailsResponseDto> {
     const [day, user] = await Promise.all([
       this.daysService.getOrCreateByDate(userId, date),
-      this.usersService.getUserById(userId),
+      this.usersService.getActiveUserById(userId),
     ]);
 
     const food = await this.foodService.getFoodByDayId(day._id.toString());

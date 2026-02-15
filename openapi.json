@@ -165,16 +165,17 @@
         ]
       }
     },
-    "/auth/me": {
+    "/auth/restore": {
       "post": {
-        "operationId": "AuthController_me",
+        "operationId": "AuthController_restore",
+        "summary": "Restore deleted account",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RefreshTokenDto"
+                "$ref": "#/components/schemas/LoginDto"
               }
             }
           }
@@ -418,7 +419,7 @@
       }
     },
     "/users/me/delete": {
-      "patch": {
+      "delete": {
         "operationId": "UsersController_deleteUser",
         "summary": "Soft delete current user",
         "parameters": [],
@@ -898,6 +899,7 @@
               "INVALID_SESSION",
               "VALIDATION_ERROR",
               "USER_NOT_FOUND",
+              "ACCOUNT_DELETED",
               "FOOD_NOT_FOUND",
               "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",

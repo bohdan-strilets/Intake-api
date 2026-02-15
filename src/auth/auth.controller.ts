@@ -12,9 +12,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { AuthService } from './auth.service';
 import { Public, Refresh } from './decorators';
 import { AuthTokensResponseDto, LoginDto, RefreshTokenDto, RegisterDto } from './dto';
-import { AuthService } from './services';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -71,14 +71,11 @@ export class AuthController {
   }
 
   @Public()
-  @Refresh()
-  @Post('me')
+  @Post('restore')
+  @ApiOperation({ summary: 'Restore deleted account' })
   @ApiOkResponse({ type: AuthTokensResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  me(
-    @CurrentSessionId() sessionId: string,
-    @Body() dto: RefreshTokenDto,
-  ): Promise<AuthTokensResponseDto> {
-    return this.authService.restore(sessionId, dto.refreshToken);
+  restore(@Body() dto: LoginDto): Promise<AuthTokensResponseDto> {
+    return this.authService.restoreAccount(dto);
   }
 }

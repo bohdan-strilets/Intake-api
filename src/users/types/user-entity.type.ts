@@ -20,6 +20,5 @@ export type UserEntity = {
   goalDelta?: number | null;
   activityLevel: ActivityLevel;
 
-  isDeleted: boolean;
   deletedAt?: Date;
 };

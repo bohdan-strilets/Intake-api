@@ -44,14 +44,11 @@ export class User {
   @Prop({ enum: ActivityLevel, required: true })
   activityLevel: ActivityLevel;
 
-  @Prop({ default: false })
-  isDeleted: boolean;
-
-  @Prop()
-  deletedAt?: Date;
+  @Prop({ default: null })
+  deletedAt?: Date | null;
 }
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.index({ email: 1, isDeleted: 1 });
+UserSchema.index({ email: 1, deletedAt: 1 });

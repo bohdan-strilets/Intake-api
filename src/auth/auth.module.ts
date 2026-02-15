@@ -6,7 +6,8 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
 import { AuthController } from './auth.controller';
-import { AuthService, TokenService } from './services';
+import { AuthService } from './auth.service';
+import { TokenService } from './services';
 import { JwtRefreshStrategy, JwtStrategy } from './strategies';
 
 @Module({

@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, QueryFilter, QueryOptions, UpdateQuery } from 'mongoose';
 
 import { User, UserDocument } from './schemas';
-import { CreateUserInput, UserEntity } from './types';
+import { CreateUserInput, FindUserOptions, UserEntity } from './types';
 
 @Injectable()
 export class UsersRepository {
@@ -15,31 +15,31 @@ export class UsersRepository {
 
   async existsByEmail(email: string): Promise<boolean> {
     const normalizedEmail = normalizeEmail(email);
-    const filter: QueryFilter<UserDocument> = {
-      email: normalizedEmail,
-      isDeleted: false,
-    };
+    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
 
     const exists = await this.userModel.exists(filter).exec();
     return !!exists;
   }
 
-  async findActiveByEmail(email: string): Promise<UserEntity | null> {
+  async findByEmail(email: string, options: FindUserOptions = {}): Promise<UserEntity | null> {
     const normalizedEmail = normalizeEmail(email);
-    const filter: QueryFilter<UserDocument> = {
-      email: normalizedEmail,
-      isDeleted: false,
-    };
+
+    const filter: QueryFilter<UserDocument> = { email: normalizedEmail };
+    if (!options.includeDeleted) {
+      filter.deletedAt = null;
+    }
 
     return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
 
-  async findActiveById(userId: string): Promise<UserEntity | null> {
+  async findById(userId: string, options: FindUserOptions = {}): Promise<UserEntity | null> {
     const objectUserId = toObjectId(userId);
-    const filter: QueryFilter<UserDocument> = {
-      _id: objectUserId,
-      isDeleted: false,
-    };
+
+    const filter: QueryFilter<UserDocument> = { _id: objectUserId };
+
+    if (!options.includeDeleted) {
+      filter.deletedAt = null;
+    }
 
     return this.userModel.findOne(filter).lean<UserEntity>().exec();
   }
@@ -58,7 +58,7 @@ export class UsersRepository {
     const objectUserId = toObjectId(userId);
     const filter: QueryFilter<UserDocument> = {
       _id: objectUserId,
-      isDeleted: false,
+      deletedAt: null,
     };
 
     const options: QueryOptions = { new: true };
@@ -74,15 +74,26 @@ export class UsersRepository {
 
     const filter: QueryFilter<UserDocument> = {
       _id: objectUserId,
-      isDeleted: false,
+      deletedAt: null,
     };
 
     const now = new Date();
-    const update: UpdateQuery<UserDocument> = {
-      isDeleted: true,
-      deletedAt: now,
+    const update: UpdateQuery<UserDocument> = { $set: { deletedAt: now } };
+
+    const options: QueryOptions = { new: true };
+
+    return this.userModel.findOneAndUpdate(filter, update, options).lean<UserEntity>().exec();
+  }
+
+  async restoreById(userId: string): Promise<UserEntity | null> {
+    const objectUserId = toObjectId(userId);
+
+    const filter: QueryFilter<UserDocument> = {
+      _id: objectUserId,
+      deletedAt: { $ne: null },
     };
 
+    const update: UpdateQuery<UserDocument> = { $set: { deletedAt: null } };
     const options: QueryOptions = { new: true };
 
     return this.userModel.findOneAndUpdate(filter, update, options).lean<UserEntity>().exec();

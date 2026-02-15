@@ -8,7 +8,7 @@ import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } 
 import { EmailAlreadyExistsException, UserNotFoundException } from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { MetabolismService } from './services';
-import { CreateUserInput, UserEntity } from './types';
+import { CreateUserInput, FindUserOptions, UserEntity } from './types';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
@@ -24,19 +24,20 @@ export class UsersService {
     return this.repository.existsByEmail(email);
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
-    const user = await this.repository.findActiveByEmail(email);
+  async findUserByEmailIncludingDeleted(email: string): Promise<UserEntity | null> {
+    const options: FindUserOptions = { includeDeleted: true };
+    return this.repository.findByEmail(email, options);
+  }
+
+  async getActiveUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.repository.findByEmail(email);
     if (!user) throw new UserNotFoundException();
 
     return user;
   }
 
-  async findUserByEmail(email: string): Promise<UserEntity | null> {
-    return this.repository.findActiveByEmail(email);
-  }
-
-  async getUserById(userId: string): Promise<UserEntity> {
-    const user = await this.repository.findActiveById(userId);
+  async getActiveUserById(userId: string): Promise<UserEntity> {
+    const user = await this.repository.findById(userId);
     if (!user) throw new UserNotFoundException();
 
     return user;
@@ -50,8 +51,7 @@ export class UsersService {
   }
 
   async getMe(userId: string): Promise<UserResponseDto> {
-    const user = await this.repository.findActiveById(userId);
-    if (!user) throw new UserNotFoundException();
+    const user = await this.getActiveUserById(userId);
 
     const metabolism = this.metabolismService.calculate(user);
     return mapUserToResponseDto(user, metabolism);
@@ -69,9 +69,7 @@ export class UsersService {
 
   async updateEmail(userId: string, dto: UpdateEmailDto): Promise<UserResponseDto> {
     const normalizedEmail = normalizeEmail(dto.email);
-    const user = await this.repository.findActiveById(userId);
-
-    if (!user) throw new UserNotFoundException();
+    const user = await this.getActiveUserById(userId);
 
     if (normalizedEmail !== user.email) {
       const exists = await this.repository.existsByEmail(normalizedEmail);
@@ -88,8 +86,7 @@ export class UsersService {
   }
 
   async updatePassword(userId: string, dto: UpdatePasswordDto): Promise<void> {
-    const user = await this.repository.findActiveById(userId);
-    if (!user) throw new UserNotFoundException();
+    const user = await this.getActiveUserById(userId);
 
     const isMatches = await this.passwordService.compare(dto.currentPassword, user.passwordHash);
 
@@ -108,5 +105,9 @@ export class UsersService {
     if (!deletedUser) throw new UserNotFoundException();
 
     await this.sessionService.invalidateByUserId(userId);
+  }
+
+  async restoreUser(userId: string): Promise<UserEntity | null> {
+    return this.repository.restoreById(userId);
   }
 }
