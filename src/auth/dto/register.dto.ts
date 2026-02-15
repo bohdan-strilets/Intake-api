@@ -2,7 +2,17 @@ import { PasswordConstraints } from '@app/common/security/constraints';
 import { UserConstraints } from '@app/users/constraints';
 import { ActivityLevel, Goal, Sex } from '@app/users/enums';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsInt, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterDto {
   @ApiProperty({
@@ -48,7 +58,7 @@ export class RegisterDto {
     minimum: UserConstraints.height.min,
     maximum: UserConstraints.height.max,
   })
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(UserConstraints.height.min)
   @Max(UserConstraints.height.max)
   height: number;
@@ -58,7 +68,7 @@ export class RegisterDto {
     minimum: UserConstraints.weight.min,
     maximum: UserConstraints.weight.max,
   })
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(UserConstraints.weight.min)
   @Max(UserConstraints.weight.max)
   weight: number;

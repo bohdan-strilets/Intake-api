@@ -1,5 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 import { UserConstraints } from '../constraints';
 import { ActivityLevel, Goal, Sex } from '../enums';
@@ -31,7 +40,7 @@ export class UpdateProfileDto {
     maximum: UserConstraints.height.max,
   })
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(UserConstraints.height.min)
   @Max(UserConstraints.height.max)
   height?: number;
@@ -41,16 +50,16 @@ export class UpdateProfileDto {
     maximum: UserConstraints.weight.max,
   })
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(UserConstraints.weight.min)
   @Max(UserConstraints.weight.max)
   weight?: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 1 })
   @Min(UserConstraints.targetWeight.min)
   @Max(UserConstraints.targetWeight.max)
-  targetWeight?: number;
+  targetWeight?: number | null;
 
   @ApiPropertyOptional({ enum: Goal })
   @IsOptional()

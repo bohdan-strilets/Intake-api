@@ -25,7 +25,7 @@ export const UserConstraints = {
   },
 
   goalDelta: {
-    min: -1000,
-    max: 1000,
+    min: -600,
+    max: 600,
   },
 } as const;
