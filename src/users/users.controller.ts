@@ -1,7 +1,7 @@
 import { Auth } from '@app/auth/decorators';
 import { CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -46,7 +46,7 @@ export class UsersController {
     return this.usersService.updateProfile(userId, dto);
   }
 
-  @Patch('me/email')
+  @Put('me/email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update current user email' })
   @ApiOkResponse({ type: UserResponseDto })
@@ -60,7 +60,7 @@ export class UsersController {
     return this.usersService.updateEmail(userId, dto);
   }
 
-  @Patch('me/password')
+  @Put('me/password')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Update current user password' })
   @ApiNoContentResponse()

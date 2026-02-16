@@ -1,11 +1,15 @@
-import { InvalidCredentialsException } from '@app/common/errors/exceptions';
 import { PasswordService } from '@app/common/security';
 import { normalizeEmail } from '@app/common/utils';
 import { SessionService } from '@app/session';
 import { Injectable } from '@nestjs/common';
 
 import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
-import { EmailAlreadyExistsException, UserNotFoundException } from './errors';
+import {
+  EmailAlreadyExistsException,
+  InvalidCurrentPasswordException,
+  NewPasswordMustBeDifferentException,
+  UserNotFoundException,
+} from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { MetabolismService } from './services';
 import { CreateUserInput, FindUserOptions, UserEntity } from './types';
@@ -90,9 +94,9 @@ export class UsersService {
 
     const isMatches = await this.passwordService.compare(dto.currentPassword, user.passwordHash);
 
-    if (!isMatches) throw new InvalidCredentialsException();
+    if (!isMatches) throw new InvalidCurrentPasswordException();
 
-    if (dto.currentPassword === dto.newPassword) throw new InvalidCredentialsException();
+    if (dto.currentPassword === dto.newPassword) throw new NewPasswordMustBeDifferentException();
 
     const passwordHash = await this.passwordService.hash(dto.newPassword);
 
