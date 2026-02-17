@@ -302,7 +302,7 @@
       }
     },
     "/users/me/email": {
-      "patch": {
+      "put": {
         "operationId": "UsersController_updateEmail",
         "summary": "Update current user email",
         "parameters": [],
@@ -369,7 +369,7 @@
       }
     },
     "/users/me/password": {
-      "patch": {
+      "put": {
         "operationId": "UsersController_updatePassword",
         "summary": "Update current user password",
         "parameters": [],
@@ -733,7 +733,7 @@
         ]
       }
     },
-    "/stats/range": {
+    "/stats": {
       "get": {
         "operationId": "StatsController_getRange",
         "summary": "Get statistics for custom date range",
@@ -765,7 +765,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WeekTotalsResponseDto"
+                  "$ref": "#/components/schemas/RangeStatsResponseDto"
                 }
               }
             }
@@ -895,6 +895,8 @@
             "enum": [
               "EMAIL_ALREADY_EXISTS",
               "INVALID_CREDENTIALS",
+              "INVALID_CURRENT_PASSWORD",
+              "NEW_PASSWORD_MUST_BE_DIFFERENT",
               "UNAUTHORIZED",
               "INVALID_SESSION",
               "VALIDATION_ERROR",
@@ -1303,35 +1305,123 @@
           "text"
         ]
       },
-      "WeekTotalsResponseDto": {
+      "StatsPeriodDto": {
         "type": "object",
         "properties": {
-          "periodDays": {
+          "start": {
+            "type": "string",
+            "example": "2026-05-13"
+          },
+          "end": {
+            "type": "string",
+            "example": "2026-05-20"
+          },
+          "totalDays": {
             "type": "number",
-            "example": 7,
-            "description": "Number of days in selected period"
+            "example": 7
           },
-          "totals": {
-            "description": "Total values for the period",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DayTotalsDto"
-              }
-            ]
-          },
-          "averages": {
-            "description": "Average daily values for the period",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DayTotalsDto"
-              }
-            ]
+          "loggedDays": {
+            "type": "number",
+            "example": 6
           }
         },
         "required": [
-          "periodDays",
-          "totals",
-          "averages"
+          "start",
+          "end",
+          "totalDays",
+          "loggedDays"
+        ]
+      },
+      "StatsCaloriesDto": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "number",
+            "example": 1982
+          },
+          "goal": {
+            "type": "number",
+            "example": 2100
+          },
+          "delta": {
+            "type": "number",
+            "example": -118
+          }
+        },
+        "required": [
+          "average",
+          "goal",
+          "delta"
+        ]
+      },
+      "StatsMacroItemDto": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "number",
+            "example": 132
+          },
+          "target": {
+            "type": "number",
+            "example": 150
+          }
+        },
+        "required": [
+          "average",
+          "target"
+        ]
+      },
+      "StatsMacrosDto": {
+        "type": "object",
+        "properties": {
+          "protein": {
+            "$ref": "#/components/schemas/StatsMacroItemDto"
+          },
+          "fat": {
+            "$ref": "#/components/schemas/StatsMacroItemDto"
+          },
+          "carbs": {
+            "$ref": "#/components/schemas/StatsMacroItemDto"
+          }
+        },
+        "required": [
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
+      "StatsWeightDto": {
+        "type": "object",
+        "properties": {
+          "delta": {
+            "type": "number",
+            "example": -0.8
+          }
+        },
+        "required": [
+          "delta"
+        ]
+      },
+      "RangeStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/StatsPeriodDto"
+          },
+          "calories": {
+            "$ref": "#/components/schemas/StatsCaloriesDto"
+          },
+          "macros": {
+            "$ref": "#/components/schemas/StatsMacrosDto"
+          },
+          "weight": {
+            "$ref": "#/components/schemas/StatsWeightDto"
+          }
+        },
+        "required": [
+          "period",
+          "calories",
+          "macros"
         ]
       }
     }

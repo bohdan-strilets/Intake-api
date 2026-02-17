@@ -24,7 +24,7 @@ export class DayDetailsService {
 
     const food = await this.foodService.getFoodByDayId(day._id.toString());
 
-    const metabolism = this.metabolismService.calculate(user);
+    const metabolism = this.metabolismService.calculateMetabolism(user);
     const targetCalories = metabolism.recommendedCalories;
 
     return mapDayDetailsToResponse(day, food, targetCalories);
