@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
+import {
+  BMR_COEFFICIENTS,
+  DEFAULT_GOAL_DELTAS,
+  DEFAULT_MACRO_POLICY,
+  MACRO_CALORIES,
+} from '../constants';
 import { ActivityLevel, Goal, Sex } from '../enums';
 import { MetabolismResult, UserEntity } from '../types';
 
 @Injectable()
 export class MetabolismService {
-  calculate(user: UserEntity): MetabolismResult {
+  calculateMetabolism(user: UserEntity): MetabolismResult {
     const bmr = this.calculateBmr(user);
     const tdee = this.calculateTdee(bmr, user.activityLevel);
     const recommended = this.applyGoal(tdee, user.goal, user.goalDelta);
@@ -17,14 +23,31 @@ export class MetabolismService {
     };
   }
 
+  calculateDailyTargets(user: UserEntity) {
+    const metabolism = this.calculateMetabolism(user);
+    const calories = metabolism.recommendedCalories;
+
+    const protein = Math.round(user.weight * DEFAULT_MACRO_POLICY.proteinPerKg);
+
+    const fat = Math.round((calories * DEFAULT_MACRO_POLICY.fatRatio) / MACRO_CALORIES.fat);
+
+    const carbs = Math.round(
+      (calories - protein * MACRO_CALORIES.protein - fat * MACRO_CALORIES.fat) /
+        MACRO_CALORIES.carbs,
+    );
+
+    return { calories, protein, fat, carbs };
+  }
+
+  // Private methods
+
   private calculateBmr(user: UserEntity): number {
     const { weight, height, age, sex } = user;
+    const { weight: w, height: h, age: a, maleOffset, femaleOffset } = BMR_COEFFICIENTS;
 
-    if (sex === Sex.Male) {
-      return 10 * weight + 6.25 * height - 5 * age + 5;
-    }
+    const base = w * weight + h * height - a * age;
 
-    return 10 * weight + 6.25 * height - 5 * age - 161;
+    return sex === Sex.Male ? base + maleOffset : base + femaleOffset;
   }
 
   private calculateTdee(bmr: number, activityLevel: ActivityLevel): number {
@@ -36,16 +59,6 @@ export class MetabolismService {
       return tdee + goalDelta;
     }
 
-    switch (goal) {
-      case Goal.Lose:
-        return tdee - 500;
-
-      case Goal.Gain:
-        return tdee + 300;
-
-      case Goal.Maintain:
-      default:
-        return tdee;
-    }
+    return tdee + DEFAULT_GOAL_DELTAS[goal];
   }
 }

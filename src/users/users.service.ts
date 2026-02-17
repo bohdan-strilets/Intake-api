@@ -57,7 +57,7 @@ export class UsersService {
   async getMe(userId: string): Promise<UserResponseDto> {
     const user = await this.getActiveUserById(userId);
 
-    const metabolism = this.metabolismService.calculate(user);
+    const metabolism = this.metabolismService.calculateMetabolism(user);
     return mapUserToResponseDto(user, metabolism);
   }
 
@@ -67,7 +67,7 @@ export class UsersService {
     const updatedUser = await this.repository.updateActive(userId, payload);
     if (!updatedUser) throw new UserNotFoundException();
 
-    const metabolism = this.metabolismService.calculate(updatedUser);
+    const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
     return mapUserToResponseDto(updatedUser, metabolism);
   }
 
@@ -85,7 +85,7 @@ export class UsersService {
 
     if (!updatedUser) throw new UserNotFoundException();
 
-    const metabolism = this.metabolismService.calculate(updatedUser);
+    const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
     return mapUserToResponseDto(updatedUser, metabolism);
   }
 
@@ -113,5 +113,10 @@ export class UsersService {
 
   async restoreUser(userId: string): Promise<UserEntity | null> {
     return this.repository.restoreById(userId);
+  }
+
+  async getDailyTargets(userId: string) {
+    const user = await this.getActiveUserById(userId);
+    return this.metabolismService.calculateDailyTargets(user);
   }
 }

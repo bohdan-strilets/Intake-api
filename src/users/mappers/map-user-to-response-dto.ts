@@ -1,3 +1,4 @@
+import { normalizeCalories } from '@app/common/lib/number';
 import { mapObjectId } from '@app/common/utils';
 
 import { UserResponseDto } from '../dto';
@@ -20,6 +21,9 @@ export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): 
     goalDelta: user.goalDelta,
     activityLevel: user.activityLevel,
 
-    metabolism,
+    metabolism: {
+      bmr: normalizeCalories(metabolism.bmr),
+      recommendedCalories: normalizeCalories(metabolism.recommendedCalories),
+    },
   };
 };
