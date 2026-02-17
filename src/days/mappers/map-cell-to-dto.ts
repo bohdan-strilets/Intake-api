@@ -1,7 +1,12 @@
+import { MetabolismResult } from '@app/users/types';
+
 import { CalendarCellDto } from '../dto';
 import { DayCellDetails } from '../types';
 
-export const mapCellToDto = (day: DayCellDetails): CalendarCellDto => {
+export const mapCellToDto = (
+  day: DayCellDetails,
+  metabolism: MetabolismResult,
+): CalendarCellDto => {
   return {
     date: day.date,
     totals: {
@@ -10,5 +15,6 @@ export const mapCellToDto = (day: DayCellDetails): CalendarCellDto => {
       fat: day.totalFat,
       carbs: day.totalCarbs,
     },
+    targetCalories: metabolism.recommendedCalories,
   };
 };

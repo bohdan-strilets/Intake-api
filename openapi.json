@@ -1181,11 +1181,16 @@
           },
           "totals": {
             "$ref": "#/components/schemas/DayTotalsDto"
+          },
+          "targetCalories": {
+            "type": "number",
+            "example": 2000
           }
         },
         "required": [
           "date",
-          "totals"
+          "totals",
+          "targetCalories"
         ]
       },
       "DayResponseDto": {

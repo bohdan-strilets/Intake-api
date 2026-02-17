@@ -8,4 +8,7 @@ export class CalendarCellDto {
 
   @ApiProperty({ type: DayTotalsDto })
   totals: DayTotalsDto;
+
+  @ApiProperty({ example: 2000 })
+  targetCalories: number;
 }

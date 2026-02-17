@@ -1,3 +1,4 @@
+import { UsersModule } from '@app/users';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -7,7 +8,7 @@ import { DaysService } from './days.service';
 import { Day, DaySchema } from './schemas/day.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Day.name, schema: DaySchema }])],
+  imports: [MongooseModule.forFeature([{ name: Day.name, schema: DaySchema }]), UsersModule],
   controllers: [DaysController],
   providers: [DaysService, DaysRepository],
   exports: [DaysService],
