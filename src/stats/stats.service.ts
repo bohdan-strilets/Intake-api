@@ -2,14 +2,44 @@ import { msToDays } from '@app/common/lib/date';
 import { DaysService } from '@app/days';
 import { DayTotalsDto } from '@app/days/dto';
 import { DateRange, DayCellDetails } from '@app/days/types';
+import { UsersService } from '@app/users';
 import { Injectable } from '@nestjs/common';
 
-import { EMPTY_STATS, EMPTY_TOTALS } from './constants';
-import { WeekTotalsResponseDto } from './dto';
+import { EMPTY_TOTALS } from './constants';
+import { RangeStatsResponseDto } from './dto';
+import { mapToRangeStatsDto } from './mappers';
 
 @Injectable()
 export class StatsService {
-  constructor(private readonly daysService: DaysService) {}
+  constructor(
+    private readonly daysService: DaysService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async getRangeStats(userId: string, range: DateRange): Promise<RangeStatsResponseDto> {
+    const days = await this.daysService.getDateRange(userId, range);
+
+    const totalDays = this.getDaysInRange(range);
+    const loggedDays = this.countLoggedDays(days);
+
+    const totals = this.calculateTotals(days);
+    const averages = this.calculateAverages(totals, totalDays);
+
+    const targets = await this.usersService.getDailyTargets(userId);
+
+    const weightDelta = this.calculateWeightDelta(days);
+
+    return mapToRangeStatsDto({
+      range,
+      totalDays,
+      loggedDays,
+      averages,
+      targets,
+      weightDelta,
+    });
+  }
+
+  // Helper methods
 
   private calculateTotals(days: DayCellDetails[]): DayTotalsDto {
     return days.reduce(
@@ -48,18 +78,21 @@ export class StatsService {
     return diffDays + 1;
   }
 
-  async getRangeStats(userId: string, range: DateRange): Promise<WeekTotalsResponseDto> {
-    const days = await this.daysService.getDateRange(userId, range);
-    if (days.length === 0) return EMPTY_STATS;
+  private countLoggedDays(days: DayCellDetails[]): number {
+    return days.filter(
+      (day) =>
+        day.totalCalories > 0 || day.totalProtein > 0 || day.totalFat > 0 || day.totalCarbs > 0,
+    ).length;
+  }
 
-    const totals = this.calculateTotals(days);
-    const periodDays = this.getDaysInRange(range);
-    const averages = this.calculateAverages(totals, periodDays);
+  private calculateWeightDelta(days: DayCellDetails[]): number | null {
+    const withWeight = days.filter((day) => day.weight !== undefined);
 
-    return {
-      periodDays,
-      totals,
-      averages,
-    };
+    if (withWeight.length < 2) return null;
+
+    const first = withWeight[0].weight;
+    const last = withWeight[withWeight.length - 1].weight;
+
+    return Number((last - first).toFixed(1));
   }
 }

@@ -10,7 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { GetRangeStatsDto, WeekTotalsResponseDto } from './dto';
+import { GetRangeStatsDto, RangeStatsResponseDto } from './dto';
 import { StatsService } from './stats.service';
 
 @Auth()
@@ -20,15 +20,15 @@ import { StatsService } from './stats.service';
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
-  @Get('range')
+  @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get statistics for custom date range' })
-  @ApiOkResponse({ type: WeekTotalsResponseDto })
+  @ApiOkResponse({ type: RangeStatsResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   getRange(
     @CurrentUserId() userId: string,
     @Query() dto: GetRangeStatsDto,
-  ): Promise<WeekTotalsResponseDto> {
+  ): Promise<RangeStatsResponseDto> {
     return this.statsService.getRangeStats(userId, dto);
   }
 }
