@@ -1,9 +1,8 @@
 import { UsersService } from '@app/users';
-import { MetabolismService } from '@app/users/services';
 import { Injectable } from '@nestjs/common';
 
 import { DaysRepository } from './days.repository';
-import { CalendarCellDto, DayTotalsDto } from './dto';
+import { DayTotalsDto, MonthDetailsResponseDto } from './dto';
 import { mapCellToDto } from './mappers';
 import { DateRange, DayCellDetails, DayEntity } from './types';
 
@@ -11,7 +10,6 @@ import { DateRange, DayCellDetails, DayEntity } from './types';
 export class DaysService {
   constructor(
     private readonly repository: DaysRepository,
-    private readonly metabolismService: MetabolismService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -19,15 +17,19 @@ export class DaysService {
     return this.repository.getDateRange(userId, range);
   }
 
-  async getCalendar(userId: string, month: string): Promise<CalendarCellDto[]> {
+  async getCalendar(userId: string, month: string): Promise<MonthDetailsResponseDto> {
     const start = `${month}-01`;
     const end = `${month}-31`;
 
-    const user = await this.usersService.getActiveUserById(userId);
-    const metabolism = this.metabolismService.calculateMetabolism(user);
-
     const days = await this.repository.getDateRange(userId, { start, end });
-    return days.map((day) => mapCellToDto(day, metabolism));
+    const monthCells = days.map((day) => mapCellToDto(day));
+
+    const userDailyTargets = await this.usersService.getDailyTargets(userId);
+
+    return {
+      days: monthCells,
+      targetCalories: userDailyTargets.calories,
+    };
   }
 
   async getOrCreateByDate(userId: string, date: string): Promise<DayEntity> {

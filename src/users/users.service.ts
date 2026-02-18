@@ -12,7 +12,7 @@ import {
 } from './errors';
 import { mapUserToResponseDto } from './mappers';
 import { MetabolismService } from './services';
-import { CreateUserInput, FindUserOptions, UserEntity } from './types';
+import { CreateUserInput, DailyTargets, FindUserOptions, UserEntity } from './types';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
@@ -115,7 +115,7 @@ export class UsersService {
     return this.repository.restoreById(userId);
   }
 
-  async getDailyTargets(userId: string) {
+  async getDailyTargets(userId: string): Promise<DailyTargets> {
     const user = await this.getActiveUserById(userId);
     return this.metabolismService.calculateDailyTargets(user);
   }

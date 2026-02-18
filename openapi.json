@@ -480,10 +480,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalendarCellDto"
-                  }
+                  "$ref": "#/components/schemas/MonthDetailsResponseDto"
                 }
               }
             }
@@ -1181,6 +1178,21 @@
           },
           "totals": {
             "$ref": "#/components/schemas/DayTotalsDto"
+          }
+        },
+        "required": [
+          "date",
+          "totals"
+        ]
+      },
+      "MonthDetailsResponseDto": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CalendarCellDto"
+            }
           },
           "targetCalories": {
             "type": "number",
@@ -1188,8 +1200,7 @@
           }
         },
         "required": [
-          "date",
-          "totals",
+          "days",
           "targetCalories"
         ]
       },

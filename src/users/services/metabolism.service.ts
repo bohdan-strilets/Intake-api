@@ -7,7 +7,7 @@ import {
   MACRO_CALORIES,
 } from '../constants';
 import { ActivityLevel, Goal, Sex } from '../enums';
-import { MetabolismResult, UserEntity } from '../types';
+import { DailyTargets, MetabolismResult, UserEntity } from '../types';
 
 @Injectable()
 export class MetabolismService {
@@ -23,7 +23,7 @@ export class MetabolismService {
     };
   }
 
-  calculateDailyTargets(user: UserEntity) {
+  calculateDailyTargets(user: UserEntity): DailyTargets {
     const metabolism = this.calculateMetabolism(user);
     const calories = metabolism.recommendedCalories;
 
