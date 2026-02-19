@@ -1,5 +1,5 @@
 import { AiService } from '@app/ai';
-import { normalizeDate } from '@app/common/lib/date';
+import { validateDateFormat } from '@app/common/lib/date';
 import { normalizeCalories, normalizeMacro, normalizeWeight } from '@app/common/lib/number';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
@@ -32,7 +32,7 @@ export class FoodService {
   }
 
   async addFood(userId: string, dto: AddFoodDto): Promise<void> {
-    const date = normalizeDate(dto.date);
+    const date = validateDateFormat(dto.date);
 
     const day = await this.daysService.getOrCreateByDate(userId, date);
     const userObjectId = toObjectId(userId);
