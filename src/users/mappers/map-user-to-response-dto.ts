@@ -1,8 +1,10 @@
+import { formatDateUTC } from '@app/common/lib/date';
 import { normalizeCalories } from '@app/common/lib/number';
 import { mapObjectId } from '@app/common/utils';
 
 import { UserResponseDto } from '../dto';
 import { Metabolism, UserEntity } from '../types';
+import { calculateAge } from '../utils';
 
 export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): UserResponseDto => {
   return {
@@ -11,7 +13,8 @@ export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): 
     email: user.email,
 
     sex: user.sex,
-    age: user.age,
+    dateOfBirth: formatDateUTC(user.dateOfBirth),
+    age: calculateAge(user.dateOfBirth),
 
     height: user.height,
     weight: user.weight,

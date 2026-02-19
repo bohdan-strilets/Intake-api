@@ -16,6 +16,9 @@ export class UserResponseDto {
   @ApiProperty({ enum: Sex, example: Sex.Male })
   sex: Sex;
 
+  @ApiProperty({ example: '1990-01-01' })
+  dateOfBirth: string;
+
   @ApiProperty({ example: 30 })
   age: number;
 

@@ -833,11 +833,10 @@
             ],
             "example": "male"
           },
-          "age": {
-            "type": "number",
-            "example": 30,
-            "minimum": 10,
-            "maximum": 100
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string",
+            "example": "1990-01-01"
           },
           "height": {
             "type": "number",
@@ -877,7 +876,7 @@
           "email",
           "password",
           "sex",
-          "age",
+          "dateOfBirth",
           "height",
           "weight",
           "goal",
@@ -997,6 +996,10 @@
             ],
             "example": "male"
           },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "1990-01-01"
+          },
           "age": {
             "type": "number",
             "example": 30
@@ -1046,6 +1049,7 @@
           "email",
           "name",
           "sex",
+          "dateOfBirth",
           "age",
           "height",
           "weight",
@@ -1070,10 +1074,10 @@
               "female"
             ]
           },
-          "age": {
-            "type": "number",
-            "minimum": 10,
-            "maximum": 100
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string",
+            "example": "1990-01-01"
           },
           "height": {
             "type": "number",

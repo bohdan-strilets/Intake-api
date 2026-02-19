@@ -1,13 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Max,
+  MaxDate,
   MaxLength,
   Min,
+  MinDate,
 } from 'class-validator';
 
 import { UserConstraints } from '../constraints';
@@ -25,15 +29,13 @@ export class UpdateProfileDto {
   @IsEnum(Sex)
   sex?: Sex;
 
-  @ApiPropertyOptional({
-    minimum: UserConstraints.age.min,
-    maximum: UserConstraints.age.max,
-  })
+  @ApiPropertyOptional({ example: '1990-01-01' })
   @IsOptional()
-  @IsInt()
-  @Min(UserConstraints.age.min)
-  @Max(UserConstraints.age.max)
-  age?: number;
+  @Type(() => Date)
+  @IsDate()
+  @MaxDate(UserConstraints.dateOfBirth.maxDate)
+  @MinDate(UserConstraints.dateOfBirth.minDate)
+  dateOfBirth?: Date;
 
   @ApiPropertyOptional({
     minimum: UserConstraints.height.min,

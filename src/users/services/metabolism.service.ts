@@ -8,6 +8,7 @@ import {
 } from '../constants';
 import { ActivityLevel, Goal, Sex } from '../enums';
 import { DailyTargets, MetabolismResult, UserEntity } from '../types';
+import { calculateAge } from '../utils';
 
 @Injectable()
 export class MetabolismService {
@@ -42,7 +43,9 @@ export class MetabolismService {
   // Private methods
 
   private calculateBmr(user: UserEntity): number {
-    const { weight, height, age, sex } = user;
+    const { weight, height, dateOfBirth, sex } = user;
+    const age = calculateAge(dateOfBirth);
+
     const { weight: w, height: h, age: a, maleOffset, femaleOffset } = BMR_COEFFICIENTS;
 
     const base = w * weight + h * height - a * age;

@@ -6,7 +6,7 @@ export type CreateUserInput = {
   passwordHash: string;
 
   sex: Sex;
-  age: number;
+  dateOfBirth: Date;
   height: number;
   weight: number;
 

@@ -1,12 +1,14 @@
+const today = new Date();
+
 export const UserConstraints = {
   name: {
     minLength: 2,
     maxLength: 100,
   },
 
-  age: {
-    min: 10,
-    max: 100,
+  dateOfBirth: {
+    maxDate: today,
+    minDate: new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()),
   },
 
   height: {

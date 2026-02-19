@@ -49,7 +49,11 @@ export class UsersService {
 
   async createUser(input: CreateUserInput): Promise<UserEntity> {
     const normalizedEmail = normalizeEmail(input.email);
-    const payload = { ...input, email: normalizedEmail };
+
+    const payload = {
+      ...input,
+      email: normalizedEmail,
+    };
 
     return this.repository.create(payload);
   }

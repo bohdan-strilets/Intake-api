@@ -23,8 +23,8 @@ export class User {
   @Prop({ enum: Sex, required: true })
   sex: Sex;
 
-  @Prop({ required: true, min: 1 })
-  age: number;
+  @Prop({ required: true })
+  dateOfBirth?: Date;
 
   @Prop({ required: true, min: 1 })
   height: number;

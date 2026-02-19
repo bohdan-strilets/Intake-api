@@ -10,7 +10,7 @@ export type UserEntity = {
   passwordHash: string;
 
   sex: Sex;
-  age: number;
+  dateOfBirth: Date;
 
   height: number;
   weight: number;

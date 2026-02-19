@@ -6,7 +6,7 @@ export type RegisterInput = {
   password: string;
 
   sex: Sex;
-  age: number;
+  dateOfBirth: Date;
   height: number;
   weight: number;
 

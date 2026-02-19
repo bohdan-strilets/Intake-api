@@ -2,15 +2,18 @@ import { PasswordConstraints } from '@app/common/security/constraints';
 import { UserConstraints } from '@app/users/constraints';
 import { ActivityLevel, Goal, Sex } from '@app/users/enums';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsEmail,
   IsEnum,
-  IsInt,
   IsNumber,
   IsString,
   Max,
+  MaxDate,
   MaxLength,
   Min,
+  MinDate,
   MinLength,
 } from 'class-validator';
 
@@ -43,15 +46,12 @@ export class RegisterDto {
   @IsEnum(Sex)
   sex: Sex;
 
-  @ApiProperty({
-    example: 30,
-    minimum: UserConstraints.age.min,
-    maximum: UserConstraints.age.max,
-  })
-  @IsInt()
-  @Min(UserConstraints.age.min)
-  @Max(UserConstraints.age.max)
-  age: number;
+  @ApiProperty({ example: '1990-01-01' })
+  @Type(() => Date)
+  @IsDate()
+  @MaxDate(UserConstraints.dateOfBirth.maxDate)
+  @MinDate(UserConstraints.dateOfBirth.minDate)
+  dateOfBirth: Date;
 
   @ApiProperty({
     example: 175,
