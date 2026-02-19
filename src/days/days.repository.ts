@@ -1,4 +1,4 @@
-import { normalizeDate } from '@app/common/lib/date';
+import { validateDateFormat } from '@app/common/lib/date';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -34,7 +34,7 @@ export class DaysRepository {
 
   async getByDate(userId: string, date: string): Promise<DayEntity | null> {
     const userObjectId = toObjectId(userId);
-    const normalizedDate = normalizeDate(date);
+    const normalizedDate = validateDateFormat(date);
 
     const filter: QueryFilter<DayDocument> = {
       userId: userObjectId,
@@ -45,7 +45,7 @@ export class DaysRepository {
   }
 
   async create(userId: string, date: string): Promise<DayEntity> {
-    const normalizedDate = normalizeDate(date);
+    const normalizedDate = validateDateFormat(date);
     const userObjectId = toObjectId(userId);
 
     const input = {
