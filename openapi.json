@@ -67,7 +67,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthTokensResponseDto"
+                  "$ref": "#/components/schemas/LoginResponseDto"
                 }
               }
             }
@@ -438,6 +438,63 @@
             }
           },
           "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/me/settings": {
+      "patch": {
+        "operationId": "UsersController_updateSettings",
+        "summary": "Update user settings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
             "description": "",
             "content": {
               "application/json": {
@@ -945,17 +1002,6 @@
           "refreshToken"
         ]
       },
-      "RefreshTokenDto": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "refreshToken"
-        ]
-      },
       "MetabolismDto": {
         "type": "object",
         "properties": {
@@ -971,6 +1017,33 @@
         "required": [
           "bmr",
           "recommendedCalories"
+        ]
+      },
+      "UserSettingsDto": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ],
+            "example": "light"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "pl",
+              "uk"
+            ],
+            "example": "en"
+          }
+        },
+        "required": [
+          "theme",
+          "language"
         ]
       },
       "UserResponseDto": {
@@ -1042,6 +1115,9 @@
           },
           "metabolism": {
             "$ref": "#/components/schemas/MetabolismDto"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/UserSettingsDto"
           }
         },
         "required": [
@@ -1057,7 +1133,34 @@
           "goal",
           "goalDelta",
           "activityLevel",
-          "metabolism"
+          "metabolism",
+          "settings"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "tokens": {
+            "$ref": "#/components/schemas/AuthTokensResponseDto"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponseDto"
+          }
+        },
+        "required": [
+          "tokens",
+          "user"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refreshToken"
         ]
       },
       "UpdateProfileDto": {
@@ -1140,6 +1243,33 @@
         "required": [
           "currentPassword",
           "newPassword"
+        ]
+      },
+      "UpdateUserSettingsDto": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ],
+            "example": "light"
+          },
+          "theme": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark",
+              "system"
+            ],
+            "example": "light"
+          }
+        },
+        "required": [
+          "language",
+          "theme"
         ]
       },
       "DayTotalsDto": {

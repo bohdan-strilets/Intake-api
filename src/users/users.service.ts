@@ -3,7 +3,13 @@ import { normalizeEmail } from '@app/common/utils';
 import { SessionService } from '@app/session';
 import { Injectable } from '@nestjs/common';
 
-import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
+import {
+  UpdateEmailDto,
+  UpdatePasswordDto,
+  UpdateProfileDto,
+  UpdateUserSettingsDto,
+  UserResponseDto,
+} from './dto';
 import {
   EmailAlreadyExistsException,
   InvalidCurrentPasswordException,
@@ -122,5 +128,23 @@ export class UsersService {
   async getDailyTargets(userId: string): Promise<DailyTargets> {
     const user = await this.getActiveUserById(userId);
     return this.metabolismService.calculateDailyTargets(user);
+  }
+
+  async updateSettings(userId: string, dto: UpdateUserSettingsDto): Promise<UserResponseDto> {
+    const update: Record<string, unknown> = {};
+
+    if (dto.language) {
+      update['settings.language'] = dto.language;
+    }
+    if (dto.theme) {
+      update['settings.theme'] = dto.theme;
+    }
+
+    const updatedUser = await this.repository.updateActive(userId, update);
+
+    if (!updatedUser) throw new UserNotFoundException();
+
+    const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
+    return mapUserToResponseDto(updatedUser, metabolism);
   }
 }

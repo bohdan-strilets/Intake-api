@@ -28,5 +28,7 @@ export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): 
       bmr: normalizeCalories(metabolism.bmr),
       recommendedCalories: normalizeCalories(metabolism.recommendedCalories),
     },
+
+    settings: user.settings,
   };
 };

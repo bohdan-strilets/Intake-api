@@ -5,11 +5,13 @@ import { SessionService } from '@app/session';
 import { CreateSessionInput, SessionEntity, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
 import { AccountDeletedException, EmailAlreadyExistsException } from '@app/users/errors';
+import { mapUserToResponseDto } from '@app/users/mappers';
+import { MetabolismService } from '@app/users/services';
 import { CreateUserInput, UserEntity } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { AuthTokensResponseDto, LoginDto } from './dto';
+import { AuthTokensResponseDto, LoginDto, LoginResponseDto } from './dto';
 import { mapUserToAccessPayload, mapUserToRefreshPayload } from './mappers';
 import { TokenService } from './services/token.service';
 import { RegisterInput } from './types';
@@ -24,6 +26,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly sessionService: SessionService,
     private readonly passwordService: PasswordService,
+    private readonly metabolismService: MetabolismService,
     readonly config: ConfigService,
   ) {
     this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
@@ -40,7 +43,7 @@ export class AuthService {
     await this.usersService.createUser(createUserInput);
   }
 
-  async login(dto: LoginDto): Promise<AuthTokensResponseDto> {
+  async login(dto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = dto;
 
     const user = await this.validateUserByEmail(email);
@@ -51,7 +54,12 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.issueTokens(user);
 
-    return { accessToken, refreshToken };
+    const tokens = { accessToken, refreshToken };
+
+    const metabolism = this.metabolismService.calculateMetabolism(user);
+    const userResponse = mapUserToResponseDto(user, metabolism);
+
+    return { tokens, user: userResponse };
   }
 
   async refresh(sessionId: string, refreshToken: string): Promise<AuthTokensResponseDto> {

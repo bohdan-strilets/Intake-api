@@ -14,7 +14,13 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UpdateEmailDto, UpdatePasswordDto, UpdateProfileDto, UserResponseDto } from './dto';
+import {
+  UpdateEmailDto,
+  UpdatePasswordDto,
+  UpdateProfileDto,
+  UpdateUserSettingsDto,
+  UserResponseDto,
+} from './dto';
 import { UsersService } from './users.service';
 
 @Auth()
@@ -78,5 +84,18 @@ export class UsersController {
   @ApiNotFoundResponse({ type: ErrorResponseDto })
   deleteUser(@CurrentUserId() userId: string): Promise<void> {
     return this.usersService.deleteUser(userId);
+  }
+
+  @Patch('me/settings')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update user settings' })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  updateSettings(
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateUserSettingsDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateSettings(userId, dto);
   }
 }

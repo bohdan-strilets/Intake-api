@@ -14,7 +14,13 @@ import {
 
 import { AuthService } from './auth.service';
 import { Public, Refresh } from './decorators';
-import { AuthTokensResponseDto, LoginDto, RefreshTokenDto, RegisterDto } from './dto';
+import {
+  AuthTokensResponseDto,
+  LoginDto,
+  LoginResponseDto,
+  RefreshTokenDto,
+  RegisterDto,
+} from './dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -38,9 +44,9 @@ export class AuthController {
   @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
-  @ApiOkResponse({ type: AuthTokensResponseDto })
+  @ApiOkResponse({ type: LoginResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  async login(@Body() dto: LoginDto): Promise<AuthTokensResponseDto> {
+  async login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(dto);
   }
 

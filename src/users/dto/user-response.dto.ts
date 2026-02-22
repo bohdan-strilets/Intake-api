@@ -2,6 +2,7 @@ import { ActivityLevel, Goal, Sex } from '@app/users/enums';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { MetabolismDto } from './metabolism.dto';
+import { UserSettingsDto } from './user-settings.dto';
 
 export class UserResponseDto {
   @ApiProperty({ example: '65f0c1b2a3e4f56789012345' })
@@ -42,4 +43,7 @@ export class UserResponseDto {
 
   @ApiProperty({ type: MetabolismDto })
   metabolism: MetabolismDto;
+
+  @ApiProperty({ type: UserSettingsDto })
+  settings: UserSettingsDto;
 }

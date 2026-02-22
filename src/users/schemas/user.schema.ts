@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { ActivityLevel, Goal, Sex } from '../enums';
+import { UserSettings } from './user-settings.schema';
 
 @Schema({ timestamps: true, versionKey: false })
 export class User {
@@ -46,6 +47,9 @@ export class User {
 
   @Prop({ default: null })
   deletedAt?: Date | null;
+
+  @Prop({ type: UserSettings, default: {} })
+  settings: UserSettings;
 }
 
 export type UserDocument = User & Document;
