@@ -563,6 +563,65 @@
         ]
       }
     },
+    "/days/{dayId}/weight": {
+      "patch": {
+        "operationId": "DaysController_updateWeight",
+        "summary": "Update weight for a specific day",
+        "parameters": [
+          {
+            "name": "dayId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWeightDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Days"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/day-details/{date}": {
       "get": {
         "operationId": "DayDetailsController_getDayDetails",
@@ -958,6 +1017,7 @@
               "FOOD_NOT_FOUND",
               "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",
+              "DAY_NOT_FOUND",
               "SERVER_ERROR"
             ],
             "example": "VALIDATION_ERROR",
@@ -1337,6 +1397,17 @@
           "days",
           "targetCalories"
         ]
+      },
+      "UpdateWeightDto": {
+        "type": "object",
+        "properties": {
+          "weight": {
+            "type": "number",
+            "example": 82.5,
+            "minimum": 30,
+            "maximum": 300
+          }
+        }
       },
       "DayResponseDto": {
         "type": "object",

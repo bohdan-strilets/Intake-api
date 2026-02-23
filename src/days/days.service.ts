@@ -2,7 +2,8 @@ import { UsersService } from '@app/users';
 import { Injectable } from '@nestjs/common';
 
 import { DaysRepository } from './days.repository';
-import { DayTotalsDto, MonthDetailsResponseDto } from './dto';
+import { DayTotalsDto, MonthDetailsResponseDto, UpdateWeightDto } from './dto';
+import { DayNotFoundException } from './errors';
 import { mapCellToDto } from './mappers';
 import { DateRange, DayCellDetails, DayEntity } from './types';
 
@@ -45,5 +46,10 @@ export class DaysService {
 
   async updateTotals(dayId: string, totals: DayTotalsDto) {
     await this.repository.updateTotals(dayId, totals);
+  }
+
+  async updateWeight(userId: string, dayId: string, dto: UpdateWeightDto): Promise<void> {
+    const updated = await this.repository.update(userId, dayId, dto);
+    if (!updated) throw new DayNotFoundException();
   }
 }

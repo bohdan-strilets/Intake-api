@@ -2,7 +2,7 @@ import { validateDateFormat } from '@app/common/lib/date';
 import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, QueryFilter, UpdateQuery } from 'mongoose';
+import { Model, QueryFilter, QueryOptions, UpdateQuery } from 'mongoose';
 
 import { DayTotalsDto } from './dto';
 import { DaySelectFields } from './projections';
@@ -44,6 +44,14 @@ export class DaysRepository {
     return await this.dayModel.findOne(filter).lean<DayEntity>().exec();
   }
 
+  async getById(dayId: string): Promise<DayEntity | null> {
+    const dayObjectId = toObjectId(dayId);
+
+    const filter: QueryFilter<DayDocument> = { _id: dayObjectId };
+
+    return await this.dayModel.findOne(filter).lean<DayEntity>().exec();
+  }
+
   async create(userId: string, date: string): Promise<DayEntity> {
     const normalizedDate = validateDateFormat(date);
     const userObjectId = toObjectId(userId);
@@ -61,6 +69,27 @@ export class DaysRepository {
     await doc.save();
 
     return doc.toObject() as DayEntity;
+  }
+
+  async update(
+    userId: string,
+    dayId: string,
+    update: UpdateQuery<DayDocument>,
+  ): Promise<DayEntity | null> {
+    const dayObjectId = toObjectId(dayId);
+    const userObjectId = toObjectId(userId);
+
+    const filter: QueryFilter<DayDocument> = {
+      _id: dayObjectId,
+      userId: userObjectId,
+    };
+
+    const options: QueryOptions = { new: true };
+
+    return this.dayModel
+      .findOneAndUpdate(filter, { $set: update }, options)
+      .lean<DayEntity>()
+      .exec();
   }
 
   async updateTotals(dayId: string, totals: DayTotalsDto): Promise<void> {
