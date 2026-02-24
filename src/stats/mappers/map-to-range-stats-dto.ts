@@ -3,8 +3,8 @@ import { normalizeCalories, normalizeMacro, normalizeWeight } from '@app/common/
 import { RangeStatsResponseDto } from '../dto';
 import { BuildStatsInput } from '../types';
 
-export function mapToRangeStatsDto(input: BuildStatsInput): RangeStatsResponseDto {
-  const { range, totalDays, loggedDays, averages, targets, weightDelta } = input;
+export const mapToRangeStatsDto = (input: BuildStatsInput): RangeStatsResponseDto => {
+  const { range, totalDays, loggedDays, averages, targets, weightDelta, dailyStats } = input;
 
   return {
     period: {
@@ -15,6 +15,7 @@ export function mapToRangeStatsDto(input: BuildStatsInput): RangeStatsResponseDt
     },
 
     calories: {
+      tdee: normalizeCalories(targets.tdee),
       average: normalizeCalories(averages.calories),
       goal: normalizeCalories(targets.calories),
       delta: normalizeCalories(averages.calories - targets.calories),
@@ -36,5 +37,14 @@ export function mapToRangeStatsDto(input: BuildStatsInput): RangeStatsResponseDt
     },
 
     weight: weightDelta !== null ? { delta: normalizeWeight(weightDelta) } : undefined,
+
+    days: dailyStats.map((day) => ({
+      date: day.date,
+      calories: normalizeCalories(day.calories),
+      protein: normalizeMacro(day.protein),
+      fat: normalizeMacro(day.fat),
+      carbs: normalizeMacro(day.carbs),
+      weight: day.weight !== undefined ? normalizeWeight(day.weight) : undefined,
+    })),
   };
-}
+};

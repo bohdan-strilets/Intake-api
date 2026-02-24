@@ -27,6 +27,7 @@ export class MetabolismService {
   calculateDailyTargets(user: UserEntity): DailyTargets {
     const metabolism = this.calculateMetabolism(user);
     const calories = metabolism.recommendedCalories;
+    const tdee = metabolism.tdee;
 
     const protein = Math.round(user.weight * DEFAULT_MACRO_POLICY.proteinPerKg);
 
@@ -37,7 +38,7 @@ export class MetabolismService {
         MACRO_CALORIES.carbs,
     );
 
-    return { calories, protein, fat, carbs };
+    return { tdee, calories, protein, fat, carbs };
   }
 
   // Private methods

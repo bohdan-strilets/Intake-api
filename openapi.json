@@ -1556,6 +1556,10 @@
       "StatsCaloriesDto": {
         "type": "object",
         "properties": {
+          "tdee": {
+            "type": "number",
+            "example": 2200
+          },
           "average": {
             "type": "number",
             "example": 1982
@@ -1570,6 +1574,7 @@
           }
         },
         "required": [
+          "tdee",
           "average",
           "goal",
           "delta"
@@ -1611,6 +1616,42 @@
           "carbs"
         ]
       },
+      "DailyStatsItemDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-05-13"
+          },
+          "calories": {
+            "type": "number",
+            "example": 1980
+          },
+          "protein": {
+            "type": "number",
+            "example": 130
+          },
+          "fat": {
+            "type": "number",
+            "example": 70
+          },
+          "carbs": {
+            "type": "number",
+            "example": 220
+          },
+          "weight": {
+            "type": "number",
+            "example": 81.4
+          }
+        },
+        "required": [
+          "date",
+          "calories",
+          "protein",
+          "fat",
+          "carbs"
+        ]
+      },
       "StatsWeightDto": {
         "type": "object",
         "properties": {
@@ -1635,6 +1676,12 @@
           "macros": {
             "$ref": "#/components/schemas/StatsMacrosDto"
           },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DailyStatsItemDto"
+            }
+          },
           "weight": {
             "$ref": "#/components/schemas/StatsWeightDto"
           }
@@ -1642,7 +1689,8 @@
         "required": [
           "period",
           "calories",
-          "macros"
+          "macros",
+          "days"
         ]
       }
     }

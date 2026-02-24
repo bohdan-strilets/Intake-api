@@ -6,7 +6,7 @@ import { UsersService } from '@app/users';
 import { Injectable } from '@nestjs/common';
 
 import { EMPTY_TOTALS } from './constants';
-import { RangeStatsResponseDto } from './dto';
+import { DailyStatsItemDto, RangeStatsResponseDto } from './dto';
 import { mapToRangeStatsDto } from './mappers';
 
 @Injectable()
@@ -27,6 +27,8 @@ export class StatsService {
 
     const targets = await this.usersService.getDailyTargets(userId);
 
+    const dailyStats = this.buildDailyStats(days, range);
+
     const weightDelta = this.calculateWeightDelta(days);
 
     return mapToRangeStatsDto({
@@ -36,6 +38,7 @@ export class StatsService {
       averages,
       targets,
       weightDelta,
+      dailyStats,
     });
   }
 
@@ -94,5 +97,38 @@ export class StatsService {
     const last = withWeight[withWeight.length - 1].weight;
 
     return Number((last - first).toFixed(1));
+  }
+
+  private buildDailyStats(days: DayCellDetails[], range: DateRange): DailyStatsItemDto[] {
+    const start = new Date(range.start);
+    const end = new Date(range.end);
+
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(0, 0, 0, 0);
+
+    const daysMap = new Map(days.map((d) => [d.date, d]));
+
+    const result: DailyStatsItemDto[] = [];
+
+    const current = new Date(start);
+
+    while (current <= end) {
+      const dateStr = current.toISOString().split('T')[0];
+
+      const day = daysMap.get(dateStr);
+
+      result.push({
+        date: dateStr,
+        calories: day?.totalCalories ?? 0,
+        protein: day?.totalProtein ?? 0,
+        fat: day?.totalFat ?? 0,
+        carbs: day?.totalCarbs ?? 0,
+        weight: day?.weight,
+      });
+
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+
+    return result;
   }
 }
