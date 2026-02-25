@@ -41,7 +41,7 @@ export class FoodRepository {
     const dayObjectId = toObjectId(dayId);
     const filter: QueryFilter<FoodDocument> = { dayId: dayObjectId };
 
-    return this.foodModel.find(filter).sort({ createdAt: 1 }).lean<FoodEntity[]>().exec();
+    return this.foodModel.find(filter).sort({ createdAt: -1 }).lean<FoodEntity[]>().exec();
   }
 
   async findById(foodId: string, userId: string): Promise<FoodEntity | null> {
