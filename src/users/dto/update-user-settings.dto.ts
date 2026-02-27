@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsOptional } from 'class-validator';
 
 import { Language, Theme } from '../enums';
 
@@ -18,4 +18,9 @@ export class UpdateUserSettingsDto {
   @IsOptional()
   @IsBoolean()
   sound?: boolean;
+
+  @ApiPropertyOptional({ example: 25 })
+  @IsOptional()
+  @IsNumber()
+  volume?: number;
 }

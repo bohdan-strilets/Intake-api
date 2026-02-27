@@ -11,4 +11,7 @@ export class UserSettingsDto {
 
   @ApiProperty({ example: true })
   sound: boolean;
+
+  @ApiProperty({ example: 25 })
+  volume: number;
 }

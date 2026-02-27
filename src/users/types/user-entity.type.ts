@@ -26,5 +26,6 @@ export type UserEntity = {
     theme: Theme;
     language: Language;
     sound: boolean;
+    volume: number;
   };
 };

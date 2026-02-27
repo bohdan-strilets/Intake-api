@@ -1103,12 +1103,17 @@
           "sound": {
             "type": "boolean",
             "example": true
+          },
+          "volume": {
+            "type": "number",
+            "example": 25
           }
         },
         "required": [
           "theme",
           "language",
-          "sound"
+          "sound",
+          "volume"
         ]
       },
       "UserResponseDto": {
@@ -1334,6 +1339,10 @@
           "sound": {
             "type": "boolean",
             "example": true
+          },
+          "volume": {
+            "type": "number",
+            "example": 25
           }
         }
       },

@@ -136,13 +136,14 @@ export class UsersService {
     if (dto.language !== undefined) {
       update['settings.language'] = dto.language;
     }
-
     if (dto.theme !== undefined) {
       update['settings.theme'] = dto.theme;
     }
-
     if (dto.sound !== undefined) {
       update['settings.sound'] = dto.sound;
+    }
+    if (dto.volume !== undefined) {
+      update['settings.volume'] = dto.volume;
     }
 
     const updatedUser = await this.repository.updateActive(userId, update);

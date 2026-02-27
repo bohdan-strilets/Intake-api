@@ -12,4 +12,7 @@ export class UserSettings {
 
   @Prop({ default: true })
   sound: boolean;
+
+  @Prop({ default: 25 })
+  volume: number;
 }
