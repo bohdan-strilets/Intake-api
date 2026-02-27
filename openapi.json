@@ -1099,11 +1099,16 @@
               "uk"
             ],
             "example": "en"
+          },
+          "sound": {
+            "type": "boolean",
+            "example": true
           }
         },
         "required": [
           "theme",
-          "language"
+          "language",
+          "sound"
         ]
       },
       "UserResponseDto": {
@@ -1325,12 +1330,12 @@
               "system"
             ],
             "example": "light"
+          },
+          "sound": {
+            "type": "boolean",
+            "example": true
           }
-        },
-        "required": [
-          "language",
-          "theme"
-        ]
+        }
       },
       "DayTotalsDto": {
         "type": "object",

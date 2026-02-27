@@ -8,4 +8,7 @@ export class UserSettingsDto {
 
   @ApiProperty({ enum: Language, example: Language.EN })
   language: Language;
+
+  @ApiProperty({ example: true })
+  sound: boolean;
 }

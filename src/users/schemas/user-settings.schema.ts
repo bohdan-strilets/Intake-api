@@ -9,4 +9,7 @@ export class UserSettings {
 
   @Prop({ enum: Theme, default: Theme.SYSTEM })
   theme: Theme;
+
+  @Prop({ default: true })
+  sound: boolean;
 }

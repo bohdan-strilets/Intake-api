@@ -133,11 +133,16 @@ export class UsersService {
   async updateSettings(userId: string, dto: UpdateUserSettingsDto): Promise<UserResponseDto> {
     const update: Record<string, unknown> = {};
 
-    if (dto.language) {
+    if (dto.language !== undefined) {
       update['settings.language'] = dto.language;
     }
-    if (dto.theme) {
+
+    if (dto.theme !== undefined) {
       update['settings.theme'] = dto.theme;
+    }
+
+    if (dto.sound !== undefined) {
+      update['settings.sound'] = dto.sound;
     }
 
     const updatedUser = await this.repository.updateActive(userId, update);

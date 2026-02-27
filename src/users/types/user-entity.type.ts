@@ -25,5 +25,6 @@ export type UserEntity = {
   settings: {
     theme: Theme;
     language: Language;
+    sound: boolean;
   };
 };
