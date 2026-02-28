@@ -1,4 +1,5 @@
 import { msToDays } from '@app/common/lib/date';
+import { round } from '@app/common/lib/number';
 import { toObjectId } from '@app/common/utils';
 import { Day, DayDocument } from '@app/days/schemas';
 import { Goal } from '@app/users/enums';
@@ -42,9 +43,9 @@ export class GoalProgressService {
 
     if (goal === Goal.Maintain) {
       return {
-        startWeight,
-        currentWeight,
-        targetWeight,
+        startWeight: round(startWeight, 0),
+        currentWeight: round(currentWeight, 0),
+        targetWeight: round(targetWeight, 0),
         progressPercent: 1,
         kgPerWeek: null,
         estimatedWeeks: null,
@@ -66,12 +67,12 @@ export class GoalProgressService {
     );
 
     return {
-      startWeight,
-      currentWeight,
-      targetWeight,
-      progressPercent,
-      kgPerWeek,
-      estimatedWeeks,
+      startWeight: round(startWeight, 0),
+      currentWeight: round(currentWeight, 0),
+      targetWeight: round(targetWeight, 0),
+      progressPercent: round(progressPercent, 1),
+      kgPerWeek: kgPerWeek != null ? round(kgPerWeek, 1) : null,
+      estimatedWeeks: estimatedWeeks != null ? round(estimatedWeeks, 1) : null,
     };
   }
 

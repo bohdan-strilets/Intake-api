@@ -207,6 +207,43 @@
         ]
       }
     },
+    "/users/goal-progress": {
+      "get": {
+        "operationId": "UsersController_getGoalProgress",
+        "summary": "Get goal progress (weight, progress %, rate, ETA)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalProgressDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/users/me": {
       "get": {
         "operationId": "UsersController_getMe",
@@ -1232,6 +1269,41 @@
         "required": [
           "refreshToken"
         ]
+      },
+      "GoalProgressDto": {
+        "type": "object",
+        "properties": {
+          "startWeight": {
+            "type": "number",
+            "example": 80,
+            "nullable": true
+          },
+          "currentWeight": {
+            "type": "number",
+            "example": 78,
+            "nullable": true
+          },
+          "targetWeight": {
+            "type": "number",
+            "example": 70,
+            "nullable": true
+          },
+          "progressPercent": {
+            "type": "number",
+            "example": 0.2,
+            "nullable": true
+          },
+          "kgPerWeek": {
+            "type": "number",
+            "example": -0.5,
+            "nullable": true
+          },
+          "estimatedWeeks": {
+            "type": "number",
+            "example": 16,
+            "nullable": true
+          }
+        }
       },
       "UpdateProfileDto": {
         "type": "object",
