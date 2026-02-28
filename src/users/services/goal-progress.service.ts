@@ -72,7 +72,7 @@ export class GoalProgressService {
       targetWeight: round(targetWeight, 0),
       progressPercent: round(progressPercent, 1),
       kgPerWeek: kgPerWeek != null ? round(kgPerWeek, 1) : null,
-      estimatedWeeks: estimatedWeeks != null ? round(estimatedWeeks, 1) : null,
+      estimatedWeeks: estimatedWeeks != null ? Math.ceil(estimatedWeeks) : null,
     };
   }
 
