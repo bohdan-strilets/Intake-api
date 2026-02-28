@@ -27,7 +27,8 @@ export class GoalProgressService {
     }
 
     const startWeight = user.weight;
-    const targetWeight = user.targetWeight ?? user.weight;
+    const targetWeight =
+      user.targetWeight != null ? user.targetWeight : null;
     const goal = user.goal;
 
     const objectUserId = toObjectId(userId);
@@ -45,32 +46,38 @@ export class GoalProgressService {
       return {
         startWeight: round(startWeight, 0),
         currentWeight: round(currentWeight, 0),
-        targetWeight: round(targetWeight, 0),
+        targetWeight: targetWeight != null ? round(targetWeight, 0) : null,
         progressPercent: 1,
         kgPerWeek: null,
         estimatedWeeks: null,
       };
     }
 
-    const progressPercent = this.calculateProgressPercent(
-      goal,
-      startWeight,
-      currentWeight,
-      targetWeight,
-    );
-    const kgPerWeek = this.calculateKgPerWeek(last14Days);
-    const estimatedWeeks = this.calculateEstimatedWeeks(
-      currentWeight,
-      targetWeight,
-      kgPerWeek,
-      goal,
-    );
+    let kgPerWeek: number | null = null;
+    let progressPercent: number | null = null;
+    let estimatedWeeks: number | null = null;
+    if (targetWeight != null) {
+      kgPerWeek = this.calculateKgPerWeek(last14Days);
+      progressPercent = this.calculateProgressPercent(
+        goal,
+        startWeight,
+        currentWeight,
+        targetWeight,
+      );
+      estimatedWeeks = this.calculateEstimatedWeeks(
+        currentWeight,
+        targetWeight,
+        kgPerWeek,
+        goal,
+      );
+    }
 
     return {
       startWeight: round(startWeight, 0),
       currentWeight: round(currentWeight, 0),
-      targetWeight: round(targetWeight, 0),
-      progressPercent: round(progressPercent, 0),
+      targetWeight: targetWeight != null ? round(targetWeight, 0) : null,
+      progressPercent:
+        progressPercent != null ? round(progressPercent, 0) : null,
       kgPerWeek: kgPerWeek != null ? round(kgPerWeek, 1) : null,
       estimatedWeeks: estimatedWeeks != null ? Math.ceil(estimatedWeeks) : null,
     };
