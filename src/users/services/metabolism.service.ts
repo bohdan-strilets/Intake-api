@@ -59,10 +59,8 @@ export class MetabolismService {
   }
 
   private applyGoal(tdee: number, goal: Goal, goalDelta?: number | null): number {
-    if (typeof goalDelta === 'number') {
-      return tdee + goalDelta;
-    }
-
-    return tdee + DEFAULT_GOAL_DELTAS[goal];
+    const baseDelta = DEFAULT_GOAL_DELTAS[goal];
+    const extraDelta = typeof goalDelta === 'number' ? goalDelta : 0;
+    return tdee + baseDelta + extraDelta;
   }
 }
