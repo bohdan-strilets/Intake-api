@@ -12,4 +12,7 @@ export type CreateUserInput = {
 
   goal: Goal;
   activityLevel: ActivityLevel;
+
+  targetWeight?: number | null;
+  goalDelta?: number | null;
 };

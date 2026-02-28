@@ -12,4 +12,7 @@ export type RegisterInput = {
 
   goal: Goal;
   activityLevel: ActivityLevel;
+
+  targetWeight?: number | null;
+  goalDelta?: number | null;
 };

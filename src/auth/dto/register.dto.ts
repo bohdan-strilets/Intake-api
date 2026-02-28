@@ -1,13 +1,15 @@
 import { PasswordConstraints } from '@app/common/security/constraints';
 import { UserConstraints } from '@app/users/constraints';
 import { ActivityLevel, Goal, Sex } from '@app/users/enums';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
   IsEnum,
+  IsInt,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   MaxDate,
@@ -80,4 +82,24 @@ export class RegisterDto {
   @ApiProperty({ enum: ActivityLevel, example: ActivityLevel.MODERATE })
   @IsEnum(ActivityLevel)
   activityLevel: ActivityLevel;
+
+  @ApiPropertyOptional({
+    minimum: UserConstraints.targetWeight.min,
+    maximum: UserConstraints.targetWeight.max,
+  })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(UserConstraints.targetWeight.min)
+  @Max(UserConstraints.targetWeight.max)
+  targetWeight?: number | null;
+
+  @ApiPropertyOptional({
+    minimum: UserConstraints.goalDelta.min,
+    maximum: UserConstraints.goalDelta.max,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(UserConstraints.goalDelta.min)
+  @Max(UserConstraints.goalDelta.max)
+  goalDelta?: number | null;
 }
