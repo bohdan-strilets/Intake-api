@@ -1,3 +1,4 @@
+export { GoalProgressDto } from './goal-progress.dto';
 export { MetabolismDto } from './metabolism.dto';
 export { UpdateEmailDto } from './update-email.dto';
 export { UpdatePasswordDto } from './update-password.dto';

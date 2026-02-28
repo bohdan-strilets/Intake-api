@@ -15,12 +15,14 @@ import {
 } from '@nestjs/swagger';
 
 import {
+  GoalProgressDto,
   UpdateEmailDto,
   UpdatePasswordDto,
   UpdateProfileDto,
   UpdateUserSettingsDto,
   UserResponseDto,
 } from './dto';
+import { GoalProgressService } from './services';
 import { UsersService } from './users.service';
 
 @Auth()
@@ -28,7 +30,19 @@ import { UsersService } from './users.service';
 @ApiBearerAuth('access-token')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly goalProgressService: GoalProgressService,
+  ) {}
+
+  @Get('goal-progress')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get goal progress (weight, progress %, rate, ETA)' })
+  @ApiOkResponse({ type: GoalProgressDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  getGoalProgress(@CurrentUserId() userId: string): Promise<GoalProgressDto> {
+    return this.goalProgressService.getGoalProgress(userId);
+  }
 
   @Get('me')
   @HttpCode(HttpStatus.OK)

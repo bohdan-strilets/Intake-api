@@ -1,22 +1,26 @@
 import { PasswordModule } from '@app/common/security';
+import { Day, DaySchema } from '@app/days/schemas';
 import { SessionModule } from '@app/session';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { User, UserSchema } from './schemas';
-import { MetabolismService } from './services';
+import { GoalProgressService, MetabolismService } from './services';
 import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Day.name, schema: DaySchema },
+    ]),
     SessionModule,
     PasswordModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, MetabolismService, UsersRepository],
+  providers: [UsersService, MetabolismService, GoalProgressService, UsersRepository],
   exports: [UsersService, MetabolismService],
 })
 export class UsersModule {}
