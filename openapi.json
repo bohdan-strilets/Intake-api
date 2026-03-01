@@ -18,7 +18,14 @@
         },
         "responses": {
           "201": {
-            "description": "User registered successfully"
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
           },
           "400": {
             "description": "",
@@ -67,7 +74,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginResponseDto"
+                  "$ref": "#/components/schemas/AuthResponseDto"
                 }
               }
             }
@@ -1022,6 +1029,16 @@
               1.9
             ],
             "example": 1.55
+          },
+          "targetWeight": {
+            "type": "number",
+            "minimum": 30,
+            "maximum": 300
+          },
+          "goalDelta": {
+            "type": "number",
+            "minimum": -600,
+            "maximum": 600
           }
         },
         "required": [
@@ -1034,54 +1051,6 @@
           "weight",
           "goal",
           "activityLevel"
-        ]
-      },
-      "ErrorResponseDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": [
-              "EMAIL_ALREADY_EXISTS",
-              "INVALID_CREDENTIALS",
-              "INVALID_CURRENT_PASSWORD",
-              "NEW_PASSWORD_MUST_BE_DIFFERENT",
-              "UNAUTHORIZED",
-              "INVALID_SESSION",
-              "VALIDATION_ERROR",
-              "USER_NOT_FOUND",
-              "ACCOUNT_DELETED",
-              "FOOD_NOT_FOUND",
-              "FOOD_BAD_REQUEST",
-              "AI_PARSE_FAILED",
-              "DAY_NOT_FOUND",
-              "SERVER_ERROR"
-            ],
-            "example": "VALIDATION_ERROR",
-            "description": "Machine-readable error code"
-          }
-        },
-        "required": [
-          "code"
-        ]
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "user@email.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "P@ssw0rd!",
-            "minLength": 8,
-            "maxLength": 80
-          }
-        },
-        "required": [
-          "email",
-          "password"
         ]
       },
       "AuthTokensResponseDto": {
@@ -1244,7 +1213,7 @@
           "settings"
         ]
       },
-      "LoginResponseDto": {
+      "AuthResponseDto": {
         "type": "object",
         "properties": {
           "tokens": {
@@ -1257,6 +1226,54 @@
         "required": [
           "tokens",
           "user"
+        ]
+      },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "EMAIL_ALREADY_EXISTS",
+              "INVALID_CREDENTIALS",
+              "INVALID_CURRENT_PASSWORD",
+              "NEW_PASSWORD_MUST_BE_DIFFERENT",
+              "UNAUTHORIZED",
+              "INVALID_SESSION",
+              "VALIDATION_ERROR",
+              "USER_NOT_FOUND",
+              "ACCOUNT_DELETED",
+              "FOOD_NOT_FOUND",
+              "FOOD_BAD_REQUEST",
+              "AI_PARSE_FAILED",
+              "DAY_NOT_FOUND",
+              "SERVER_ERROR"
+            ],
+            "example": "VALIDATION_ERROR",
+            "description": "Machine-readable error code"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "P@ssw0rd!",
+            "minLength": 8,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "email",
+          "password"
         ]
       },
       "RefreshTokenDto": {
