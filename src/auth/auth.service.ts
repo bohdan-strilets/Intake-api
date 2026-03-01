@@ -11,7 +11,7 @@ import { CreateUserInput, UserEntity } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { AuthTokensResponseDto, LoginDto, LoginResponseDto } from './dto';
+import { AuthResponseDto, AuthTokensResponseDto, LoginDto } from './dto';
 import { mapUserToAccessPayload, mapUserToRefreshPayload } from './mappers';
 import { TokenService } from './services/token.service';
 import { RegisterInput } from './types';
@@ -32,7 +32,7 @@ export class AuthService {
     this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
   }
 
-  async register(input: RegisterInput): Promise<void> {
+  async register(input: RegisterInput): Promise<AuthResponseDto> {
     const existingUser = await this.usersService.userExistsByEmail(input.email);
     if (existingUser) throw new EmailAlreadyExistsException();
 
@@ -40,10 +40,20 @@ export class AuthService {
     const passwordHash = await this.passwordService.hash(password);
 
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
-    await this.usersService.createUser(createUserInput);
+    const user = await this.usersService.createUser(createUserInput);
+
+    const { accessToken, refreshToken } = await this.issueTokens(user);
+
+    const metabolism = this.metabolismService.calculateMetabolism(user);
+    const userResponse = mapUserToResponseDto(user, metabolism);
+
+    return {
+      tokens: { accessToken, refreshToken },
+      user: userResponse,
+    };
   }
 
-  async login(dto: LoginDto): Promise<LoginResponseDto> {
+  async login(dto: LoginDto): Promise<AuthResponseDto> {
     const { email, password } = dto;
 
     const user = await this.validateUserByEmail(email);

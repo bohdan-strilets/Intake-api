@@ -15,9 +15,9 @@ import {
 import { AuthService } from './auth.service';
 import { Public, Refresh } from './decorators';
 import {
+  AuthResponseDto,
   AuthTokensResponseDto,
   LoginDto,
-  LoginResponseDto,
   RefreshTokenDto,
   RegisterDto,
 } from './dto';
@@ -32,10 +32,10 @@ export class AuthController {
   @AuthRateLimit()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register user' })
-  @ApiCreatedResponse({ description: 'User registered successfully' })
+  @ApiCreatedResponse({ description: 'User registered successfully', type: AuthResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiConflictResponse({ type: ErrorResponseDto })
-  async register(@Body() dto: RegisterDto): Promise<void> {
+  async register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(dto);
   }
 
@@ -44,9 +44,9 @@ export class AuthController {
   @AuthRateLimit()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
-  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiOkResponse({ type: AuthResponseDto })
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
-  async login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
+  async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(dto);
   }
 
