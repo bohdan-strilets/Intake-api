@@ -28,4 +28,15 @@ export type UserEntity = {
     sound: boolean;
     volume: number;
   };
+
+  passwordResetToken?: {
+    tokenHash: string;
+    expiresAt: Date;
+    used: boolean;
+  } | null;
+
+  emailVerificationToken?: {
+    tokenHash: string;
+    expiresAt: Date;
+  } | null;
 };

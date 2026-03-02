@@ -99,6 +99,36 @@ export class UsersService {
     return mapUserToResponseDto(updatedUser, metabolism);
   }
 
+  async setPasswordFromReset(userId: string, newPassword: string): Promise<void> {
+    const passwordHash = await this.passwordService.hash(newPassword);
+    await this.repository.updatePasswordAndClearResetToken(userId, passwordHash);
+    await this.sessionService.invalidateByUserId(userId);
+  }
+
+  async setPasswordResetToken(userId: string, tokenHash: string, expiresAt: Date): Promise<void> {
+    await this.repository.setPasswordResetToken(userId, tokenHash, expiresAt);
+  }
+
+  async findUserByValidPasswordResetToken(tokenHash: string): Promise<UserEntity | null> {
+    return this.repository.findActiveUserByPasswordResetTokenHash(tokenHash);
+  }
+
+  async setEmailVerificationToken(
+    userId: string,
+    tokenHash: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await this.repository.setEmailVerificationToken(userId, tokenHash, expiresAt);
+  }
+
+  async findUserByValidEmailVerificationToken(tokenHash: string): Promise<UserEntity | null> {
+    return this.repository.findActiveUserByEmailVerificationTokenHash(tokenHash);
+  }
+
+  async clearEmailVerificationToken(userId: string): Promise<void> {
+    await this.repository.clearEmailVerificationToken(userId);
+  }
+
   async updatePassword(userId: string, dto: UpdatePasswordDto): Promise<void> {
     const user = await this.getActiveUserById(userId);
 

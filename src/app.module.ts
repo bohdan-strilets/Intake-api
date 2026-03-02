@@ -10,12 +10,14 @@ import { PasswordModule } from './common/security';
 import { DayDetailsModule } from './day-details';
 import { DaysModule } from './days';
 import { FoodModule } from './food';
+import { MailModule } from './mail';
 import { StatsModule } from './stats';
 import { UsersModule } from './users';
 
 @Module({
   imports: [
     EnvModule,
+    MailModule,
     RateLimitModule,
     DatabaseModule,
     GlobalJwtModule,

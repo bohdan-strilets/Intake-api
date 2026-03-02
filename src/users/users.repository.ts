@@ -98,4 +98,57 @@ export class UsersRepository {
 
     return this.userModel.findOneAndUpdate(filter, update, options).lean<UserEntity>().exec();
   }
+
+  async setPasswordResetToken(userId: string, tokenHash: string, expiresAt: Date): Promise<void> {
+    await this.updateActive(userId, {
+      passwordResetToken: { tokenHash, expiresAt, used: false },
+    });
+  }
+
+  async findActiveUserByPasswordResetTokenHash(tokenHash: string): Promise<UserEntity | null> {
+    const now = new Date();
+    const filter: QueryFilter<UserDocument> = {
+      'passwordResetToken.tokenHash': tokenHash,
+      'passwordResetToken.used': false,
+      'passwordResetToken.expiresAt': { $gt: now },
+      deletedAt: null,
+    };
+
+    return this.userModel.findOne(filter).lean<UserEntity>().exec();
+  }
+
+  async updatePasswordAndClearResetToken(
+    userId: string,
+    passwordHash: string,
+  ): Promise<UserEntity | null> {
+    return this.updateActive(userId, {
+      passwordHash,
+      passwordResetToken: null,
+    });
+  }
+
+  async setEmailVerificationToken(
+    userId: string,
+    tokenHash: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    await this.updateActive(userId, {
+      emailVerificationToken: { tokenHash, expiresAt },
+    });
+  }
+
+  async findActiveUserByEmailVerificationTokenHash(tokenHash: string): Promise<UserEntity | null> {
+    const now = new Date();
+    const filter: QueryFilter<UserDocument> = {
+      'emailVerificationToken.tokenHash': tokenHash,
+      'emailVerificationToken.expiresAt': { $gt: now },
+      deletedAt: null,
+    };
+
+    return this.userModel.findOne(filter).lean<UserEntity>().exec();
+  }
+
+  async clearEmailVerificationToken(userId: string): Promise<UserEntity | null> {
+    return this.updateActive(userId, { emailVerificationToken: null });
+  }
 }

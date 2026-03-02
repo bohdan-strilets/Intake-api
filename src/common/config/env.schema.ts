@@ -19,6 +19,13 @@ export const envSchema = z.object({
 
   OPENAI_API_KEY: z.string().min(1),
 
+  RESEND_API_KEY: z.string().min(1),
+  MAIL_FROM: z.string(),
+  APP_URL: z.string().url(),
+
+  PASSWORD_RESET_EXPIRES_MINUTES: z.coerce.number().default(60),
+  EMAIL_VERIFICATION_EXPIRES_HOURS: z.coerce.number().default(24),
+
   RATE_LIMIT_GLOBAL_TTL: z.coerce.number().default(60),
   RATE_LIMIT_GLOBAL_LIMIT: z.coerce.number().default(100),
   RATE_LIMIT_AUTH_TTL: z.coerce.number().default(60),

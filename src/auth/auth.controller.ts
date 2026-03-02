@@ -20,6 +20,9 @@ import {
   LoginDto,
   RefreshTokenDto,
   RegisterDto,
+  RequestPasswordResetDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
 } from './dto';
 
 @ApiTags('Auth')
@@ -83,5 +86,40 @@ export class AuthController {
   @ApiUnauthorizedResponse({ type: ErrorResponseDto })
   restore(@Body() dto: LoginDto): Promise<AuthTokensResponseDto> {
     return this.authService.restoreAccount(dto);
+  }
+
+  @Public()
+  @Post('verify-email')
+  @AuthRateLimit()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify email with token from registration' })
+  @ApiOkResponse({ description: 'Email verified successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async verifyEmail(@Body() dto: VerifyEmailDto): Promise<{ message: string }> {
+    await this.authService.verifyEmail(dto.token);
+    return { message: 'Email verified successfully' };
+  }
+
+  @Public()
+  @Post('password-reset/request')
+  @AuthRateLimit()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset email' })
+  @ApiOkResponse({ description: 'If email exists, reset link will be sent' })
+  async requestPasswordReset(@Body() dto: RequestPasswordResetDto): Promise<{ message: string }> {
+    await this.authService.requestPasswordReset(dto.email);
+    return { message: 'If the email exists, a reset link has been sent' };
+  }
+
+  @Public()
+  @Post('password-reset/confirm')
+  @AuthRateLimit()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password with token' })
+  @ApiOkResponse({ description: 'Password has been reset' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    await this.authService.resetPassword(dto.token, dto.newPassword);
+    return { message: 'Password has been reset successfully' };
   }
 }

@@ -214,6 +214,101 @@
         ]
       }
     },
+    "/auth/verify-email": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "summary": "Verify email with token from registration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully"
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/password-reset/request": {
+      "post": {
+        "operationId": "AuthController_requestPasswordReset",
+        "summary": "Request password reset email",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPasswordResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "If email exists, reset link will be sent"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/password-reset/confirm": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "summary": "Reset password with token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password has been reset"
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/users/goal-progress": {
       "get": {
         "operationId": "UsersController_getGoalProgress",
@@ -1243,6 +1338,8 @@
               "VALIDATION_ERROR",
               "USER_NOT_FOUND",
               "ACCOUNT_DELETED",
+              "INVALID_RESET_TOKEN",
+              "INVALID_VERIFICATION_TOKEN",
               "FOOD_NOT_FOUND",
               "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",
@@ -1285,6 +1382,49 @@
         },
         "required": [
           "refreshToken"
+        ]
+      },
+      "VerifyEmailDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Email verification token from registration email"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "RequestPasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset token from email"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "P@ssw0rd!",
+            "minLength": 8,
+            "maxLength": 80
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
         ]
       },
       "GoalProgressDto": {

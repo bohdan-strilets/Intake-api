@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { ActivityLevel, Goal, Sex } from '../enums';
+import { EmailVerificationToken } from './email-verification-token.schema';
+import { PasswordResetToken } from './password-reset-token.schema';
 import { UserSettings } from './user-settings.schema';
 
 @Schema({ timestamps: true, versionKey: false })
@@ -50,9 +52,17 @@ export class User {
 
   @Prop({ type: UserSettings, default: {} })
   settings: UserSettings;
+
+  @Prop({ type: PasswordResetToken, default: null })
+  passwordResetToken?: PasswordResetToken | null;
+
+  @Prop({ type: EmailVerificationToken, default: null })
+  emailVerificationToken?: EmailVerificationToken | null;
 }
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.index({ email: 1, deletedAt: 1 });
+UserSchema.index({ 'passwordResetToken.tokenHash': 1 });
+UserSchema.index({ 'emailVerificationToken.tokenHash': 1 });

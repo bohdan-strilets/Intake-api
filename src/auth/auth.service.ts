@@ -1,6 +1,12 @@
 import { CryptoService } from '@app/common/crypto';
-import { InvalidCredentialsException, UnauthorizedException } from '@app/common/errors/exceptions';
+import {
+  InvalidCredentialsException,
+  InvalidResetTokenException,
+  InvalidVerificationTokenException,
+  UnauthorizedException,
+} from '@app/common/errors/exceptions';
 import { PasswordService } from '@app/common/security';
+import { MailService } from '@app/mail';
 import { SessionService } from '@app/session';
 import { CreateSessionInput, SessionEntity, UpdateSessionInput } from '@app/session/types';
 import { UsersService } from '@app/users';
@@ -10,6 +16,7 @@ import { MetabolismService } from '@app/users/services';
 import { CreateUserInput, UserEntity } from '@app/users/types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
 
 import { AuthResponseDto, AuthTokensResponseDto, LoginDto } from './dto';
 import { mapUserToAccessPayload, mapUserToRefreshPayload } from './mappers';
@@ -27,6 +34,7 @@ export class AuthService {
     private readonly sessionService: SessionService,
     private readonly passwordService: PasswordService,
     private readonly metabolismService: MetabolismService,
+    private readonly mailService: MailService,
     readonly config: ConfigService,
   ) {
     this.sessionExpiresDays = Number(this.config.getOrThrow<number>('SESSION_EXPIRES_DAYS'));
@@ -42,6 +50,15 @@ export class AuthService {
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
 
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresHours = Number(this.config.getOrThrow<number>('EMAIL_VERIFICATION_EXPIRES_HOURS'));
+    const expiresAt = new Date(Date.now() + expiresHours * 60 * 60 * 1000);
+
+    await this.usersService.setEmailVerificationToken(user._id.toString(), tokenHash, expiresAt);
+
+    await this.mailService.sendVerificationEmail(user.email, rawToken);
+
     const { accessToken, refreshToken } = await this.issueTokens(user);
 
     const metabolism = this.metabolismService.calculateMetabolism(user);
@@ -51,6 +68,17 @@ export class AuthService {
       tokens: { accessToken, refreshToken },
       user: userResponse,
     };
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.usersService.findUserByValidEmailVerificationToken(tokenHash);
+    if (!user) {
+      throw new InvalidVerificationTokenException();
+    }
+
+    await this.usersService.clearEmailVerificationToken(user._id.toString());
   }
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {
@@ -104,6 +132,32 @@ export class AuthService {
 
   async logout(sessionId: string): Promise<void> {
     await this.sessionService.invalidateById(sessionId);
+  }
+
+  async requestPasswordReset(email: string): Promise<void> {
+    const user = await this.usersService.findUserByEmailIncludingDeleted(email);
+    if (!user || user.deletedAt) return;
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    const expiresMinutes = Number(this.config.getOrThrow<number>('PASSWORD_RESET_EXPIRES_MINUTES'));
+    const expiresAt = new Date(Date.now() + expiresMinutes * 60 * 1000);
+
+    await this.usersService.setPasswordResetToken(user._id.toString(), tokenHash, expiresAt);
+
+    await this.mailService.sendResetPasswordEmail(user.email, rawToken);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.usersService.findUserByValidPasswordResetToken(tokenHash);
+    if (!user) {
+      throw new InvalidResetTokenException();
+    }
+
+    await this.usersService.setPasswordFromReset(user._id.toString(), newPassword);
   }
 
   async restoreAccount(dto: LoginDto): Promise<AuthTokensResponseDto> {
