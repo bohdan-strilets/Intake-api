@@ -3,7 +3,7 @@ import { normalizeCalories, normalizeMacro, normalizeWeight } from '@app/common/
 import { CreateFoodInput, CreateFoodMapperParams } from '../types';
 import { calculatePer100g, normalizeIcon } from '../utils';
 
-export const mapToCreateFoodInput = (params: CreateFoodMapperParams): CreateFoodInput => {
+export const mapCreateFoodParamsToInput = (params: CreateFoodMapperParams): CreateFoodInput => {
   const per100g = calculatePer100g(params.food);
 
   return {

@@ -1,3 +1,4 @@
+import { getLastDayOfMonth } from '@app/common/lib/date';
 import { UsersService } from '@app/users';
 import { Injectable } from '@nestjs/common';
 
@@ -20,7 +21,7 @@ export class DaysService {
 
   async getCalendar(userId: string, month: string): Promise<MonthDetailsResponseDto> {
     const start = `${month}-01`;
-    const end = `${month}-31`;
+    const end = getLastDayOfMonth(month);
 
     const days = await this.repository.getDateRange(userId, { start, end });
     const monthCells = days.map((day) => mapCellToDto(day));

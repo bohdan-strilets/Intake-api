@@ -1,1 +1,1 @@
-export { AiParseFailedException } from './ai-rarse-failed.exception';
+export { AiParseFailedException } from './ai-parse-failed.exception';

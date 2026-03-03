@@ -1,1 +1,1 @@
-export { mapToCreateFoodInput } from './map-to-create-food-input';
+export { mapCreateFoodParamsToInput } from './map-create-food-params-to-input';

@@ -6,6 +6,8 @@ import {
   UnauthorizedException,
   VerificationEmailSendFailedException,
 } from '@app/common/errors/exceptions';
+import { expiresAtFromNow } from '@app/common/lib/date';
+import { generateOpaqueToken, hashOpaqueToken } from '@app/common/lib/opaque-token';
 import { PasswordService } from '@app/common/security';
 import { MailService } from '@app/mail';
 import { SessionService } from '@app/session';
@@ -17,7 +19,6 @@ import { MetabolismService } from '@app/users/services';
 import { CreateUserInput, UserEntity } from '@app/users/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
 
 import { AuthResponseDto, AuthTokensResponseDto, LoginDto } from './dto';
 import { mapUserToAccessPayload, mapUserToRefreshPayload } from './mappers';
@@ -52,10 +53,9 @@ export class AuthService {
     const createUserInput: CreateUserInput = { ...rest, passwordHash };
     const user = await this.usersService.createUser(createUserInput);
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const { raw: rawToken, hash: tokenHash } = generateOpaqueToken();
     const expiresHours = Number(this.config.getOrThrow<number>('EMAIL_VERIFICATION_EXPIRES_HOURS'));
-    const expiresAt = new Date(Date.now() + expiresHours * 60 * 60 * 1000);
+    const expiresAt = expiresAtFromNow({ hours: expiresHours });
 
     await this.usersService.setEmailVerificationToken(user._id.toString(), tokenHash, expiresAt);
 
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<void> {
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const tokenHash = hashOpaqueToken(token);
 
     const user = await this.usersService.findUserByValidEmailVerificationToken(tokenHash);
     if (!user) {
@@ -96,10 +96,9 @@ export class AuthService {
       return;
     }
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const { raw: rawToken, hash: tokenHash } = generateOpaqueToken();
     const expiresHours = Number(this.config.getOrThrow<number>('EMAIL_VERIFICATION_EXPIRES_HOURS'));
-    const expiresAt = new Date(Date.now() + expiresHours * 60 * 60 * 1000);
+    const expiresAt = expiresAtFromNow({ hours: expiresHours });
 
     await this.usersService.setEmailVerificationToken(userId, tokenHash, expiresAt);
 
@@ -171,11 +170,9 @@ export class AuthService {
     const user = await this.usersService.findUserByEmailIncludingDeleted(email);
     if (!user || user.deletedAt) return;
 
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-
+    const { raw: rawToken, hash: tokenHash } = generateOpaqueToken();
     const expiresMinutes = Number(this.config.getOrThrow<number>('PASSWORD_RESET_EXPIRES_MINUTES'));
-    const expiresAt = new Date(Date.now() + expiresMinutes * 60 * 1000);
+    const expiresAt = expiresAtFromNow({ minutes: expiresMinutes });
 
     await this.usersService.setPasswordResetToken(user._id.toString(), tokenHash, expiresAt);
 
@@ -183,7 +180,7 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const tokenHash = hashOpaqueToken(token);
 
     const user = await this.usersService.findUserByValidPasswordResetToken(tokenHash);
     if (!user) {

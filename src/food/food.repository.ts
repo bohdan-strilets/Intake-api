@@ -2,7 +2,7 @@ import { toObjectId } from '@app/common/utils';
 import { DayTotalsDto } from '@app/days/dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, QueryFilter, QueryOptions } from 'mongoose';
+import { Model, QueryFilter, QueryOptions, UpdateQuery } from 'mongoose';
 
 import { buildDayTotalsPipeline } from './aggregates';
 import { EMPTY_DAY_TOTALS } from './constants';
@@ -45,36 +45,33 @@ export class FoodRepository {
   }
 
   async findById(foodId: string, userId: string): Promise<FoodEntity | null> {
-    const foodObjectId = toObjectId(foodId);
-    const userObjectId = toObjectId(userId);
-
-    const filter: QueryFilter<FoodDocument> = {
-      _id: foodObjectId,
-      userId: userObjectId,
-    };
-
+    const filter = this.buildFoodFilter(foodId, userId);
     return this.foodModel.findOne(filter).lean<FoodEntity>().exec();
   }
 
   async deleteById(foodId: string, userId: string): Promise<FoodEntity | null> {
-    const foodObjectId = toObjectId(foodId);
-    const userObjectId = toObjectId(userId);
-
-    const filter: QueryFilter<FoodDocument> = {
-      _id: foodObjectId,
-      userId: userObjectId,
-    };
-
+    const filter = this.buildFoodFilter(foodId, userId);
     return await this.foodModel.findOneAndDelete(filter).lean<FoodEntity>().exec();
   }
 
-  async updateMacros(foodId: string, update: UpdateMacrosInput): Promise<FoodEntity | null> {
-    const foodObjectId = toObjectId(foodId);
+  async updateMacros(
+    foodId: string,
+    userId: string,
+    update: UpdateMacrosInput,
+  ): Promise<FoodEntity | null> {
+    const filter = this.buildFoodFilter(foodId, userId);
     const options: QueryOptions = { new: true };
-
+    const updateQuery: UpdateQuery<FoodDocument> = { $set: update };
     return this.foodModel
-      .findByIdAndUpdate(foodObjectId, update, options)
+      .findOneAndUpdate(filter, updateQuery, options)
       .lean<FoodEntity>()
       .exec();
+  }
+
+  private buildFoodFilter(foodId: string, userId: string): QueryFilter<FoodDocument> {
+    return {
+      _id: toObjectId(foodId),
+      userId: toObjectId(userId),
+    };
   }
 }

@@ -9,7 +9,7 @@ import { AddFoodDto, AddFoodFromTextDto } from './dto';
 import { Source } from './enums';
 import { FoodBadRequestException, FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
-import { mapToCreateFoodInput } from './mappers';
+import { mapCreateFoodParamsToInput } from './mappers';
 import type { CreateFoodInput, FoodEntity, UpdateMacrosInput } from './types';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class FoodService {
     const userObjectId = toObjectId(userId);
 
     const inputs: CreateFoodInput[] = dto.items.map((item) =>
-      mapToCreateFoodInput({
+      mapCreateFoodParamsToInput({
         dayId: day._id,
         userId: userObjectId,
         food: item,
@@ -96,7 +96,7 @@ export class FoodService {
       carbs: normalizeMacro((carbs * normalizedWeight) / 100),
     };
 
-    await this.repository.updateMacros(foodId, input);
+    await this.repository.updateMacros(foodId, userId, input);
 
     const dayId = food.dayId.toString();
     await this.recalculateDayTotals(dayId);
