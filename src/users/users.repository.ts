@@ -149,6 +149,9 @@ export class UsersRepository {
   }
 
   async clearEmailVerificationToken(userId: string): Promise<UserEntity | null> {
-    return this.updateActive(userId, { emailVerificationToken: null });
+    return this.updateActive(userId, {
+      emailVerificationToken: null,
+      emailVerified: true,
+    });
   }
 }

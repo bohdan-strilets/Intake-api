@@ -30,5 +30,7 @@ export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): 
     },
 
     settings: user.settings,
+
+    emailVerified: user.emailVerified ?? !user.emailVerificationToken,
   };
 };

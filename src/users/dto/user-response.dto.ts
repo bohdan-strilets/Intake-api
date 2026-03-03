@@ -46,4 +46,7 @@ export class UserResponseDto {
 
   @ApiProperty({ type: UserSettingsDto })
   settings: UserSettingsDto;
+
+  @ApiProperty({ example: true, description: 'Whether the user has verified their email' })
+  emailVerified: boolean;
 }

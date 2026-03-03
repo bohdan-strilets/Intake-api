@@ -58,6 +58,9 @@ export class User {
 
   @Prop({ type: EmailVerificationToken, default: null })
   emailVerificationToken?: EmailVerificationToken | null;
+
+  @Prop({ default: false })
+  emailVerified: boolean;
 }
 
 export type UserDocument = User & Document;

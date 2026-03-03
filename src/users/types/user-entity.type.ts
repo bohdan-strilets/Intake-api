@@ -39,4 +39,6 @@ export type UserEntity = {
     tokenHash: string;
     expiresAt: Date;
   } | null;
-};
+
+  emailVerified: boolean;
+}
