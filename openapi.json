@@ -249,6 +249,31 @@
         ]
       }
     },
+    "/auth/verify-email/resend": {
+      "post": {
+        "operationId": "AuthController_resendVerificationEmail",
+        "summary": "Resend verification email for current user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Verification email sent"
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/password-reset/request": {
       "post": {
         "operationId": "AuthController_requestPasswordReset",
@@ -1289,6 +1314,11 @@
           },
           "settings": {
             "$ref": "#/components/schemas/UserSettingsDto"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "example": true,
+            "description": "Whether the user has verified their email"
           }
         },
         "required": [
@@ -1305,7 +1335,8 @@
           "goalDelta",
           "activityLevel",
           "metabolism",
-          "settings"
+          "settings",
+          "emailVerified"
         ]
       },
       "AuthResponseDto": {
@@ -1340,6 +1371,8 @@
               "ACCOUNT_DELETED",
               "INVALID_RESET_TOKEN",
               "INVALID_VERIFICATION_TOKEN",
+              "VERIFICATION_EMAIL_SEND_FAILED",
+              "EMAIL_NOT_VERIFIED",
               "FOOD_NOT_FOUND",
               "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",
