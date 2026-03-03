@@ -187,7 +187,17 @@ export class AuthService {
       throw new InvalidResetTokenException();
     }
 
+    const userEmail = user.email;
     await this.usersService.setPasswordFromReset(user._id.toString(), newPassword);
+
+    try {
+      await this.mailService.sendPasswordChangedNotification(userEmail);
+    } catch (err) {
+      this.logger.warn(
+        `Password changed notification failed for ${userEmail}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
   }
 
   async restoreAccount(dto: LoginDto): Promise<AuthTokensResponseDto> {
@@ -203,6 +213,15 @@ export class AuthService {
 
     const restoredUser = await this.usersService.restoreUser(userId);
     if (!restoredUser) throw new UnauthorizedException();
+
+    try {
+      await this.mailService.sendAccountRestoredNotification(restoredUser.email);
+    } catch (err) {
+      this.logger.warn(
+        `Account restored notification failed for ${restoredUser.email}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
 
     const { accessToken, refreshToken } = await this.issueTokens(restoredUser);
 

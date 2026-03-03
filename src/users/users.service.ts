@@ -1,7 +1,11 @@
+import { expiresAtFromNow } from '@app/common/lib/date';
+import { generateOpaqueToken } from '@app/common/lib/opaque-token';
 import { PasswordService } from '@app/common/security';
 import { normalizeEmail } from '@app/common/utils';
+import { MailService } from '@app/mail';
 import { SessionService } from '@app/session';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import {
   UpdateEmailDto,
@@ -23,11 +27,15 @@ import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     private readonly repository: UsersRepository,
     private readonly sessionService: SessionService,
     private readonly passwordService: PasswordService,
     private readonly metabolismService: MetabolismService,
+    private readonly mailService: MailService,
+    private readonly config: ConfigService,
   ) {}
 
   async userExistsByEmail(email: string): Promise<boolean> {
@@ -82,18 +90,47 @@ export class UsersService {
   }
 
   async updateEmail(userId: string, dto: UpdateEmailDto): Promise<UserResponseDto> {
-    const normalizedEmail = normalizeEmail(dto.email);
+    const normalizedNewEmail = normalizeEmail(dto.email);
     const user = await this.getActiveUserById(userId);
+    const oldEmail = user.email;
 
-    if (normalizedEmail !== user.email) {
-      const exists = await this.repository.existsByEmail(normalizedEmail);
-      if (exists) throw new EmailAlreadyExistsException();
+    if (normalizedNewEmail === oldEmail) {
+      const metabolism = this.metabolismService.calculateMetabolism(user);
+      return mapUserToResponseDto(user, metabolism);
     }
 
-    const payload = { email: normalizedEmail };
-    const updatedUser = await this.repository.updateActive(userId, payload);
+    const exists = await this.repository.existsByEmail(normalizedNewEmail);
+    if (exists) throw new EmailAlreadyExistsException();
+
+    const { raw: rawToken, hash: tokenHash } = generateOpaqueToken();
+    const expiresHours = Number(this.config.getOrThrow<number>('EMAIL_VERIFICATION_EXPIRES_HOURS'));
+    const expiresAt = expiresAtFromNow({ hours: expiresHours });
+
+    const updatedUser = await this.repository.updateActive(userId, {
+      email: normalizedNewEmail,
+      emailVerified: false,
+      emailVerificationToken: { tokenHash, expiresAt },
+    });
 
     if (!updatedUser) throw new UserNotFoundException();
+
+    try {
+      await this.mailService.sendVerificationEmail(normalizedNewEmail, rawToken);
+    } catch (err) {
+      this.logger.warn(
+        `Verification email failed for ${normalizedNewEmail} after email change`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
+
+    try {
+      await this.mailService.sendEmailChangedNotification(oldEmail, normalizedNewEmail);
+    } catch (err) {
+      this.logger.warn(
+        `Email changed notification failed to ${oldEmail}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
 
     const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
     return mapUserToResponseDto(updatedUser, metabolism);
@@ -142,6 +179,15 @@ export class UsersService {
 
     await this.repository.updateActive(userId, { passwordHash });
     await this.sessionService.invalidateByUserId(userId);
+
+    try {
+      await this.mailService.sendPasswordChangedNotification(user.email);
+    } catch (err) {
+      this.logger.warn(
+        `Password changed notification failed for ${user.email}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
   }
 
   async deleteUser(userId: string): Promise<void> {
@@ -149,6 +195,15 @@ export class UsersService {
     if (!deletedUser) throw new UserNotFoundException();
 
     await this.sessionService.invalidateByUserId(userId);
+
+    try {
+      await this.mailService.sendAccountDeletedNotification(deletedUser.email);
+    } catch (err) {
+      this.logger.warn(
+        `Account deleted notification failed for ${deletedUser.email}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
   }
 
   async restoreUser(userId: string): Promise<UserEntity | null> {

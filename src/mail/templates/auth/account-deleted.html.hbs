@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>{{> styles}}</style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      {{> email-header}}
+      <h1>Account deleted</h1>
+      <div class="alert alert-warning">Your account has been deleted.</div>
+      <p>If you did not request this, please contact support. You may be able to restore your account by logging in again within a limited time.</p>
+      {{> email-footer}}
+    </div>
+  </div>
+</body>
+</html>

@@ -6,14 +6,16 @@
   <style>{{> styles}}</style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrapper">
     <div class="card">
+      {{> email-header}}
       <h1>Verify your email</h1>
-      <p>Click the button below to verify your email address.</p>
+      <p class="lead">Click the button below to confirm your email address and activate your account.</p>
       <p><a href="{{verifyUrl}}" class="button">Verify email</a></p>
       <hr>
       <p class="muted">Or copy and paste this link into your browser:</p>
       <p><a href="{{verifyUrl}}" class="link">{{verifyUrl}}</a></p>
+      {{> email-footer}}
     </div>
   </div>
 </body>

@@ -4,7 +4,11 @@ import { Resend } from 'resend';
 
 import type { SendEmailParams } from './mail.types';
 import {
+  ACCOUNT_DELETED_SUBJECT,
+  ACCOUNT_RESTORED_SUBJECT,
+  EMAIL_CHANGED_SUBJECT,
   MailTemplateService,
+  PASSWORD_CHANGED_SUBJECT,
   RESET_PASSWORD_SUBJECT,
   VERIFICATION_SUBJECT,
 } from './mail-template.service';
@@ -36,6 +40,31 @@ export class MailService {
     const { html, text } = this.templateService.renderVerification(verifyUrl);
 
     await this.sendEmail({ to, subject: VERIFICATION_SUBJECT, html, text });
+  }
+
+  async sendPasswordChangedNotification(to: string): Promise<void> {
+    const { html, text } = this.templateService.renderPasswordChanged();
+    await this.sendEmail({ to, subject: PASSWORD_CHANGED_SUBJECT, html, text });
+  }
+
+  async sendEmailChangedNotification(toOldEmail: string, newEmail: string): Promise<void> {
+    const { html, text } = this.templateService.renderEmailChanged(newEmail);
+    await this.sendEmail({
+      to: toOldEmail,
+      subject: EMAIL_CHANGED_SUBJECT,
+      html,
+      text,
+    });
+  }
+
+  async sendAccountDeletedNotification(to: string): Promise<void> {
+    const { html, text } = this.templateService.renderAccountDeleted();
+    await this.sendEmail({ to, subject: ACCOUNT_DELETED_SUBJECT, html, text });
+  }
+
+  async sendAccountRestoredNotification(to: string): Promise<void> {
+    const { html, text } = this.templateService.renderAccountRestored();
+    await this.sendEmail({ to, subject: ACCOUNT_RESTORED_SUBJECT, html, text });
   }
 
   private async sendEmail({ to, subject, html, text }: SendEmailParams): Promise<void> {
