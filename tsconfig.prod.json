@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./dist",
+    "paths": {
+      "@app/*": ["./*"],
+      "@common/*": ["./common/*"],
+      "@auth/*": ["./auth/*"],
+      "@users/*": ["./users/*"],
+      "@days/*": ["./days/*"],
+      "@food/*": ["./food/*"],
+      "@ai/*": ["./ai/*"]
+    }
+  }
+}
