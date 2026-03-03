@@ -1,0 +1,1 @@
+export const USERS_SERVICE_TOKEN = 'AUTH_USERS_SERVICE';

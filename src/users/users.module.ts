@@ -1,10 +1,10 @@
+import { AuthModule } from '@app/auth';
 import { PasswordModule } from '@app/common/security';
 import { Day, DaySchema } from '@app/days/schemas';
 import { SessionModule } from '@app/session';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { EmailVerifiedGuard } from '../auth/guards';
 import { User, UserSchema } from './schemas';
 import { GoalProgressService, MetabolismService } from './services';
 import { UsersController } from './users.controller';
@@ -17,11 +17,12 @@ import { UsersService } from './users.service';
       { name: User.name, schema: UserSchema },
       { name: Day.name, schema: DaySchema },
     ]),
+    forwardRef(() => AuthModule),
     SessionModule,
     PasswordModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, MetabolismService, GoalProgressService, UsersRepository, EmailVerifiedGuard],
-  exports: [UsersService, MetabolismService, EmailVerifiedGuard],
+  providers: [UsersService, MetabolismService, GoalProgressService, UsersRepository],
+  exports: [UsersService, MetabolismService],
 })
 export class UsersModule {}

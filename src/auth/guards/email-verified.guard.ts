@@ -1,16 +1,17 @@
 import { EmailNotVerifiedException } from '@app/common/errors/exceptions';
-import { UsersService } from '@app/users';
-import { ExecutionContext, forwardRef, Inject, Injectable, CanActivate } from '@nestjs/common';
+import type { UsersService } from '@app/users';
+import { ExecutionContext, Inject, Injectable, CanActivate } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
 import { SKIP_EMAIL_VERIFIED_KEY } from '../decorators';
+import { USERS_SERVICE_TOKEN } from './tokens';
 
 @Injectable()
 export class EmailVerifiedGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    @Inject(forwardRef(() => UsersService))
+    @Inject(USERS_SERVICE_TOKEN)
     private readonly usersService: UsersService,
   ) {}
 
