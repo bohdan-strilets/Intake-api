@@ -14,7 +14,7 @@ import { AccountDeletedException, EmailAlreadyExistsException } from '@app/users
 import { mapUserToResponseDto } from '@app/users/mappers';
 import { MetabolismService } from '@app/users/services';
 import { CreateUserInput, UserEntity } from '@app/users/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 
@@ -25,6 +25,7 @@ import { RegisterInput } from './types';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private readonly sessionExpiresDays: number;
 
   constructor(
@@ -57,7 +58,14 @@ export class AuthService {
 
     await this.usersService.setEmailVerificationToken(user._id.toString(), tokenHash, expiresAt);
 
-    await this.mailService.sendVerificationEmail(user.email, rawToken);
+    try {
+      await this.mailService.sendVerificationEmail(user.email, rawToken);
+    } catch (err) {
+      this.logger.warn(
+        `Verification email failed for ${user.email}, user already created`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    }
 
     const { accessToken, refreshToken } = await this.issueTokens(user);
 
