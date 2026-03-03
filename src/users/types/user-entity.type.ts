@@ -27,6 +27,13 @@ export type UserEntity = {
     language: Language;
     sound: boolean;
     volume: number;
+    reminders?: {
+      enabled: boolean;
+      time: string;
+      timezone: string;
+      channels: { push: boolean; email: boolean };
+      lastSentAt?: Date | null;
+    };
   };
 
   passwordResetToken?: {

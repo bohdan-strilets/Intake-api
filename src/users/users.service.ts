@@ -4,13 +4,15 @@ import { PasswordService } from '@app/common/security';
 import { normalizeEmail } from '@app/common/utils';
 import { MailService } from '@app/mail';
 import { SessionService } from '@app/session';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import {
+  CreatePushSubscriptionDto,
   UpdateEmailDto,
   UpdatePasswordDto,
   UpdateProfileDto,
+  UpdateRemindersDto,
   UpdateUserSettingsDto,
   UserResponseDto,
 } from './dto';
@@ -23,7 +25,9 @@ import {
 import { mapUserToResponseDto } from './mappers';
 import { MetabolismService } from './services';
 import { CreateUserInput, DailyTargets, FindUserOptions, UserEntity } from './types';
+import { PushSubscriptionRepository } from './push-subscription.repository';
 import { UsersRepository } from './users.repository';
+import { ValidationException } from '@app/common/errors/exceptions';
 
 @Injectable()
 export class UsersService {
@@ -31,6 +35,7 @@ export class UsersService {
 
   constructor(
     private readonly repository: UsersRepository,
+    private readonly pushSubscriptionRepository: PushSubscriptionRepository,
     private readonly sessionService: SessionService,
     private readonly passwordService: PasswordService,
     private readonly metabolismService: MetabolismService,
@@ -237,5 +242,90 @@ export class UsersService {
 
     const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
     return mapUserToResponseDto(updatedUser, metabolism);
+  }
+
+  async updateReminders(userId: string, dto: UpdateRemindersDto): Promise<UserResponseDto> {
+    const user = await this.getActiveUserById(userId);
+    const current = user.settings?.reminders ?? {
+      enabled: false,
+      time: '20:00',
+      timezone: 'Europe/Warsaw',
+      channels: { push: false, email: false },
+      lastSentAt: null,
+    };
+
+    const merged = {
+      enabled: dto.enabled ?? current.enabled,
+      time: dto.time ?? current.time ?? '20:00',
+      timezone: dto.timezone ?? current.timezone ?? 'Europe/Warsaw',
+      channels: {
+        push: dto.channels?.push ?? current.channels?.push ?? false,
+        email: dto.channels?.email ?? current.channels?.email ?? false,
+      },
+    };
+
+    if (merged.enabled && !merged.channels.push && !merged.channels.email) {
+      merged.enabled = false;
+    }
+    if (merged.channels.push) {
+      const count = await this.pushSubscriptionRepository.countByUserId(userId);
+      if (count === 0) throw new ValidationException();
+    }
+
+    const updatedUser = await this.repository.updateReminders(userId, {
+      enabled: merged.enabled,
+      time: merged.time,
+      timezone: merged.timezone,
+      channels: merged.channels,
+    });
+    if (!updatedUser) throw new UserNotFoundException();
+    const metabolism = this.metabolismService.calculateMetabolism(updatedUser);
+    return mapUserToResponseDto(updatedUser, metabolism);
+  }
+
+  async createPushSubscription(
+    userId: string,
+    dto: CreatePushSubscriptionDto,
+  ): Promise<{ id: string }> {
+    const { mapObjectId, toObjectId } = await import('@app/common/utils');
+    const existing = await this.pushSubscriptionRepository.findByEndpoint(dto.endpoint);
+    if (existing) {
+      if (existing.userId.equals(toObjectId(userId))) {
+        return { id: mapObjectId(existing._id) };
+      }
+      await this.pushSubscriptionRepository.deleteByEndpoint(dto.endpoint);
+    }
+    const doc = await this.pushSubscriptionRepository.create(userId, dto);
+    return { id: mapObjectId(doc._id) };
+  }
+
+  async deletePushSubscription(subscriptionId: string, userId: string): Promise<void> {
+    const deleted = await this.pushSubscriptionRepository.deleteByIdAndUserId(
+      subscriptionId,
+      userId,
+    );
+    if (!deleted) throw new NotFoundException('Push subscription not found');
+  }
+
+  /** For cron: list users with reminders enabled (id, email, settings.reminders, settings.language) */
+  async getUsersWithRemindersEnabled(): Promise<
+    Array<{
+      _id: import('mongoose').Types.ObjectId;
+      email: string;
+      settings: Pick<UserEntity['settings'], 'reminders' | 'language'>;
+    }>
+  > {
+    return this.repository.findWithRemindersEnabled();
+  }
+
+  async getPushSubscriptionsForUser(
+    userId: string,
+  ): Promise<Array<{ endpoint: string; p256dh: string; auth: string }>> {
+    const list = await this.pushSubscriptionRepository.findByUserId(userId);
+    return list.map((s) => ({ endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth }));
+  }
+
+  async setRemindersLastSentAt(userId: string, lastSentAt: Date): Promise<void> {
+    await this.repository.setRemindersLastSentAt(userId, lastSentAt);
   }
 }

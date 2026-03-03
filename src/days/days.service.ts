@@ -34,6 +34,10 @@ export class DaysService {
     };
   }
 
+  async getByDate(userId: string, date: string): Promise<DayEntity | null> {
+    return this.repository.getByDate(userId, date);
+  }
+
   async getOrCreateByDate(userId: string, date: string): Promise<DayEntity> {
     const existing = await this.repository.getByDate(userId, date);
     if (existing) return existing;

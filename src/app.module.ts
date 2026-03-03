@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AiModule } from './ai';
 import { AuthModule } from './auth';
+import { RemindersModule } from './reminders';
 import { SavedPromptsModule } from './saved-prompts';
 import { EnvModule } from './common/config';
 import { DatabaseModule } from './common/database';
@@ -18,6 +20,7 @@ import { UsersModule } from './users';
 @Module({
   imports: [
     EnvModule,
+    ScheduleModule.forRoot(),
     MailModule,
     RateLimitModule,
     DatabaseModule,
@@ -31,6 +34,7 @@ import { UsersModule } from './users';
     SavedPromptsModule,
     StatsModule,
     PasswordModule,
+    RemindersModule,
   ],
 })
 export class AppModule {}

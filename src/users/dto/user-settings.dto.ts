@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Language, Theme } from '../enums';
+import { RemindersDto } from './reminders.dto';
 
 export class UserSettingsDto {
   @ApiProperty({ enum: Theme, example: Theme.LIGHT })
@@ -14,4 +15,7 @@ export class UserSettingsDto {
 
   @ApiProperty({ example: 25 })
   volume: number;
+
+  @ApiProperty({ type: RemindersDto, required: false })
+  reminders?: RemindersDto;
 }

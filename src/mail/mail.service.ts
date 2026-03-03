@@ -2,6 +2,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
 
+import { Language } from '@app/users/enums';
+
 import type { SendEmailParams } from './mail.types';
 import {
   ACCOUNT_DELETED_SUBJECT,
@@ -12,6 +14,7 @@ import {
   RESET_PASSWORD_SUBJECT,
   VERIFICATION_SUBJECT,
 } from './mail-template.service';
+import { getFoodReminderContent } from './reminder-i18n';
 
 @Injectable()
 export class MailService {
@@ -65,6 +68,12 @@ export class MailService {
   async sendAccountRestoredNotification(to: string): Promise<void> {
     const { html, text } = this.templateService.renderAccountRestored();
     await this.sendEmail({ to, subject: ACCOUNT_RESTORED_SUBJECT, html, text });
+  }
+
+  async sendFoodReminder(to: string, language: Language = Language.EN): Promise<void> {
+    const { emailSubject, emailBody } = getFoodReminderContent(language);
+    const html = `<p>${emailBody.replace(/\n/g, '<br>')}</p>`;
+    await this.sendEmail({ to, subject: emailSubject, html, text: emailBody });
   }
 
   private async sendEmail({ to, subject, html, text }: SendEmailParams): Promise<void> {

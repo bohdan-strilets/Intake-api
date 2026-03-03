@@ -6,6 +6,27 @@ import { UserResponseDto } from '../dto';
 import { Metabolism, UserEntity } from '../types';
 import { calculateAge } from '../utils';
 
+const defaultReminders = {
+  enabled: false,
+  time: '20:00',
+  timezone: 'Europe/Warsaw',
+  channels: { push: false, email: false },
+  lastSentAt: null as string | null,
+};
+
+function normalizeReminders(
+  reminders: UserEntity['settings']['reminders'],
+): UserResponseDto['settings']['reminders'] {
+  const r = reminders ?? defaultReminders;
+  return {
+    enabled: r.enabled,
+    time: r.time,
+    timezone: r.timezone,
+    channels: { push: r.channels?.push ?? false, email: r.channels?.email ?? false },
+    lastSentAt: r.lastSentAt ? (r.lastSentAt instanceof Date ? r.lastSentAt.toISOString() : r.lastSentAt) : null,
+  };
+}
+
 export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): UserResponseDto => {
   return {
     id: mapObjectId(user._id),
@@ -29,7 +50,10 @@ export const mapUserToResponseDto = (user: UserEntity, metabolism: Metabolism): 
       recommendedCalories: normalizeCalories(metabolism.recommendedCalories),
     },
 
-    settings: user.settings,
+    settings: {
+      ...user.settings,
+      reminders: normalizeReminders(user.settings.reminders),
+    },
 
     emailVerified: user.emailVerified ?? !user.emailVerificationToken,
   };

@@ -679,6 +679,161 @@
         ]
       }
     },
+    "/users/reminders": {
+      "patch": {
+        "operationId": "UsersController_updateReminders",
+        "summary": "Update reminder settings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRemindersDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/push-subscription": {
+      "post": {
+        "operationId": "UsersController_createPushSubscription",
+        "summary": "Register push subscription",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePushSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns created subscription id"
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/users/push-subscription/{id}": {
+      "delete": {
+        "operationId": "UsersController_deletePushSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/days": {
       "get": {
         "operationId": "DaysController_getCalendar",
@@ -1404,6 +1559,53 @@
           "recommendedCalories"
         ]
       },
+      "ReminderChannelsDto": {
+        "type": "object",
+        "properties": {
+          "push": {
+            "type": "boolean",
+            "example": false
+          },
+          "email": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "push",
+          "email"
+        ]
+      },
+      "RemindersDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "time": {
+            "type": "string",
+            "example": "20:00"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Warsaw"
+          },
+          "channels": {
+            "$ref": "#/components/schemas/ReminderChannelsDto"
+          },
+          "lastSentAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "enabled",
+          "time",
+          "timezone",
+          "channels"
+        ]
+      },
       "UserSettingsDto": {
         "type": "object",
         "properties": {
@@ -1432,6 +1634,9 @@
           "volume": {
             "type": "number",
             "example": 25
+          },
+          "reminders": {
+            "$ref": "#/components/schemas/RemindersDto"
           }
         },
         "required": [
@@ -1807,6 +2012,62 @@
             "example": 25
           }
         }
+      },
+      "UpdateReminderChannelsDto": {
+        "type": "object",
+        "properties": {
+          "push": {
+            "type": "boolean",
+            "example": false
+          },
+          "email": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "UpdateRemindersDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "time": {
+            "type": "string",
+            "example": "20:00",
+            "description": "HH:mm format"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Europe/Warsaw"
+          },
+          "channels": {
+            "$ref": "#/components/schemas/UpdateReminderChannelsDto"
+          }
+        }
+      },
+      "CreatePushSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "description": "Web Push subscription endpoint URL"
+          },
+          "p256dh": {
+            "type": "string",
+            "description": "Client public key (p256dh)"
+          },
+          "auth": {
+            "type": "string",
+            "description": "Auth secret"
+          }
+        },
+        "required": [
+          "endpoint",
+          "p256dh",
+          "auth"
+        ]
       },
       "DayTotalsDto": {
         "type": "object",

@@ -154,4 +154,66 @@ export class UsersRepository {
       emailVerified: true,
     });
   }
+
+  async updateReminders(
+    userId: string,
+    reminders: Partial<{
+      enabled: boolean;
+      time: string;
+      timezone: string;
+      channels: { push?: boolean; email?: boolean };
+    }>,
+  ): Promise<UserEntity | null> {
+    const objectUserId = toObjectId(userId);
+    const filter: QueryFilter<UserDocument> = {
+      _id: objectUserId,
+      deletedAt: null,
+    };
+    const update: UpdateQuery<UserDocument> = {};
+    if (reminders.enabled !== undefined) update['settings.reminders.enabled'] = reminders.enabled;
+    if (reminders.time !== undefined) update['settings.reminders.time'] = reminders.time;
+    if (reminders.timezone !== undefined)
+      update['settings.reminders.timezone'] = reminders.timezone;
+    if (reminders.channels?.push !== undefined)
+      update['settings.reminders.channels.push'] = reminders.channels.push;
+    if (reminders.channels?.email !== undefined)
+      update['settings.reminders.channels.email'] = reminders.channels.email;
+    if (Object.keys(update).length === 0) return this.findById(userId);
+    const options: QueryOptions = { new: true };
+    return this.userModel
+      .findOneAndUpdate(filter, { $set: update }, options)
+      .lean<UserEntity>()
+      .exec();
+  }
+
+  async setRemindersLastSentAt(userId: string, lastSentAt: Date): Promise<void> {
+    const objectUserId = toObjectId(userId);
+    await this.userModel
+      .updateOne(
+        { _id: objectUserId, deletedAt: null },
+        { $set: { 'settings.reminders.lastSentAt': lastSentAt } },
+      )
+      .exec();
+  }
+
+  async findWithRemindersEnabled(): Promise<
+    Array<{
+      _id: import('mongoose').Types.ObjectId;
+      email: string;
+      settings: UserEntity['settings'];
+    }>
+  > {
+    const filter: QueryFilter<UserDocument> = {
+      deletedAt: null,
+      'settings.reminders.enabled': true,
+    };
+    return this.userModel
+      .find(filter, {
+        email: 1,
+        'settings.reminders': 1,
+        'settings.language': 1,
+      })
+      .lean()
+      .exec();
+  }
 }

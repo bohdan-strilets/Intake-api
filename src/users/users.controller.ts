@@ -1,7 +1,18 @@
 import { Auth } from '@app/auth/decorators';
 import { CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Patch, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -15,10 +26,12 @@ import {
 } from '@nestjs/swagger';
 
 import {
+  CreatePushSubscriptionDto,
   GoalProgressDto,
   UpdateEmailDto,
   UpdatePasswordDto,
   UpdateProfileDto,
+  UpdateRemindersDto,
   UpdateUserSettingsDto,
   UserResponseDto,
 } from './dto';
@@ -111,5 +124,43 @@ export class UsersController {
     @Body() dto: UpdateUserSettingsDto,
   ): Promise<UserResponseDto> {
     return this.usersService.updateSettings(userId, dto);
+  }
+
+  @Patch('reminders')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update reminder settings' })
+  @ApiOkResponse({ type: UserResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  updateReminders(
+    @CurrentUserId() userId: string,
+    @Body() dto: UpdateRemindersDto,
+  ): Promise<UserResponseDto> {
+    return this.usersService.updateReminders(userId, dto);
+  }
+
+  @Post('push-subscription')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Register push subscription' })
+  @ApiOkResponse({ description: 'Returns created subscription id' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  createPushSubscription(
+    @CurrentUserId() userId: string,
+    @Body() dto: CreatePushSubscriptionDto,
+  ): Promise<{ id: string }> {
+    return this.usersService.createPushSubscription(userId, dto);
+  }
+
+  @Delete('push-subscription/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
+  deletePushSubscription(
+    @CurrentUserId() userId: string,
+    @Param('id') subscriptionId: string,
+  ): Promise<void> {
+    return this.usersService.deletePushSubscription(subscriptionId, userId);
   }
 }
