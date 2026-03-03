@@ -1,3 +1,4 @@
+import { AuthModule } from '@app/auth';
 import { DaysModule } from '@app/days';
 import { FoodModule } from '@app/food';
 import { UsersModule } from '@app/users';
@@ -7,7 +8,7 @@ import { DayDetailsController } from './day-details.controller';
 import { DayDetailsService } from './day-details.service';
 
 @Module({
-  imports: [DaysModule, FoodModule, UsersModule],
+  imports: [AuthModule, DaysModule, FoodModule, UsersModule],
   controllers: [DayDetailsController],
   providers: [DayDetailsService],
 })

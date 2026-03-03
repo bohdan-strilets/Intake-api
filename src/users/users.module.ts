@@ -4,6 +4,7 @@ import { SessionModule } from '@app/session';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { EmailVerifiedGuard } from '../auth/guards';
 import { User, UserSchema } from './schemas';
 import { GoalProgressService, MetabolismService } from './services';
 import { UsersController } from './users.controller';
@@ -20,7 +21,7 @@ import { UsersService } from './users.service';
     PasswordModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, MetabolismService, GoalProgressService, UsersRepository],
-  exports: [UsersService, MetabolismService],
+  providers: [UsersService, MetabolismService, GoalProgressService, UsersRepository, EmailVerifiedGuard],
+  exports: [UsersService, MetabolismService, EmailVerifiedGuard],
 })
 export class UsersModule {}
