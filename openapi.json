@@ -1885,7 +1885,7 @@
           },
           "progressPercent": {
             "type": "number",
-            "example": 0.2,
+            "example": 31,
             "nullable": true
           },
           "kgPerWeek": {
