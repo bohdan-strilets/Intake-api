@@ -4,6 +4,7 @@ import {
   InvalidResetTokenException,
   InvalidVerificationTokenException,
   UnauthorizedException,
+  VerificationEmailSendFailedException,
 } from '@app/common/errors/exceptions';
 import { PasswordService } from '@app/common/security';
 import { MailService } from '@app/mail';
@@ -87,6 +88,30 @@ export class AuthService {
     }
 
     await this.usersService.clearEmailVerificationToken(user._id.toString());
+  }
+
+  async resendVerificationEmail(userId: string): Promise<void> {
+    const user = await this.usersService.getActiveUserById(userId);
+    if (user.emailVerified ?? !user.emailVerificationToken) {
+      return;
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresHours = Number(this.config.getOrThrow<number>('EMAIL_VERIFICATION_EXPIRES_HOURS'));
+    const expiresAt = new Date(Date.now() + expiresHours * 60 * 60 * 1000);
+
+    await this.usersService.setEmailVerificationToken(userId, tokenHash, expiresAt);
+
+    try {
+      await this.mailService.sendVerificationEmail(user.email, rawToken);
+    } catch (err) {
+      this.logger.warn(
+        `Resend verification email failed for ${user.email}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+      throw new VerificationEmailSendFailedException();
+    }
   }
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {

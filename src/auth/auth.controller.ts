@@ -1,4 +1,4 @@
-import { CurrentSessionId } from '@app/common/decorators';
+import { CurrentSessionId, CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
 import { AuthRateLimit, RefreshRateLimit } from '@app/common/rate-limit/decorators';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
@@ -13,7 +13,7 @@ import {
 } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
-import { Public, Refresh } from './decorators';
+import { Auth, Public, Refresh, SkipEmailVerified } from './decorators';
 import {
   AuthResponseDto,
   AuthTokensResponseDto,
@@ -98,6 +98,21 @@ export class AuthController {
   async verifyEmail(@Body() dto: VerifyEmailDto): Promise<{ message: string }> {
     await this.authService.verifyEmail(dto.token);
     return { message: 'Email verified successfully' };
+  }
+
+  @Auth()
+  @SkipEmailVerified()
+  @Post('verify-email/resend')
+  @AuthRateLimit()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend verification email for current user' })
+  @ApiOkResponse({ description: 'Verification email sent' })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  async resendVerificationEmail(
+    @CurrentUserId() userId: string,
+  ): Promise<{ message: string }> {
+    await this.authService.resendVerificationEmail(userId);
+    return { message: 'Verification email sent' };
   }
 
   @Public()
