@@ -1010,6 +1010,205 @@
         ]
       }
     },
+    "/prompts/recent": {
+      "get": {
+        "operationId": "SavedPromptsController_getRecent",
+        "summary": "Get recent prompts (last used)",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 20,
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavedPromptResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Saved prompts"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/prompts/favorites": {
+      "get": {
+        "operationId": "SavedPromptsController_getFavorites",
+        "summary": "Get favorite prompts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavedPromptResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Saved prompts"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/prompts/{id}/favorite": {
+      "patch": {
+        "operationId": "SavedPromptsController_toggleFavorite",
+        "summary": "Toggle prompt favorite",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedPromptResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Saved prompts"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/prompts/{id}": {
+      "delete": {
+        "operationId": "SavedPromptsController_delete",
+        "summary": "Delete saved prompt",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Saved prompts"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
     "/stats": {
       "get": {
         "operationId": "StatsController_getRange",
@@ -1377,6 +1576,7 @@
               "FOOD_BAD_REQUEST",
               "AI_PARSE_FAILED",
               "DAY_NOT_FOUND",
+              "SAVED_PROMPT_NOT_FOUND",
               "SERVER_ERROR"
             ],
             "example": "VALIDATION_ERROR",
@@ -1800,6 +2000,38 @@
         "required": [
           "date",
           "text"
+        ]
+      },
+      "SavedPromptResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "text": {
+            "type": "string",
+            "example": "Chicken sandwich with lettuce"
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "example": false
+          },
+          "usageCount": {
+            "type": "number",
+            "example": 3
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "example": "2026-03-03T12:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "isFavorite",
+          "usageCount",
+          "lastUsedAt"
         ]
       },
       "StatsPeriodDto": {

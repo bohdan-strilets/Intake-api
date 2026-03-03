@@ -1,4 +1,5 @@
 import { OpenAIModule } from '@app/common/lib/openai';
+import { SavedPromptsModule } from '@app/saved-prompts';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -10,6 +11,7 @@ import { AIParseRequest, AIParseRequestSchema } from './schemas';
   imports: [
     MongooseModule.forFeature([{ name: AIParseRequest.name, schema: AIParseRequestSchema }]),
     OpenAIModule,
+    SavedPromptsModule,
   ],
   providers: [AiService, AiRepository],
   exports: [AiService],

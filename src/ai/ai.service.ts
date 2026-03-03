@@ -1,3 +1,4 @@
+import { SavedPromptsService } from '@app/saved-prompts';
 import { OPENAI_MODEL, OpenAIService } from '@app/common/lib/openai';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -15,6 +16,7 @@ export class AiService {
   constructor(
     private readonly repository: AiRepository,
     private readonly openai: OpenAIService,
+    private readonly savedPromptsService: SavedPromptsService,
   ) {}
 
   async parseFood(userId: string, dto: ParseFoodDto): Promise<ParseFoodResponseDto> {
@@ -32,7 +34,9 @@ export class AiService {
       const result = FoodParseResultSchema.parse(parsedJson);
 
       success = true;
-      return mapFoodParseResultToDto(result);
+      const parseResponse = mapFoodParseResultToDto(result);
+      await this.savedPromptsService.recordSuccessPrompt(userId, dto.text);
+      return parseResponse;
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : String(error);
 

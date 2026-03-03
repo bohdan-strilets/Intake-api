@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AiModule } from './ai';
 import { AuthModule } from './auth';
+import { SavedPromptsModule } from './saved-prompts';
 import { EnvModule } from './common/config';
 import { DatabaseModule } from './common/database';
 import { GlobalJwtModule } from './common/jwt';
@@ -27,6 +28,7 @@ import { UsersModule } from './users';
     DayDetailsModule,
     FoodModule,
     AiModule,
+    SavedPromptsModule,
     StatsModule,
     PasswordModule,
   ],
