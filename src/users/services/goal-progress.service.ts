@@ -3,7 +3,7 @@ import { round } from '@app/common/lib/number';
 import { toObjectId } from '@app/common/utils';
 import { Day, DayDocument } from '@app/days/schemas';
 import { Goal } from '@app/users/enums';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Types } from 'mongoose';
@@ -16,8 +16,6 @@ type LatestWeightRow = { weight: number };
 
 @Injectable()
 export class GoalProgressService {
-  private readonly logger = new Logger(GoalProgressService.name);
-
   constructor(
     private readonly usersRepository: UsersRepository,
     @InjectModel(Day.name)
@@ -75,10 +73,6 @@ export class GoalProgressService {
       startWeight,
       currentWeight,
       targetWeight,
-    );
-
-    this.logger.log(
-      `goal-progress: goal=${goal} start=${startWeight} current=${currentWeight} target=${targetWeight} -> progressPercent=${progressPercentValue}`,
     );
 
     return {
