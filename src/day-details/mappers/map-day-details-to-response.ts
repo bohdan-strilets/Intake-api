@@ -1,12 +1,13 @@
 import { DayEntity } from '@app/days/types';
 import { FoodEntity } from '@app/food/types';
+import type { DailyTargets } from '@app/users/types';
 
 import { DayDetailsResponseDto } from '../dto';
 
 export const mapDayDetailsToResponse = (
   day: DayEntity,
   food: FoodEntity[],
-  targetCalories: number,
+  targets: DailyTargets,
 ): DayDetailsResponseDto => {
   return {
     day: {
@@ -35,6 +36,9 @@ export const mapDayDetailsToResponse = (
       carbs: item.carbs,
     })),
 
-    targetCalories,
+    targetCalories: targets.calories,
+    targetProtein: targets.protein,
+    targetFat: targets.fat,
+    targetCarbs: targets.carbs,
   };
 };

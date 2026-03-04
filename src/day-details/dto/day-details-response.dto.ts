@@ -11,4 +11,13 @@ export class DayDetailsResponseDto {
 
   @ApiProperty({ type: Number, required: true })
   targetCalories: number;
+
+  @ApiProperty({ type: Number, required: true })
+  targetProtein: number;
+
+  @ApiProperty({ type: Number, required: true })
+  targetFat: number;
+
+  @ApiProperty({ type: Number, required: true })
+  targetCarbs: number;
 }

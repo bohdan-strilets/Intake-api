@@ -2223,12 +2223,24 @@
           },
           "targetCalories": {
             "type": "number"
+          },
+          "targetProtein": {
+            "type": "number"
+          },
+          "targetFat": {
+            "type": "number"
+          },
+          "targetCarbs": {
+            "type": "number"
           }
         },
         "required": [
           "day",
           "food",
-          "targetCalories"
+          "targetCalories",
+          "targetProtein",
+          "targetFat",
+          "targetCarbs"
         ]
       },
       "UpdateFoodWeightDto": {

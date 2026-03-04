@@ -24,9 +24,8 @@ export class DayDetailsService {
 
     const food = await this.foodService.getFoodByDayId(day._id.toString());
 
-    const metabolism = this.metabolismService.calculateMetabolism(user);
-    const targetCalories = metabolism.recommendedCalories;
+    const targets = this.metabolismService.calculateDailyTargets(user);
 
-    return mapDayDetailsToResponse(day, food, targetCalories);
+    return mapDayDetailsToResponse(day, food, targets);
   }
 }
