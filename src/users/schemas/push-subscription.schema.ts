@@ -18,6 +18,3 @@ export class PushSubscription {
 
 export type PushSubscriptionDocument = PushSubscription & Document;
 export const PushSubscriptionSchema = SchemaFactory.createForClass(PushSubscription);
-
-PushSubscriptionSchema.index({ userId: 1 });
-PushSubscriptionSchema.index({ endpoint: 1 }, { unique: true });
