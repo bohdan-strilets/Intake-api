@@ -10,7 +10,7 @@ import { Source } from './enums';
 import { FoodBadRequestException, FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
 import { mapCreateFoodParamsToInput } from './mappers';
-import type { CreateFoodInput, FoodEntity, UpdateMacrosInput } from './types';
+import type { CreateFoodInput, FoodEntity, ListFoodOptions, UpdateMacrosInput } from './types';
 
 @Injectable()
 export class FoodService {
@@ -52,8 +52,8 @@ export class FoodService {
     await this.recalculateDayTotals(dayId);
   }
 
-  async getFoodByDayId(dayId: string): Promise<FoodEntity[]> {
-    return this.repository.findAllByDayId(dayId);
+  async getFoodByDayId(dayId: string, options?: ListFoodOptions): Promise<FoodEntity[]> {
+    return this.repository.findAllByDayId(dayId, options);
   }
 
   async delete(foodId: string, userId: string): Promise<void> {

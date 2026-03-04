@@ -7,7 +7,7 @@ import { Model, QueryFilter, QueryOptions, UpdateQuery } from 'mongoose';
 import { buildDayTotalsPipeline } from './aggregates';
 import { EMPTY_DAY_TOTALS } from './constants';
 import { Food, FoodDocument } from './schemas';
-import { CreateFoodInput, FoodEntity, UpdateMacrosInput } from './types';
+import type { CreateFoodInput, FoodEntity, ListFoodOptions, UpdateMacrosInput } from './types';
 
 @Injectable()
 export class FoodRepository {
@@ -37,11 +37,20 @@ export class FoodRepository {
     return result ?? EMPTY_DAY_TOTALS;
   }
 
-  async findAllByDayId(dayId: string): Promise<FoodEntity[]> {
+  async findAllByDayId(dayId: string, options?: ListFoodOptions): Promise<FoodEntity[]> {
     const dayObjectId = toObjectId(dayId);
     const filter: QueryFilter<FoodDocument> = { dayId: dayObjectId };
 
-    return this.foodModel.find(filter).sort({ createdAt: -1 }).lean<FoodEntity[]>().exec();
+    if (options?.search?.trim()) {
+      filter.title = { $regex: options.search.trim(), $options: 'i' };
+    }
+
+    const sort: Record<string, 1 | -1> =
+      options?.sortBy && options?.sortOrder
+        ? { [options.sortBy]: options.sortOrder === 'asc' ? 1 : -1 }
+        : { createdAt: -1 };
+
+    return this.foodModel.find(filter).sort(sort).lean<FoodEntity[]>().exec();
   }
 
   async findById(foodId: string, userId: string): Promise<FoodEntity | null> {

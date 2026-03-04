@@ -1,7 +1,7 @@
 import { Auth } from '@app/auth/decorators';
 import { CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -12,7 +12,7 @@ import {
 } from '@nestjs/swagger';
 
 import { DayDetailsService } from './day-details.service';
-import { DayDetailsResponseDto } from './dto';
+import { DayDetailsQueryDto, DayDetailsResponseDto } from './dto';
 
 @Auth()
 @ApiTags('Day Details')
@@ -30,7 +30,8 @@ export class DayDetailsController {
   getDayDetails(
     @CurrentUserId() userId: string,
     @Param('date') date: string,
+    @Query() query: DayDetailsQueryDto,
   ): Promise<DayDetailsResponseDto> {
-    return this.dayDetailsService.getByDate(userId, date);
+    return this.dayDetailsService.getByDate(userId, date, query);
   }
 }
