@@ -51,12 +51,16 @@ export class WebPushService {
       await webPush.sendNotification(
         pushSubscription,
         JSON.stringify(payload),
-        {},
+        {
+          TTL: 86400, // 24h — helps push services (e.g. APNs on iOS) retain and deliver
+          urgency: 'high',
+        },
       );
     } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const statusCode = err && typeof err === 'object' && 'statusCode' in err ? (err as { statusCode: number }).statusCode : undefined;
       this.logger.warn(
-        'Push send failed',
-        err instanceof Error ? err.message : String(err),
+        `Push send failed${statusCode != null ? ` (${statusCode})` : ''}: ${msg}`,
       );
       throw err;
     }

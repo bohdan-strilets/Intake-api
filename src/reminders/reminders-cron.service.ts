@@ -79,11 +79,29 @@ export class RemindersCronService {
 
     if (channels.push) {
       const subscriptions = await this.usersService.getPushSubscriptionsForUser(userId);
+      if (subscriptions.length === 0) {
+        this.logger.warn(
+          `User ${userId} has push reminders enabled but no push subscription registered (PWA may not be installed or permission not granted)`,
+        );
+      }
       for (const sub of subscriptions) {
         try {
           await this.webPushService.sendFoodReminderPush(sub, language);
         } catch (err) {
-          this.logger.warn(`Food reminder push failed for user ${userId}`, err);
+          const statusCode =
+            err && typeof err === 'object' && 'statusCode' in err
+              ? (err as { statusCode: number }).statusCode
+              : undefined;
+          if (statusCode === 410 || statusCode === 404) {
+            await this.usersService.deletePushSubscriptionByEndpoint(userId, sub.endpoint);
+            this.logger.log(
+              `Removed expired push subscription for user ${userId} (${statusCode})`,
+            );
+          } else {
+            this.logger.warn(
+              `Food reminder push failed for user ${userId}: ${err instanceof Error ? err.message : String(err)}`,
+            );
+          }
         }
       }
     }

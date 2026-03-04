@@ -40,6 +40,13 @@ export class PushSubscriptionRepository {
     return (result.deletedCount ?? 0) > 0;
   }
 
+  async deleteByEndpointAndUserId(userId: string, endpoint: string): Promise<boolean> {
+    const result = await this.model
+      .deleteOne({ endpoint, userId: toObjectId(userId) })
+      .exec();
+    return (result.deletedCount ?? 0) > 0;
+  }
+
   async findByIdAndUserId(
     id: string,
     userId: string,
