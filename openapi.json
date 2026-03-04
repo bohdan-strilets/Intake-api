@@ -1421,6 +1421,43 @@
           }
         ]
       }
+    },
+    "/stats/streak": {
+      "get": {
+        "operationId": "StatsController_getStreak",
+        "summary": "Get streak statistics (current streak, longest streak, last 7 days)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreakResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Stats"
+        ],
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
     }
   },
   "info": {
@@ -2525,6 +2562,31 @@
           "calories",
           "macros",
           "days"
+        ]
+      },
+      "StreakResponseDto": {
+        "type": "object",
+        "properties": {
+          "currentStreak": {
+            "type": "number",
+            "description": "Current consecutive days with at least one food entry"
+          },
+          "longestStreak": {
+            "type": "number",
+            "description": "Longest consecutive days with at least one food entry"
+          },
+          "activityLast7Days": {
+            "description": "Activity for last 7 days (oldest to newest): true if day had at least one food entry",
+            "type": "array",
+            "items": {
+              "type": "boolean"
+            }
+          }
+        },
+        "required": [
+          "currentStreak",
+          "longestStreak",
+          "activityLast7Days"
         ]
       }
     }

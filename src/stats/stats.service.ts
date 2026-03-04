@@ -1,4 +1,4 @@
-import { msToDays } from '@app/common/lib/date';
+import { formatDateUTC, msToDays } from '@app/common/lib/date';
 import { DaysService } from '@app/days';
 import { DayTotalsDto } from '@app/days/dto';
 import { DateRange, DayCellDetails } from '@app/days/types';
@@ -6,7 +6,7 @@ import { UsersService } from '@app/users';
 import { Injectable } from '@nestjs/common';
 
 import { EMPTY_TOTALS } from './constants';
-import { DailyStatsItemDto, RangeStatsResponseDto } from './dto';
+import { DailyStatsItemDto, RangeStatsResponseDto, StreakResponseDto } from './dto';
 import { mapToRangeStatsDto } from './mappers';
 
 @Injectable()
@@ -15,6 +15,22 @@ export class StatsService {
     private readonly daysService: DaysService,
     private readonly usersService: UsersService,
   ) {}
+
+  async getStreak(userId: string): Promise<StreakResponseDto> {
+    const activeDates = await this.daysService.getActiveDayDates(userId);
+    const activeSet = new Set(activeDates);
+    const today = formatDateUTC(new Date());
+
+    const currentStreak = this.computeCurrentStreak(activeSet, today);
+    const longestStreak = this.computeLongestStreak(activeDates);
+    const activityLast7Days = this.computeActivityLast7Days(activeSet, today);
+
+    return {
+      currentStreak,
+      longestStreak,
+      activityLast7Days,
+    };
+  }
 
   async getRangeStats(userId: string, range: DateRange): Promise<RangeStatsResponseDto> {
     const days = await this.daysService.getDateRange(userId, range);
@@ -48,6 +64,53 @@ export class StatsService {
       worstDay,
       mostAboveTarget,
     });
+  }
+
+  // Streak helpers
+
+  private computeCurrentStreak(activeSet: Set<string>, today: string): number {
+    let streak = 0;
+    const date = new Date(Date.UTC(0, 0, 0));
+    const [y, m, d] = today.split('-').map(Number);
+    date.setUTCFullYear(y, m - 1, d);
+    for (;;) {
+      const dateStr = formatDateUTC(date);
+      if (!activeSet.has(dateStr)) break;
+      streak++;
+      date.setUTCDate(date.getUTCDate() - 1);
+    }
+    return streak;
+  }
+
+  private computeLongestStreak(sortedDates: string[]): number {
+    if (sortedDates.length === 0) return 0;
+    const msPerDay = 24 * 60 * 60 * 1000;
+    let maxStreak = 1;
+    let current = 1;
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prev = new Date(sortedDates[i - 1] + 'T00:00:00Z').getTime();
+      const curr = new Date(sortedDates[i] + 'T00:00:00Z').getTime();
+      const diffDays = Math.round((curr - prev) / msPerDay);
+      if (diffDays === 1) {
+        current++;
+      } else {
+        maxStreak = Math.max(maxStreak, current);
+        current = 1;
+      }
+    }
+    return Math.max(maxStreak, current);
+  }
+
+  private computeActivityLast7Days(activeSet: Set<string>, today: string): boolean[] {
+    const result: boolean[] = [];
+    const [y, m, d] = today.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(date);
+      d.setUTCDate(d.getUTCDate() - i);
+      result.push(activeSet.has(formatDateUTC(d)));
+    }
+    return result;
   }
 
   // Helper methods

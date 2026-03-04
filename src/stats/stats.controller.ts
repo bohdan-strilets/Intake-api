@@ -10,7 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { GetRangeStatsDto, RangeStatsResponseDto } from './dto';
+import { GetRangeStatsDto, RangeStatsResponseDto, StreakResponseDto } from './dto';
 import { StatsService } from './stats.service';
 
 @Auth()
@@ -30,5 +30,14 @@ export class StatsController {
     @Query() dto: GetRangeStatsDto,
   ): Promise<RangeStatsResponseDto> {
     return this.statsService.getRangeStats(userId, dto);
+  }
+
+  @Get('streak')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get streak statistics (current streak, longest streak, last 7 days)' })
+  @ApiOkResponse({ type: StreakResponseDto })
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  getStreak(@CurrentUserId() userId: string): Promise<StreakResponseDto> {
+    return this.statsService.getStreak(userId);
   }
 }

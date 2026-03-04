@@ -19,6 +19,10 @@ export class DaysService {
     return this.repository.getDateRange(userId, range);
   }
 
+  async getActiveDayDates(userId: string): Promise<string[]> {
+    return this.repository.getActiveDayDates(userId);
+  }
+
   async getCalendar(userId: string, month: string): Promise<MonthDetailsResponseDto> {
     const start = `${month}-01`;
     const end = getLastDayOfMonth(month);

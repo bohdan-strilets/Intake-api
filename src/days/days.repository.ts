@@ -105,4 +105,19 @@ export class DaysRepository {
 
     await this.dayModel.updateOne(filter, update).exec();
   }
+
+  /** Returns sorted (ASC) date strings for days where totalCalories > 0 */
+  async getActiveDayDates(userId: string): Promise<string[]> {
+    const userObjectId = toObjectId(userId);
+    const filter: QueryFilter<DayDocument> = {
+      userId: userObjectId,
+      totalCalories: { $gt: 0 },
+    };
+    const docs = await this.dayModel
+      .find(filter, { date: 1, _id: 0 })
+      .sort({ date: 1 })
+      .lean<{ date: string }[]>()
+      .exec();
+    return docs.map((d) => d.date);
+  }
 }

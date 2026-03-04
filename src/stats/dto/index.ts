@@ -4,6 +4,7 @@ export { RangeStatsResponseDto } from './range-stats-response.dto';
 export { StatsCaloriesDto } from './stats-calories.dto';
 export { StatsDayHighlightDto } from './stats-day-highlight.dto';
 export { StatsMacroItemDto } from './stats-macro-item.dto';
+export { StreakResponseDto } from './streak-response.dto';
 export { StatsMacrosDto } from './stats-macros.dto';
 export { StatsPeriodDto } from './stats-period.dto';
 export { StatsWeightDto } from './stats-weight.dto';
