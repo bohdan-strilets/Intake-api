@@ -31,6 +31,11 @@ export class StatsService {
 
     const weightDelta = this.calculateWeightDelta(days);
 
+    const { bestDay, worstDay, mostAboveTarget } = this.findBestAndWorstDays(
+      dailyStats,
+      targets.calories,
+    );
+
     return mapToRangeStatsDto({
       range,
       totalDays,
@@ -39,6 +44,9 @@ export class StatsService {
       targets,
       weightDelta,
       dailyStats,
+      bestDay,
+      worstDay,
+      mostAboveTarget,
     });
   }
 
@@ -97,6 +105,47 @@ export class StatsService {
     const last = withWeight[withWeight.length - 1].weight;
 
     return Number((last - first).toFixed(1));
+  }
+
+  /**
+   * 1. Closest to target: day with min abs(calories - goal). Tie-break: prefer deficit (calories <= goal).
+   * 2. Worst day: day with max(calories - goal) — biggest surplus, or if all below goal then closest from below (least deficit).
+   */
+  private findBestAndWorstDays(
+    dailyStats: DailyStatsItemDto[],
+    calorieGoal: number,
+  ): {
+    bestDay?: { date: string; calories: number; deviation: number };
+    worstDay?: { date: string; calories: number; deviation: number };
+    mostAboveTarget?: { date: string; calories: number; deviation: number };
+  } {
+    const withSignedDeviation = dailyStats
+      .filter((d) => d.calories > 0)
+      .map((d) => ({
+        date: d.date,
+        calories: d.calories,
+        deviation: d.calories - calorieGoal,
+      }));
+
+    if (withSignedDeviation.length === 0) return {};
+
+    // Closest to target: min abs(deviation), tie-break: prefer deficit (deviation <= 0)
+    const best = withSignedDeviation.reduce((a, b) => {
+      const absA = Math.abs(a.deviation);
+      const absB = Math.abs(b.deviation);
+      if (absA < absB) return a;
+      if (absA > absB) return b;
+      return a.deviation <= 0 ? a : b;
+    });
+
+    // Worst day: max(deviation) — biggest surplus, or if all below goal then closest from below
+    const worst = withSignedDeviation.reduce((a, b) => (a.deviation >= b.deviation ? a : b));
+
+    return {
+      bestDay: { date: best.date, calories: best.calories, deviation: best.deviation },
+      worstDay: { date: worst.date, calories: worst.calories, deviation: worst.deviation },
+      mostAboveTarget: { date: worst.date, calories: worst.calories, deviation: worst.deviation },
+    };
   }
 
   private buildDailyStats(days: DayCellDetails[], range: DateRange): DailyStatsItemDto[] {

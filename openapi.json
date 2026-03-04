@@ -2371,11 +2371,17 @@
           "target": {
             "type": "number",
             "example": 150
+          },
+          "percent": {
+            "type": "number",
+            "example": 88,
+            "description": "Progress to target, 0–100"
           }
         },
         "required": [
           "average",
-          "target"
+          "target",
+          "percent"
         ]
       },
       "StatsMacrosDto": {
@@ -2445,6 +2451,29 @@
           "delta"
         ]
       },
+      "StatsDayHighlightDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-05-13"
+          },
+          "calories": {
+            "type": "number",
+            "example": 1980
+          },
+          "deviation": {
+            "type": "number",
+            "example": 120,
+            "description": "Positive = over goal, negative = under goal"
+          }
+        },
+        "required": [
+          "date",
+          "calories",
+          "deviation"
+        ]
+      },
       "RangeStatsResponseDto": {
         "type": "object",
         "properties": {
@@ -2465,6 +2494,30 @@
           },
           "weight": {
             "$ref": "#/components/schemas/StatsWeightDto"
+          },
+          "bestDay": {
+            "description": "Day closest to calorie goal",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatsDayHighlightDto"
+              }
+            ]
+          },
+          "worstDay": {
+            "description": "Day farthest from calorie goal",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatsDayHighlightDto"
+              }
+            ]
+          },
+          "mostAboveTarget": {
+            "description": "Day with highest calories above goal",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatsDayHighlightDto"
+              }
+            ]
           }
         },
         "required": [
