@@ -41,7 +41,11 @@ export class StatsService {
     const totals = this.calculateTotals(days);
     const averages = this.calculateAverages(totals, totalDays);
 
-    const targets = await this.usersService.getDailyTargets(userId);
+    const [targets, user, firstWeightEntry] = await Promise.all([
+      this.usersService.getDailyTargets(userId),
+      this.usersService.getActiveUserById(userId),
+      this.daysService.getFirstWeightEntry(userId),
+    ]);
 
     const dailyStats = this.buildDailyStats(days, range);
 
@@ -59,6 +63,8 @@ export class StatsService {
       averages,
       targets,
       weightDelta,
+      weightInitial: firstWeightEntry?.weight,
+      weightTarget: user.targetWeight,
       dailyStats,
       bestDay,
       worstDay,

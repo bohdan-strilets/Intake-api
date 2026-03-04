@@ -23,6 +23,11 @@ export class DaysService {
     return this.repository.getActiveDayDates(userId);
   }
 
+  /** Weight from the user's first ever recorded day (earliest by date). */
+  async getFirstWeightEntry(userId: string): Promise<{ weight: number } | null> {
+    return this.repository.getFirstWeightEntry(userId);
+  }
+
   async getCalendar(userId: string, month: string): Promise<MonthDetailsResponseDto> {
     const start = `${month}-01`;
     const end = getLastDayOfMonth(month);

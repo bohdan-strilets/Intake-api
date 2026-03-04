@@ -953,6 +953,42 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "weight",
+                "calories",
+                "protein",
+                "carbs",
+                "fat"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Filter food by title (case-insensitive)",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2481,12 +2517,20 @@
         "properties": {
           "delta": {
             "type": "number",
+            "description": "Weight change over the period (last - first)",
             "example": -0.8
+          },
+          "initial": {
+            "type": "number",
+            "description": "Weight from the user's first ever recorded day (fixed reference for charts)",
+            "example": 82.5
+          },
+          "target": {
+            "type": "number",
+            "description": "User's target (goal) weight from profile",
+            "example": 75
           }
-        },
-        "required": [
-          "delta"
-        ]
+        }
       },
       "StatsDayHighlightDto": {
         "type": "object",

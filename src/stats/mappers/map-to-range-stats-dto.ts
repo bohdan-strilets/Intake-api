@@ -16,6 +16,8 @@ export const mapToRangeStatsDto = (input: BuildStatsInput): RangeStatsResponseDt
     averages,
     targets,
     weightDelta,
+    weightInitial,
+    weightTarget,
     dailyStats,
     bestDay,
     worstDay,
@@ -55,7 +57,14 @@ export const mapToRangeStatsDto = (input: BuildStatsInput): RangeStatsResponseDt
       },
     },
 
-    weight: weightDelta !== null ? { delta: normalizeWeight(weightDelta) } : undefined,
+    weight:
+      weightDelta !== null || weightInitial != null || weightTarget != null
+        ? {
+            ...(weightDelta !== null ? { delta: normalizeWeight(weightDelta) } : {}),
+            ...(weightInitial != null ? { initial: normalizeWeight(weightInitial) } : {}),
+            ...(weightTarget != null ? { target: normalizeWeight(weightTarget) } : {}),
+          }
+        : undefined,
 
     bestDay:
       bestDay !== undefined
