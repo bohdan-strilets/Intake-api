@@ -1,6 +1,7 @@
 import { Auth } from '@app/auth/decorators';
 import { CurrentUserId } from '@app/common/decorators';
 import { ErrorResponseDto } from '@app/common/errors/dto';
+import { AiRateLimit } from '@app/common/rate-limit/decorators';
 import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -51,6 +52,7 @@ export class FoodController {
   }
 
   @Post('add/from-ai')
+  @AiRateLimit()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Add food to day from natural language text' })
   @ApiNoContentResponse()

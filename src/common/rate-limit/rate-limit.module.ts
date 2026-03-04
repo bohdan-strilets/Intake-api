@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 
+import { AiThrottleGuard } from './guards';
+
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({
@@ -30,5 +32,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       ],
     }),
   ],
+  providers: [AiThrottleGuard],
+  exports: [AiThrottleGuard],
 })
 export class RateLimitModule {}

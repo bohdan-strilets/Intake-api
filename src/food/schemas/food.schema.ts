@@ -42,3 +42,5 @@ export class Food {
 
 export type FoodDocument = Food & Document;
 export const FoodSchema = SchemaFactory.createForClass(Food);
+
+FoodSchema.index({ dayId: 1, createdAt: -1 });

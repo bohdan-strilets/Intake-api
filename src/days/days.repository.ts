@@ -44,14 +44,6 @@ export class DaysRepository {
     return await this.dayModel.findOne(filter).lean<DayEntity>().exec();
   }
 
-  async getById(dayId: string): Promise<DayEntity | null> {
-    const dayObjectId = toObjectId(dayId);
-
-    const filter: QueryFilter<DayDocument> = { _id: dayObjectId };
-
-    return await this.dayModel.findOne(filter).lean<DayEntity>().exec();
-  }
-
   async create(userId: string, date: string): Promise<DayEntity> {
     const normalizedDate = validateDateFormat(date);
     const userObjectId = toObjectId(userId);

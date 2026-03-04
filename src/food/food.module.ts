@@ -1,7 +1,7 @@
 import { AiModule } from '@app/ai';
 import { AuthModule } from '@app/auth';
 import { DaysModule } from '@app/days';
-import { UsersModule } from '@app/users';
+import { RateLimitModule } from '@app/common/rate-limit';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -15,8 +15,8 @@ import { Food, FoodSchema } from './schemas';
     AuthModule,
     MongooseModule.forFeature([{ name: Food.name, schema: FoodSchema }]),
     DaysModule,
-    UsersModule,
     AiModule,
+    RateLimitModule,
   ],
   controllers: [FoodController],
   providers: [FoodService, FoodRepository],

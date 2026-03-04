@@ -5,11 +5,11 @@ import { toObjectId } from '@app/common/utils';
 import { Injectable } from '@nestjs/common';
 
 import { DaysService } from '../days/days.service';
-import { AddFoodDto, AddFoodFromTextDto } from './dto';
+import { AddFoodDto, AddFoodFromTextDto, ItemFoodDto } from './dto';
 import { Source } from './enums';
 import { FoodBadRequestException, FoodNotFoundException } from './errors';
 import { FoodRepository } from './food.repository';
-import { mapCreateFoodParamsToInput } from './mappers';
+import { mapCreateFoodParamsToInput, mapParsedItemToItemFoodDto } from './mappers';
 import type { CreateFoodInput, FoodEntity, ListFoodOptions, UpdateMacrosInput } from './types';
 
 @Injectable()
@@ -69,9 +69,11 @@ export class FoodService {
   async addFromText(userId: string, dto: AddFoodFromTextDto): Promise<void> {
     const parsed = await this.aiService.parseFood(userId, { text: dto.text });
 
+    const items: ItemFoodDto[] = parsed.items.map(mapParsedItemToItemFoodDto);
+
     await this.addFood(userId, {
       date: dto.date,
-      items: parsed.items,
+      items,
     });
   }
 

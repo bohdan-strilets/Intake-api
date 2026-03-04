@@ -58,7 +58,7 @@ export class DaysService {
     }
   }
 
-  async updateTotals(dayId: string, totals: DayTotalsDto) {
+  async updateTotals(dayId: string, totals: DayTotalsDto): Promise<void> {
     await this.repository.updateTotals(dayId, totals);
   }
 

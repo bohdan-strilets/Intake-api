@@ -5,7 +5,6 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ZodError } from 'zod';
@@ -34,12 +33,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       return response.status(status).json({
         code: mapHttpStatusToErrorCode(status),
-      });
-    }
-
-    if (exception instanceof UnauthorizedException) {
-      return response.status(HttpStatus.UNAUTHORIZED).json({
-        code: ErrorCode.UNAUTHORIZED,
       });
     }
 
