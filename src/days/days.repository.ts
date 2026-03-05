@@ -98,10 +98,8 @@ export class DaysRepository {
     await this.dayModel.updateOne(filter, update).exec();
   }
 
-  /**
-   * Returns the weight from the user's first ever recorded day (earliest date with weight set).
-   * Used as a fixed "initial weight" reference for stats/charts.
-   */
+  
+
   async getFirstWeightEntry(userId: string): Promise<{ weight: number } | null> {
     const userObjectId = toObjectId(userId);
     const filter: QueryFilter<DayDocument> = {
@@ -116,7 +114,8 @@ export class DaysRepository {
     return doc ?? null;
   }
 
-  /** Returns sorted (ASC) date strings for days where totalCalories > 0 */
+  
+
   async getActiveDayDates(userId: string): Promise<string[]> {
     const userObjectId = toObjectId(userId);
     const filter: QueryFilter<DayDocument> = {

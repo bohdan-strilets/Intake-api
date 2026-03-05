@@ -307,12 +307,14 @@ export class UsersService {
     if (!deleted) throw new NotFoundException('Push subscription not found');
   }
 
-  /** Removes a push subscription by endpoint (e.g. after 410 Gone). Used by reminder cron. */
+  
+
   async deletePushSubscriptionByEndpoint(userId: string, endpoint: string): Promise<void> {
     await this.pushSubscriptionRepository.deleteByEndpointAndUserId(userId, endpoint);
   }
 
-  /** For cron: list users with reminders enabled (id, email, settings.reminders, settings.language) */
+  
+
   async getUsersWithRemindersEnabled(): Promise<
     Array<{
       _id: import('mongoose').Types.ObjectId;

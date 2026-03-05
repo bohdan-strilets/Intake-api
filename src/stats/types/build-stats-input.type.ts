@@ -20,17 +20,22 @@ export type BuildStatsInput = {
   dailyStats: DailyStatsItemDto[];
 
   weightDelta: number | null;
-  /** Weight from the user's first ever recorded day (fixed reference). */
+  
+
   weightInitial?: number;
-  /** User's target (goal) weight from profile. */
+  
+
   weightTarget?: number;
 
-  /** Day with smallest |calories - goal| among logged days; deviation = calories - goal */
+  
+
   bestDay?: { date: string; calories: number; deviation: number };
 
-  /** Day with largest |calories - goal| among logged days; deviation = calories - goal */
+  
+
   worstDay?: { date: string; calories: number; deviation: number };
 
-  /** Day with max(calories - goal) among days above goal */
+  
+
   mostAboveTarget?: { date: string; calories: number; deviation: number };
 };

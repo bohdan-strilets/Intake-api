@@ -1,9 +1,5 @@
 import { formatDateUTC } from './format-date-utc';
 
-/**
- * Returns the last day of the given month as YYYY-MM-DD.
- * @param month - "YYYY-MM" (e.g. "2024-02")
- */
 export const getLastDayOfMonth = (month: string): string => {
   const [year, monthNum] = month.split('-').map(Number);
   if (!Number.isFinite(year) || !Number.isFinite(monthNum) || monthNum < 1 || monthNum > 12) {

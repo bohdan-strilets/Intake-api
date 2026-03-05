@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-/**
- * Parsed food item returned by AI. Same shape as food creation input;
- * kept in AI module to avoid circular dependency with Food.
- */
 export class ParsedFoodItemDto {
   @ApiProperty({ example: 'Rice' })
   title: string;

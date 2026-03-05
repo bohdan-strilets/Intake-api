@@ -228,8 +228,6 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  // PRIVATE METHODS
-
   private async validatePassword(password: string, user: UserEntity): Promise<void> {
     const hash = user.passwordHash;
     const isValid = await this.passwordService.compare(password, hash);

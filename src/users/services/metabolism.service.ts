@@ -41,8 +41,6 @@ export class MetabolismService {
     return { tdee, calories, protein, fat, carbs };
   }
 
-  // Private methods
-
   private calculateBmr(user: UserEntity): number {
     const { weight, height, dateOfBirth, sex } = user;
     const age = calculateAge(dateOfBirth);

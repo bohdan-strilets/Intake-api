@@ -72,8 +72,6 @@ export class StatsService {
     });
   }
 
-  // Streak helpers
-
   private computeCurrentStreak(activeSet: Set<string>, today: string): number {
     let streak = 0;
     const date = new Date(Date.UTC(0, 0, 0));
@@ -118,8 +116,6 @@ export class StatsService {
     }
     return result;
   }
-
-  // Helper methods
 
   private calculateTotals(days: DayCellDetails[]): DayTotalsDto {
     return days.reduce(
@@ -176,10 +172,8 @@ export class StatsService {
     return Number((last - first).toFixed(1));
   }
 
-  /**
-   * 1. Closest to target: day with min abs(calories - goal). Tie-break: prefer deficit (calories <= goal).
-   * 2. Worst day: day with max(calories - goal) — biggest surplus, or if all below goal then closest from below (least deficit).
-   */
+  
+
   private findBestAndWorstDays(
     dailyStats: DailyStatsItemDto[],
     calorieGoal: number,
@@ -198,7 +192,6 @@ export class StatsService {
 
     if (withSignedDeviation.length === 0) return {};
 
-    // Closest to target: min abs(deviation), tie-break: prefer deficit (deviation <= 0)
     const best = withSignedDeviation.reduce((a, b) => {
       const absA = Math.abs(a.deviation);
       const absB = Math.abs(b.deviation);
@@ -207,7 +200,6 @@ export class StatsService {
       return a.deviation <= 0 ? a : b;
     });
 
-    // Worst day: max(deviation) — biggest surplus, or if all below goal then closest from below
     const worst = withSignedDeviation.reduce((a, b) => (a.deviation >= b.deviation ? a : b));
 
     return {

@@ -14,9 +14,8 @@ function normalizePromptText(text: string): string {
 export class SavedPromptsService {
   constructor(private readonly repository: SavedPromptsRepository) {}
 
-  /**
-   * Call after successful AI parse. Does not throw.
-   */
+  
+
   async recordSuccessPrompt(userId: string, rawText: string): Promise<void> {
     const text = normalizePromptText(rawText);
     if (text.length < MIN_TEXT_LENGTH) return;

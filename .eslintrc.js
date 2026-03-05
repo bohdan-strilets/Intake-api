@@ -33,9 +33,7 @@ module.exports = {
   },
 
   rules: {
-    // ========================
-    // 🧠 TypeScript discipline
-    // ========================
+
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
 
@@ -43,9 +41,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
 
-    // ========================
-    // 🧹 Auto-remove imports
-    // ========================
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',
@@ -57,15 +52,9 @@ module.exports = {
       },
     ],
 
-    // ========================
-    // 🔀 Import sorting
-    // ========================
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
 
-    // ========================
-    // 🎨 Prettier as truth
-    // ========================
     'prettier/prettier': 'error',
   },
 };

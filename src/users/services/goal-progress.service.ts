@@ -115,10 +115,8 @@ export class GoalProgressService {
     return fallback;
   }
 
-  /**
-   * Returns progress 0..1 (rounded to 2 decimals) or null when targetWeight is null.
-   * Used directly in the API response.
-   */
+  
+
 private computeProgressPercent(
   goal: Goal,
   startWeight: number,

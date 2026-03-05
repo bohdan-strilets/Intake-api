@@ -26,7 +26,8 @@ export const envSchema = z.object({
   PASSWORD_RESET_EXPIRES_MINUTES: z.coerce.number().default(60),
   EMAIL_VERIFICATION_EXPIRES_HOURS: z.coerce.number().default(24),
 
-  /** Optional. If not set, push notifications are skipped (email reminders still work). */
+  
+
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
 

@@ -10,7 +10,8 @@ export class GoalProgressDto {
   @ApiPropertyOptional({ example: 70, nullable: true })
   targetWeight: number | null;
 
-  /** Progress 0–100 (integer). Null when target not set. */
+  
+
   @ApiPropertyOptional({ example: 31, nullable: true })
   progressPercent: number | null;
 

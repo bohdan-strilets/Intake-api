@@ -1,7 +1,5 @@
-/**
- * Returns a Date that is the given hours and/or minutes from now.
- * Use for token expiry (e.g. email verification, password reset).
- */
+
+
 export const expiresAtFromNow = (options: {
   hours?: number;
   minutes?: number;
