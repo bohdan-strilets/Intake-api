@@ -2625,12 +2625,19 @@
             "items": {
               "type": "boolean"
             }
+          },
+          "firstActivityDate": {
+            "type": "string",
+            "description": "First date the user had any activity (YYYY-MM-DD). Used to not count days before first use as \"skipped\".",
+            "example": "2025-03-01",
+            "nullable": true
           }
         },
         "required": [
           "currentStreak",
           "longestStreak",
-          "activityLast7Days"
+          "activityLast7Days",
+          "firstActivityDate"
         ]
       }
     }

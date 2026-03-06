@@ -24,11 +24,14 @@ export class StatsService {
     const currentStreak = this.computeCurrentStreak(activeSet, today);
     const longestStreak = this.computeLongestStreak(activeDates);
     const activityLast7Days = this.computeActivityLast7Days(activeSet, today);
+    const firstActivityDate =
+      activeDates.length > 0 ? activeDates.reduce((a, b) => (a <= b ? a : b)) : null;
 
     return {
       currentStreak,
       longestStreak,
       activityLast7Days,
+      firstActivityDate,
     };
   }
 
